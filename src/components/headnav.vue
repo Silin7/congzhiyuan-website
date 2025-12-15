@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, nextTick, ref, reactive } from 'vue'
+import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage } from 'element-plus'
 
 onMounted(() => {
   // 确保 DOM 完全渲染后再初始化 lucide 图标
@@ -46,21 +47,21 @@ const closeLoginModal = () => {
 // 发送验证码
 const sendCode = () => {
   if (!loginForm.phone) {
-    alert('请输入手机号码')
+    ElMessage.warning('请输入手机号码')
     return
   }
-  alert(`验证码已发送到 ${loginForm.phone}`)
+  ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
 }
 
 // 登录提交
 const handleLogin = () => {
   if (!loginForm.agree) {
-    alert('请阅读并同意用户协议')
+    ElMessage.warning('请阅读并同意用户协议')
     return
   }
 
   // 模拟登录成功
-  alert('登录成功')
+  ElMessage.success('登录成功')
   closeLoginModal()
 }
 </script>
@@ -83,91 +84,66 @@ const handleLogin = () => {
         </div>
       </div>
       <div>
-        <button class="login-btn" @click="openLoginModal('phone')">登录</button>
+        <el-button type="primary" @click="openLoginModal('phone')">登录</el-button>
       </div>
     </div>
   </header>
 
   <!-- 登录弹窗 -->
-  <div v-if="showLoginModal" class="login-modal-overlay" @click="closeLoginModal">
-    <div class="login-modal" @click.stop>
-      <div class="modal-header">
-        <h3 class="modal-title">登录聪志愿AI</h3>
-        <button class="close-btn" @click="closeLoginModal">
-          <i data-lucide="x" class="icon"></i>
-        </button>
-      </div>
-
-      <div class="login-tabs">
-        <button :class="['tab-btn', { active: loginType === 'phone' }]" @click="loginType = 'phone'">
-          手机登录
-        </button>
-        <button :class="['tab-btn', { active: loginType === 'account' }]" @click="loginType = 'account'">
-          账号登录
-        </button>
-        <button :class="['tab-btn', { active: loginType === 'card' }]" @click="loginType = 'card'">
-          志愿卡登录
-        </button>
-      </div>
-
-      <div class="login-form">
-        <!-- 手机登录 -->
-        <div v-if="loginType === 'phone'" class="form-content">
-          <div class="form-group">
-            <label class="form-label">手机号码</label>
-            <input v-model="loginForm.phone" type="tel" class="form-input" placeholder="请输入手机号码">
-          </div>
-          <div class="form-group">
-            <label class="form-label">验证码</label>
-            <div class="code-input-group">
-              <input v-model="loginForm.code" type="text" class="form-input" placeholder="请输入验证码">
-              <button class="code-btn" @click="sendCode">获取验证码</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 账号登录 -->
-        <div v-if="loginType === 'account'" class="form-content">
-          <div class="form-group">
-            <label class="form-label">账号/手机号</label>
-            <input v-model="loginForm.account" type="text" class="form-input" placeholder="请输入账号或手机号">
-          </div>
-          <div class="form-group">
-            <label class="form-label">密码</label>
-            <input v-model="loginForm.password" type="password" class="form-input" placeholder="请输入密码">
-          </div>
+  <el-dialog v-model="showLoginModal" title="登录聪志愿AI" width="400px" center @close="closeLoginModal">
+    <el-tabs v-model="loginType" class="login-tabs">
+      <el-tab-pane label="手机登录" name="phone">
+        <el-form label-position="top">
+          <el-form-item label="手机号码">
+            <el-input v-model="loginForm.phone" type="tel" placeholder="请输入手机号码"></el-input>
+          </el-form-item>
+          <el-form-item label="验证码">
+            <el-input v-model="loginForm.code" placeholder="请输入验证码" clearable>
+              <template #append>
+                <el-button @click="sendCode">获取验证码</el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="账号登录" name="account">
+        <el-form label-position="top">
+          <el-form-item label="账号/手机号">
+            <el-input v-model="loginForm.account" placeholder="请输入账号或手机号"></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" show-password></el-input>
+          </el-form-item>
           <div class="form-options">
-            <label class="checkbox-label">
-              <input v-model="loginForm.remember" type="checkbox" class="checkbox">
-              记住密码
-            </label>
+            <el-checkbox v-model="loginForm.remember">记住密码</el-checkbox>
             <a href="#" class="forgot-link">忘记密码？</a>
           </div>
-        </div>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="志愿卡登录" name="card">
+        <el-form label-position="top">
+          <el-form-item label="志愿卡号">
+            <el-input v-model="loginForm.cardNumber" placeholder="请输入志愿卡号"></el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="loginForm.cardPassword" type="password" placeholder="请输入密码" show-password></el-input>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
 
-        <!-- 志愿卡登录 -->
-        <div v-if="loginType === 'card'" class="form-content">
-          <div class="form-group">
-            <label class="form-label">志愿卡号</label>
-            <input v-model="loginForm.cardNumber" type="text" class="form-input" placeholder="请输入志愿卡号">
-          </div>
-          <div class="form-group">
-            <label class="form-label">密码</label>
-            <input v-model="loginForm.cardPassword" type="password" class="form-input" placeholder="请输入密码">
-          </div>
-        </div>
-
-        <div class="form-agreement">
-          <label class="checkbox-label">
-            <input v-model="loginForm.agree" type="checkbox" class="checkbox">
-            阅读并同意 《用户协议》
-          </label>
-        </div>
-
-        <button class="login-submit-btn" @click="handleLogin">登录</button>
-      </div>
+    <div class="form-agreement">
+      <el-checkbox v-model="loginForm.agree">
+        阅读并同意 《用户协议》
+      </el-checkbox>
     </div>
-  </div>
+
+    <div class="dialog-footer">
+      <el-button type="primary" @click="handleLogin" style="width: 100%">
+        登录
+      </el-button>
+    </div>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>
@@ -244,157 +220,12 @@ const handleLogin = () => {
   background: #2563eb;
 }
 
-/* Login Modal */
-.login-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.login-modal {
-  background: white;
-  border-radius: 1rem;
-  width: 90%;
-  max-width: 400px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.modal-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  border-radius: 0.375rem;
-  transition: background 0.2s;
-}
-
-.close-btn:hover {
-  background: #f3f4f6;
-}
-
-.close-btn .icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  color: #6b7280;
-}
-
-.login-tabs {
-  display: flex;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 1rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: #6b7280;
-  transition: all 0.2s;
-}
-
-.tab-btn.active {
-  color: #3b82f6;
-  border-bottom: 2px solid #3b82f6;
-}
-
-.tab-btn:hover:not(.active) {
-  background: #f9fafb;
-}
-
-.login-form {
-  padding: 1.5rem;
-}
-
-.form-content {
-  margin-bottom: 1.5rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  transition: border-color 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-}
-
-.code-input-group {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.code-btn {
-  padding: 0.75rem 1rem;
-  background: #f3f4f6;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.code-btn:hover {
-  background: #e5e7eb;
-}
-
 .form-options {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-}
-
-.checkbox {
-  width: 1rem;
-  height: 1rem;
+  margin: 1rem 0;
+  font-size: 0.875rem;
 }
 
 .forgot-link {
@@ -407,23 +238,10 @@ const handleLogin = () => {
 }
 
 .form-agreement {
-  margin-bottom: 1.5rem;
+  margin: 1.5rem 0;
 }
 
-.login-submit-btn {
-  width: 100%;
-  padding: 0.75rem;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.login-submit-btn:hover {
-  background: #2563eb;
+.dialog-footer {
+  margin-top: 1rem;
 }
 </style>
