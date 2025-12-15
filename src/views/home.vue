@@ -71,7 +71,16 @@ onMounted(() => {
               </div>
               <h3 class="card-title">AI志愿填报</h3>
               <p class="card-description">利用人工智能技术，结合你的高考成绩、兴趣特长和职业意向，生成最优的志愿填报方案。</p>
-              <a href="#" class="card-link">了解更多 &rarr;</a>
+              <a href="/volunteerApply" class="card-link">了解更多 &rarr;</a>
+            </div>
+            
+            <div class="feature-card">
+              <div class="card-icon pink-icon">
+                <i data-lucide="clipboard-check" class="icon"></i>
+              </div>
+              <h3 class="card-title">AI智能测评</h3>
+              <p class="card-description">科学评估你的能力与兴趣，基于霍兰德职业理论模型，匹配适合的专业发展方向。</p>
+              <a href="/aiAssessment" class="card-link">了解更多 &rarr;</a>
             </div>
 
             <div class="feature-card">
@@ -80,7 +89,7 @@ onMounted(() => {
               </div>
               <h3 class="card-title">院校专业查询</h3>
               <p class="card-description">全面收录全国高校的详细信息，包括专业设置、录取分数线、就业情况等，供你随时查询。</p>
-              <a href="#" class="card-link">了解更多 &rarr;</a>
+              <a href="/majorAnalysis" class="card-link">了解更多 &rarr;</a>
             </div>
 
             <div class="feature-card">
@@ -353,6 +362,10 @@ onMounted(() => {
   background: #f3e8ff;
 }
 
+.pink-icon {
+  background: #fce7f3;
+}
+
 .yellow-icon {
   background: #fef9c3;
 }
@@ -376,6 +389,10 @@ onMounted(() => {
 
 .purple-icon .icon {
   color: #a855f7;
+}
+
+.pink-icon .icon {
+  color: #ec4899;
 }
 
 .yellow-icon .icon {

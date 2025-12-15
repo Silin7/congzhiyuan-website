@@ -21,11 +21,11 @@ onMounted(() => {
           志愿AI
         </a>
         <div class="nav-menu">
-          <a href="#" class="nav-link">首页</a>
-          <a href="#" class="nav-link">生涯规划</a>
-          <a href="#" class="nav-link">院校专业</a>
-          <a href="#" class="nav-link">AI测评</a>
-          <a href="#" class="nav-link">高考资讯</a>
+          <a href="/" class="nav-link">首页</a>
+          <a href="/volunteerApply" class="nav-link">志愿填报</a>
+          <a href="/schoolSearch" class="nav-link">院校查询</a>
+          <a href="/majorAnalysis" class="nav-link">专业解析</a>
+          <a href="/aiAssessment" class="nav-link">AI测评</a>
         </div>
       </div>
       <div>

@@ -92,9 +92,9 @@ const resetFilters = () => {
 </script>
 
 <template>
-  <div class="zytb-page">
+  <div class="volunteer-apply-page">
 
-    <main class="zytb-main">
+    <main class="volunteer-apply-main">
       <!-- 页面标题 -->
       <div class="page-header">
         <h1 class="page-title">志愿填报查询</h1>
@@ -284,12 +284,12 @@ const resetFilters = () => {
 </template>
 
 <style lang="scss" scoped>
-.zytb-page {
+.volunteer-apply-page {
   min-height: 100vh;
   background: #f8fafc;
 }
 
-.zytb-main {
+.volunteer-apply-main {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
@@ -671,7 +671,7 @@ const resetFilters = () => {
 }
 
 @media (max-width: 768px) {
-  .zytb-main {
+  .volunteer-apply-main {
     padding: 1rem;
   }
 

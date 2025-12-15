@@ -115,7 +115,7 @@ const handleLogin = () => {
               </div>
               <h3 class="feature-title">AI志愿填报</h3>
               <p class="feature-description">根据成绩、兴趣、就业前景多维分析，生成个性化志愿填报方案</p>
-              <a href="/zytb" class="feature-link">了解更多</a>
+              <a href="/volunteerApply" class="feature-link">了解更多</a>
             </div>
 
             <div class="feature-item">
