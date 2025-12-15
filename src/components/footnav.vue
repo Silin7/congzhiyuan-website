@@ -1,14 +1,5 @@
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue'
-
-onMounted(() => {
-  // 确保 DOM 完全渲染后再初始化 lucide 图标
-  nextTick(() => {
-    if (typeof window !== 'undefined' && (window as any).lucide) {
-      (window as any).lucide.createIcons()
-    }
-  })
-})
+import { Message, Phone, Location } from '@element-plus/icons-vue'
 </script>
 
 <template>
@@ -42,10 +33,10 @@ onMounted(() => {
         <div class="footer-column">
           <h3 class="footer-title">联系方式</h3>
           <ul class="footer-list">
-            <li><i data-lucide="mail" class="footer-icon"></i> contact@zhiyuanai.com</li>
-            <li><i data-lucide="phone" class="footer-icon"></i> 400-123-4567</li>
+            <li><el-icon class="footer-icon"><Message /></el-icon> contact@zhiyuanai.com</li>
+            <li><el-icon class="footer-icon"><Phone /></el-icon> 400-123-4567</li>
             <li class="footer-address">
-              <i data-lucide="map-pin" class="footer-icon"></i>
+              <el-icon class="footer-icon"><Location /></el-icon>
               <span>北京市海淀区中关村大街1号</span>
             </li>
           </ul>
