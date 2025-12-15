@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { onMounted, nextTick } from 'vue'
-import Headnav from '@/components/headnav.vue'
-import Footnav from '@/components/footnav.vue'
 
 onMounted(() => {
   // 确保 DOM 完全渲染后再初始化 lucide 图标
