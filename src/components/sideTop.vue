@@ -3,7 +3,7 @@ import { ElBacktop } from 'element-plus'
 </script>
 
 <template>
-  <el-backtop :right="32" :bottom="80" :visibility-height="300">
+  <el-backtop :right="32" :bottom="80" :visibility-height="300" style="width: 3rem; height: 3rem;">
     <div class="gtBox">
       <img src="../assets/sys/gotop.png" alt="">
     </div>
@@ -12,8 +12,11 @@ import { ElBacktop } from 'element-plus'
 
 <style lang="scss" scoped>
 .gtBox {
-  width: 4rem;
-  height: 4rem;
+  // position: fixed;
+  // right: 32px;
+  // bottom: 80px;
+  width: 3rem;
+  height: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -21,7 +24,7 @@ import { ElBacktop } from 'element-plus'
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
-  border-radius: 4rem;
+  border-radius: 3rem;
 
   &:hover {
     transform: scale(1.05);
@@ -29,8 +32,8 @@ import { ElBacktop } from 'element-plus'
   }
 
   img {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2rem;
+    height: 2rem;
   }
 }
 </style>
