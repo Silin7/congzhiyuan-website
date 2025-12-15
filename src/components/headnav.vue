@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { onMounted, nextTick, ref, reactive } from 'vue'
+import { ref, reactive } from 'vue'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage } from 'element-plus'
-
-onMounted(() => {
-  // 确保 DOM 完全渲染后再初始化 lucide 图标
-  nextTick(() => {
-    if (typeof window !== 'undefined' && (window as any).lucide) {
-      (window as any).lucide.createIcons()
-    }
-  })
-})
 
 // 登录弹窗状态
 const showLoginModal = ref(false)
@@ -72,7 +63,7 @@ const handleLogin = () => {
     <div class="header-container">
       <div class="header-left">
         <a href="/" class="logo">
-          <i data-lucide="graduation-cap" class="logo-icon"></i>
+          <i class="fa fa-graduation-cap logo-icon"></i>
           志愿AI
         </a>
         <div class="nav-menu">

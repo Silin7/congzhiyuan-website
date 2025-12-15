@@ -111,7 +111,7 @@ const handleLogin = () => {
           <div class="features-grid">
             <div class="feature-item">
               <div class="feature-icon">
-                <i data-lucide="bot" class="icon"></i>
+                <i class="fa fa-robot icon"></i>
               </div>
               <h3 class="feature-title">AI志愿填报</h3>
               <p class="feature-description">根据成绩、兴趣、就业前景多维分析，生成个性化志愿填报方案</p>
@@ -120,7 +120,7 @@ const handleLogin = () => {
 
             <div class="feature-item">
               <div class="feature-icon">
-                <i data-lucide="database" class="icon"></i>
+                <i class="fa fa-database icon"></i>
               </div>
               <h3 class="feature-title">院校数据查询</h3>
               <p class="feature-description">覆盖全国3000+院校实时录取数据，学科评估与就业报告深度解析</p>
@@ -129,7 +129,7 @@ const handleLogin = () => {
 
             <div class="feature-item">
               <div class="feature-icon">
-                <i data-lucide="book-open" class="icon"></i>
+                <i class="fa fa-book icon"></i>
               </div>
               <h3 class="feature-title">专业解析</h3>
               <p class="feature-description">高校专业详细解析...</p>
@@ -148,7 +148,7 @@ const handleLogin = () => {
           <div class="service-grid">
             <div class="service-item">
               <div class="service-icon">
-                <i data-lucide="brain" class="icon"></i>
+                <i class="fa fa-brain icon"></i>
               </div>
               <h3 class="service-title">AI算法精准</h3>
               <p class="service-description">基于机器学习模型不断优化，预测准确率高达92%</p>
@@ -156,7 +156,7 @@ const handleLogin = () => {
 
             <div class="service-item">
               <div class="service-icon">
-                <i data-lucide="refresh-cw" class="icon"></i>
+                <i class="fa fa-refresh icon"></i>
               </div>
               <h3 class="service-title">数据实时更新</h3>
               <p class="service-description">每年更新千万级录取数据，确保信息准确性</p>
@@ -164,7 +164,7 @@ const handleLogin = () => {
 
             <div class="service-item">
               <div class="service-icon">
-                <i data-lucide="users" class="icon"></i>
+                <i class="fa fa-users icon"></i>
               </div>
               <h3 class="service-title">专家团队支持</h3>
               <p class="service-description">300+招生官与教育专家提供深度咨询服务</p>
@@ -172,7 +172,7 @@ const handleLogin = () => {
 
             <div class="service-item">
               <div class="service-icon">
-                <i data-lucide="award" class="icon"></i>
+                <i class="fa fa-trophy icon"></i>
               </div>
               <h3 class="service-title">成功案例见证</h3>
               <p class="service-description">每年帮助10万+考生进入理想院校</p>
@@ -187,19 +187,19 @@ const handleLogin = () => {
           <h2 class="section-title">合作院校</h2>
           <div class="partners-grid">
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
           </div>
         </div>
@@ -212,7 +212,7 @@ const handleLogin = () => {
         <div class="modal-header">
           <h3 class="modal-title">登录聪志愿AI</h3>
           <button class="close-btn" @click="closeLoginModal">
-            <i data-lucide="x" class="icon"></i>
+            <i class="fa fa-times icon"></i>
           </button>
         </div>
 

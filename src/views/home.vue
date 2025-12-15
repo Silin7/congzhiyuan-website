@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue'
+import { ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
-
-onMounted(() => {
-  // 确保 DOM 完全渲染后再初始化 lucide 图标
-  nextTick(() => {
-    if (typeof window !== 'undefined' && (window as any).lucide) {
-      (window as any).lucide.createIcons()
-    }
-  })
-})
 </script>
 
 <template>
@@ -32,7 +23,7 @@ onMounted(() => {
 
             <div class="feature-card">
               <div class="card-icon orange-icon">
-                <i data-lucide="lightbulb" class="icon"></i>
+                <i class="fa fa-lightbulb-o icon"></i>
               </div>
               <h3 class="card-title">基于分数的精准推荐</h3>
               <p class="card-description">根据你的高考成绩，智能筛选出最适合你的院校和专业，提供个性化的志愿填报方案。</p>
@@ -41,7 +32,7 @@ onMounted(() => {
 
             <div class="feature-card">
               <div class="card-icon green-icon">
-                <i data-lucide="compass" class="icon"></i>
+                <i class="fa fa-compass icon"></i>
               </div>
               <h3 class="card-title">个性化生涯规划</h3>
               <p class="card-description">通过AI测评，深入了解你的兴趣、性格与能力，为你量身定制未来的职业发展路径。</p>
@@ -50,7 +41,7 @@ onMounted(() => {
 
             <div class="feature-card">
               <div class="card-icon blue-icon">
-                <i data-lucide="bar-chart-3" class="icon"></i>
+                <i class="fa fa-bar-chart icon"></i>
               </div>
               <h3 class="card-title">权威数据分析</h3>
               <p class="card-description">汇总整理最新的招生政策、院校分数线和就业前景等关键数据，助你科学决策。</p>
@@ -68,16 +59,16 @@ onMounted(() => {
 
             <div class="feature-card">
               <div class="card-icon purple-icon">
-                <i data-lucide="bot" class="icon"></i>
+                <i class="fa fa-robot icon"></i>
               </div>
               <h3 class="card-title">AI志愿填报</h3>
               <p class="card-description">利用人工智能技术，结合你的高考成绩、兴趣特长和职业意向，生成最优的志愿填报方案。</p>
               <a href="/volunteerApply" class="card-link">了解更多 &rarr;</a>
             </div>
-            
+
             <div class="feature-card">
               <div class="card-icon pink-icon">
-                <i data-lucide="clipboard-check" class="icon"></i>
+                <i class="fa fa-check-square-o icon"></i>
               </div>
               <h3 class="card-title">AI智能测评</h3>
               <p class="card-description">科学评估你的能力与兴趣，基于霍兰德职业理论模型，匹配适合的专业发展方向。</p>
@@ -86,7 +77,7 @@ onMounted(() => {
 
             <div class="feature-card">
               <div class="card-icon yellow-icon">
-                <i data-lucide="user-check" class="icon"></i>
+                <i class="fa fa-user icon"></i>
               </div>
               <h3 class="card-title">院校专业查询</h3>
               <p class="card-description">全面收录全国高校的详细信息，包括专业设置、录取分数线、就业情况等，供你随时查询。</p>
@@ -95,7 +86,7 @@ onMounted(() => {
 
             <div class="feature-card">
               <div class="card-icon green-icon">
-                <i data-lucide="book-open" class="icon"></i>
+                <i class="fa fa-book icon"></i>
               </div>
               <h3 class="card-title">专业解析</h3>
               <p class="card-description">深入解析各专业的学习内容、发展前景和就业方向，帮助你更清晰地认识自己的选择。</p>
@@ -114,7 +105,7 @@ onMounted(() => {
 
             <div class="business-item">
               <div class="business-icon purple-icon">
-                <i data-lucide="database" class="icon"></i>
+                <i class="fa fa-database icon"></i>
               </div>
               <h3 class="business-title">AI算法</h3>
               <p class="business-description">基于千万级数据训练的智能算法，精准匹配你的分数与院校。</p>
@@ -122,7 +113,7 @@ onMounted(() => {
 
             <div class="business-item">
               <div class="business-icon blue-icon">
-                <i data-lucide="shield-check" class="icon"></i>
+                <i class="fa fa-shield icon"></i>
               </div>
               <h3 class="business-title">数据资源</h3>
               <p class="business-description">独家收录全国2000+高校、1200+专业的详细数据，持续更新。</p>
@@ -130,7 +121,7 @@ onMounted(() => {
 
             <div class="business-item">
               <div class="business-icon orange-icon">
-                <i data-lucide="users" class="icon"></i>
+                <i class="fa fa-users icon"></i>
               </div>
               <h3 class="business-title">专家团队</h3>
               <p class="business-description">汇聚高考志愿填报专家和行业资深人士，提供专业指导。</p>
@@ -138,7 +129,7 @@ onMounted(() => {
 
             <div class="business-item">
               <div class="business-icon green-icon">
-                <i data-lucide="headphones" class="icon"></i>
+                <i class="fa fa-headphones icon"></i>
               </div>
               <h3 class="business-title">贴心服务</h3>
               <p class="business-description">一对一咨询，全程陪伴，为你的升学之路保驾护航。</p>
@@ -153,19 +144,19 @@ onMounted(() => {
           <h2 class="section-title">合作院校</h2>
           <div class="partners-grid">
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
             <div class="partner-logo">
-              <i data-lucide="school" class="partner-icon"></i>
+              <i class="fa fa-graduation-cap partner-icon"></i>
             </div>
           </div>
         </div>

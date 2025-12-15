@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue'
+import { ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
-
-onMounted(() => {
-  // 确保 DOM 完全渲染后再初始化 lucide 图标
-  nextTick(() => {
-    if (typeof window !== 'undefined' && (window as any).lucide) {
-      (window as any).lucide.createIcons()
-    }
-  })
-})
 </script>
 
 <template>
@@ -29,12 +20,7 @@ onMounted(() => {
           <div class="search-form">
             <div class="search-input-group">
               <label for="score" class="form-label">高考分数</label>
-              <input 
-                type="number" 
-                id="score" 
-                class="form-input" 
-                placeholder="请输入你的高考分数"
-              >
+              <input type="number" id="score" class="form-input" placeholder="请输入你的高考分数">
             </div>
             <div class="search-input-group">
               <label for="province" class="form-label">所在省份</label>
@@ -181,19 +167,19 @@ onMounted(() => {
               <div class="result-content">
                 <div class="school-info">
                   <div class="info-item">
-                    <i data-lucide="map-pin" class="info-icon"></i>
+                    <i class="fa fa-map-marker info-icon"></i>
                     <span>北京</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="building" class="info-icon"></i>
+                    <i class="fa fa-building info-icon"></i>
                     <span>综合类</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="trophy" class="info-icon"></i>
+                    <i class="fa fa-trophy info-icon"></i>
                     <span>双一流</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="users" class="info-icon"></i>
+                    <i class="fa fa-users info-icon"></i>
                     <span>10000+在校生</span>
                   </div>
                 </div>
@@ -222,19 +208,19 @@ onMounted(() => {
               <div class="result-content">
                 <div class="school-info">
                   <div class="info-item">
-                    <i data-lucide="map-pin" class="info-icon"></i>
+                    <i class="fa fa-map-marker info-icon"></i>
                     <span>北京</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="building" class="info-icon"></i>
+                    <i class="fa fa-building info-icon"></i>
                     <span>综合类</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="trophy" class="info-icon"></i>
+                    <i class="fa fa-trophy info-icon"></i>
                     <span>双一流</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="users" class="info-icon"></i>
+                    <i class="fa fa-users info-icon"></i>
                     <span>10000+在校生</span>
                   </div>
                 </div>
@@ -263,19 +249,19 @@ onMounted(() => {
               <div class="result-content">
                 <div class="school-info">
                   <div class="info-item">
-                    <i data-lucide="map-pin" class="info-icon"></i>
+                    <i class="fa fa-map-marker info-icon"></i>
                     <span>上海</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="building" class="info-icon"></i>
+                    <i class="fa fa-building info-icon"></i>
                     <span>综合类</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="trophy" class="info-icon"></i>
+                    <i class="fa fa-trophy info-icon"></i>
                     <span>双一流</span>
                   </div>
                   <div class="info-item">
-                    <i data-lucide="users" class="info-icon"></i>
+                    <i class="fa fa-users info-icon"></i>
                     <span>10000+在校生</span>
                   </div>
                 </div>
@@ -300,7 +286,7 @@ onMounted(() => {
           <!-- Pagination -->
           <div class="pagination">
             <button class="page-btn disabled">
-              <i data-lucide="chevron-left" class="page-icon"></i>
+              <i class="fa fa-chevron-left page-icon"></i>
               上一页
             </button>
             <button class="page-btn active">1</button>
@@ -312,7 +298,7 @@ onMounted(() => {
             <button class="page-btn">124</button>
             <button class="page-btn">
               下一页
-              <i data-lucide="chevron-right" class="page-icon"></i>
+              <i class="fa fa-chevron-right page-icon"></i>
             </button>
           </div>
         </div>
