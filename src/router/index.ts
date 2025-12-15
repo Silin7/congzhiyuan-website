@@ -14,6 +14,17 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/zytb',
+    name: 'zytb',
+    component: () => import('@/views/zytb.vue'),
+    meta: {
+      title: '志愿填报',
+      stcode: 'zytb',
+      hashead: true,
+      hasfoot: true,
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   }
@@ -26,7 +37,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   // 根据路由元信息设置文档标题
-  window.document.title = `科睿易晶官方网站${to.meta.title ? '-' + to.meta.title : ''}`
+  window.document.title = `聪志愿AI${to.meta.title ? '-' + to.meta.title : ''}`
 
   if (useHeaderStore) {
     const headerStore = useHeaderStore()

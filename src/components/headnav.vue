@@ -1,405 +1,111 @@
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, computed, unref } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import pageJump from '@/hooks/pageJump'
-import useHeaderStore from '@/store/modules/header'
-import { baselogoutdApi } from '@/api/interface'
-
-const windowWidth: any = ref(window.innerWidth)
-const windowScrollY: any = ref(window.scrollY)
-
-function updateWindowWidth() {
-  windowWidth.value = window.innerWidth
-}
-
-function handleScroll() {
-  windowScrollY.value = window.scrollY
-}
-
-const headerStore = useHeaderStore()
-
-const selectedTab = computed(() => {
-  getUserInfo()
-  return headerStore.selectedTab
-})
-
-function tabRouterPush(item: any) {
-  pageJump(item.name)
-  drawerVisible.value = false
-}
-
-const menuList: any = ref([
-  { title: '系统首页', path: '/', name: 'home' },
-  { title: '公司介绍', path: '/about', name: 'about' },
-  { title: '委托开发', path: '/', name: '' },
-  { title: '产品出售', path: '/', name: '' },
-  { title: 'AI预测平台 ', path: '/ai', name: 'ai' },
-])
-
-// 登陆后的用户信息
-const userInfo: any = ref(
-  window.localStorage.getItem('userInfo')
-    ? JSON.parse(window.localStorage.getItem('userInfo') as string)
-    : {},
-)
-
-function getUserInfo() {
-  if (window.localStorage.getItem('userInfo')) {
-    userInfo.value = JSON.parse(window.localStorage.getItem('userInfo') as string)
-  } else {
-    userInfo.value = {}
-  }
-}
-
-// 退出登录
-function logoutFunction() {
-  ElMessageBox.confirm('确定要退出登录吗？ ', '退出登录', {
-    confirmButtonText: '确认',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-    .then(() => {
-      baselogoutdApi().then((res: any) => {
-        if (res) {
-          ElMessage({
-            type: 'success',
-            message: '退出成功',
-          })
-          window.localStorage.removeItem('accessToken')
-          window.localStorage.removeItem('refreshToken')
-          window.localStorage.removeItem('expiresTime')
-          window.localStorage.removeItem('userInfo')
-          pageJump('login')
-        }
-      })
-    })
-    .catch(() => {
-      console.log('取消退出')
-    })
-}
-
-// popover 气泡
-const buttonRef = ref()
-const popoverRef = ref()
-function onClickOutside() {
-  unref(popoverRef).popperRef?.delayHide?.()
-}
-
-// 移动端
-const drawerVisible = ref(false)
+import { onMounted, nextTick } from 'vue'
 
 onMounted(() => {
-  window.addEventListener('resize', updateWindowWidth)
-  window.addEventListener('scroll', handleScroll)
-  getUserInfo()
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', updateWindowWidth)
-  window.removeEventListener('scroll', handleScroll)
+  // 确保 DOM 完全渲染后再初始化 lucide 图标
+  nextTick(() => {
+    if (typeof window !== 'undefined' && (window as any).lucide) {
+      (window as any).lucide.createIcons()
+    }
+  })
 })
 </script>
 
 <template>
-  <div>
-    <div :class="[windowScrollY === 0 ? 'headNoMove' : 'headMoved', 'headPositon']">
-      <div class="headFlex">
-        <img v-if="selectedTab === 'home' && windowScrollY === 0" src="@/assets/logo/logo-16-9-w.png" alt="logo"
-          class="headLogo" @click="pageJump('home')" />
-        <img v-else src="@/assets/logo/logo-16-9.png" alt="logo" class="headLogo" @click="pageJump('home')" />
-        <template v-if="windowWidth > 1200">
-          <div class="headNav">
-            <div v-for="(item, index) in menuList" :key="index" class="menuItem" @click="tabRouterPush(item)">
-              <img v-if="selectedTab === 'home' && windowScrollY === 0" src="@/assets/header/cb_bz2.png"
-                class="menuYanhua" :style="selectedTab === item.name ? 'opacity: 1;' : ''" />
-              <img v-else src="@/assets/header/cb_lz2.png" class="menuYanhua"
-                :style="selectedTab === item.name ? 'opacity: 1;' : ''" />
-              <div class="menuTitle" :style="selectedTab === item.name ? 'opacity: 1;' : ''">
-                <span :style="selectedTab === 'home' && windowScrollY === 0 ? 'color: #fff;' : ''">{{ item.title
-                }}</span>
-              </div>
-              <img v-if="selectedTab === 'home' && windowScrollY === 0" src="@/assets/header/cb_by2.png"
-                class="menuYanhua" :style="selectedTab === item.name ? 'opacity: 1;' : ''" />
-              <img v-else src="@/assets/header/cb_ly2.png" class="menuYanhua"
-                :style="selectedTab === item.name ? 'opacity: 1;' : ''" />
-            </div>
-          </div>
-          <div v-if="userInfo.mobile" ref="buttonRef" class="userName" v-click-outside="onClickOutside">
-            <i class="fa fa-user-circle mr-2"
-              :style="selectedTab === 'home' && windowScrollY === 0 ? 'color: #fff;' : ''"></i>
-            <span :style="selectedTab === 'home' && windowScrollY === 0 ? 'color: #fff;' : ''">
-              {{ userInfo.mobile }}
-              <i class="fa fa-angle-down"></i>
-            </span>
-            <el-popover placement="bottom" :virtual-ref="buttonRef" virtual-triggering :width="150" trigger="click">
-              <div>
-                <div class="popoverItem" @click="pageJump('userinfo')">
-                  <i class="fa fa-user-o"></i>用户中心
-                </div>
-                <div class="popoverItem" @click="pageJump('myorder')">
-                  <i class="fa fa-navicon"></i>我的订单
-                </div>
-                <div class="popoverItem" @click="pageJump('rmobile')">
-                  <i class="fa fa-phone"></i>修改手机号
-                </div>
-                <div class="popoverItem" @click="pageJump('upassword')">
-                  <i class="fa fa-edit"></i>修改密码
-                </div>
-                <div class="popoverItem" @click="logoutFunction">
-                  <i class="fa fa-sign-out"></i>退出登录
-                </div>
-              </div>
-            </el-popover>
-          </div>
-          <button v-else class="headLogin" @click="pageJump('login')">
-            <span :style="selectedTab === 'home' && windowScrollY === 0 ? 'color: #fff;' : ''">登录/注册</span>
-          </button>
-        </template>
-        <div v-else class="drawerIcon" @click="drawerVisible = true">
-          <i class="fa fa-bars" :style="windowScrollY === 0 ? 'color: #fff' : 'color: #1f3e85;'"></i>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="header-left">
+        <a href="#" class="logo">
+          <i data-lucide="graduation-cap" class="logo-icon"></i>
+          志愿AI
+        </a>
+        <div class="nav-menu">
+          <a href="#" class="nav-link">首页</a>
+          <a href="#" class="nav-link">生涯规划</a>
+          <a href="#" class="nav-link">院校专业</a>
+          <a href="#" class="nav-link">AI测评</a>
+          <a href="#" class="nav-link">高考资讯</a>
         </div>
+      </div>
+      <div>
+        <button class="login-btn">登录</button>
       </div>
     </div>
-
-    <!-- 移动端 抽屉 -->
-    <el-drawer v-model="drawerVisible" :with-header="false" direction="rtl" size="80%" class="mobiledrawer">
-      <div v-if="userInfo.mobile" class="drawerTitle">
-        <p>欢迎您，</p>
-        <p>{{ userInfo.mobile }}</p>
-      </div>
-      <div v-else class="drawerTitle">
-        <p>您好，</p>
-        <p @click="tabRouterPush({ name: 'login' })">
-          点击此处 登录/注册 <i class="fa fa-sign-out"></i>
-        </p>
-      </div>
-      <div class="mobilecollapse">
-        <div v-for="(item, index) in menuList" :key="index"
-          :class="['collapseItem', selectedTab === item.name ? 'collapseActive' : '']" @click="tabRouterPush(item)">
-          {{ item.title }}
-        </div>
-        <button v-if="userInfo.mobile" @click="tabRouterPush({ name: 'userinfo' })" class="mobileBtns">
-          <i class="fa fa-user-o"></i>
-          用户中心
-        </button>
-        <button v-if="userInfo.mobile" @click="tabRouterPush({ name: 'myorder' })" class="mobileBtns">
-          <i class="fa fa-navicon"></i>
-          我的订单
-        </button>
-        <button v-if="userInfo.mobile" @click="tabRouterPush({ name: 'rmobile' })" class="mobileBtns">
-          <i class="fa fa-phone"></i>
-          修改手机号
-        </button>
-        <button v-if="userInfo.mobile" @click="tabRouterPush({ name: 'upassword' })" class="mobileBtns">
-          <i class="fa fa-edit"></i>
-          修改密码
-        </button>
-        <button v-if="userInfo.mobile" @click="logoutFunction" class="mobileBtns">
-          <i class="fa fa-sign-out"></i>
-          退出登录
-        </button>
-      </div>
-    </el-drawer>
-  </div>
+  </header>
 </template>
 
 <style lang="scss" scoped>
-.headNoMove {
-  background-image: linear-gradient(to bottom, #55aed710 50%, #0e1d2a10);
+.header {
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.headMoved {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.headPositon {
-  width: 100vw;
-  position: fixed;
-  top: 0;
-  z-index: 99;
+.header-left {
+  display: flex;
+  align-items: center;
+}
 
-  .headFlex {
-    margin: 0 auto;
-    padding: 0 1.25rem;
-    max-width: 1400px;
-    height: 100px;
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo-icon {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  color: #3b82f6;
+  margin-right: 0.5rem;
+}
+
+.nav-menu {
+  display: none;
+  margin-left: 2.5rem;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .nav-menu {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .headLogo {
-      cursor: pointer;
-      width: 100px;
-      height: 50px;
-    }
-
-    .headNav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      .menuItem {
-        cursor: pointer;
-        margin: 0 2rem;
-        position: relative;
-        display: flex;
-        align-items: center;
-
-        .menuTitle {
-          color: #1f3e85;
-          line-height: 1.625rem;
-        }
-
-        .menuYanhua {
-          margin: 0 0.5rem;
-          width: 1.25rem;
-          height: 1.25rem;
-          opacity: 0;
-        }
-
-        &:hover {
-
-          .menuTitle,
-          .menuYanhua {
-            opacity: 1;
-            transform: scale(1.05);
-          }
-        }
-      }
-    }
-
-    .userName {
-      cursor: pointer;
-      height: 1.625rem;
-      display: flex;
-      align-items: center;
-      color: #1f3e85;
-      // color: #fff;
-    }
-
-    .headLogin {
-      cursor: pointer;
-      line-height: 1.625rem;
-      color: #1f3e85;
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-
-    .drawerIcon {
-      font-size: 1.875rem;
-    }
   }
 }
 
-.mobiledrawer {
-  .drawerTitle {
-    padding: 0.75rem;
-    border-bottom: 1px solid #ebf0fb;
-
-    p {
-      padding: 0.375rem 0.75rem;
-      font-size: 1.5rem;
-      line-height: 1.875rem;
-      font-weight: 700;
-      color: #1f3e85;
-
-      &:first-child {
-        color: #000;
-      }
-    }
-  }
-
-  .mobilecollapse {
-    padding: 0.75rem;
-
-    .collapseItem {
-      margin-bottom: 0.75rem;
-      padding: 0.75rem 1.25rem;
-      line-height: 1.5rem;
-      color: #1f3e85;
-    }
-
-    .collapseActive {
-      border-radius: 0.75rem;
-      background-color: #ebf0fb;
-    }
-  }
-
-  .mobileBtns {
-    margin-bottom: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    display: flex;
-    align-items: center;
-    color: #1f3e85;
-    // background-color: #ebf0fb;
-    border: 1px solid #ebf0fb;
-    border-radius: 0.75rem;
-
-    i {
-      margin-right: 0.5rem;
-    }
-  }
+.nav-link {
+  color: #4b5563;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-.popoverItem {
+.nav-link:hover {
+  color: #3b82f6;
+}
+
+.login-btn {
+  background: #3b82f6;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
   cursor: pointer;
-  line-height: 2.5rem;
-  color: #1f3e85;
-  padding-left: 1rem;
-
-  i {
-    margin-right: 0.5rem;
-  }
-
-  &:hover {
-    background-color: #eee;
-  }
-}
-</style>
-
-<style lang="scss">
-.mobiledrawer {
-  .el-drawer__body {
-    padding: 0 !important;
-  }
-
-  .el-collapse {
-    border: 0 !important;
-
-    .el-icon {
-      display: none;
-    }
-
-    .el-collapse-item__header {
-      border: 0 !important;
-    }
-
-    .el-collapse-item__header:hover {
-      color: #1f3e85 !important;
-    }
-
-    .el-collapse-item__title {
-      font-size: 1.25rem !important;
-    }
-
-    .el-collapse-item__wrap {
-      border: 0 !important;
-    }
-
-    .el-collapse-item__content {
-      display: none;
-    }
-
-    .is-active {
-      color: #1f3e85 !important;
-    }
-  }
+  transition: background 0.3s ease;
 }
 
-.el-message-box__btns>.el-button--primary {
-  background-color: #1f3e85 !important;
+.login-btn:hover {
+  background: #2563eb;
 }
 </style>

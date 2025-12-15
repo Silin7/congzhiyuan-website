@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能志愿填报</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="#" class="text-xl font-bold text-gray-800">
+                    <i data-lucide="graduation-cap" class="inline-block w-8 h-8 text-blue-500"></i>
+                    志愿AI
+                </a>
+                <div class="hidden md:flex ml-10 space-x-8">
+                    <a href="#" class="text-gray-600 hover:text-blue-500">首页</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">生涯规划</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">院校专业</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">AI测评</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">高考资讯</a>
+                </div>
+            </div>
+            <div>
+                <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">登录</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white py-20">
+            <div class="container mx-auto text-center">
+                <h1 class="text-4xl font-bold mb-4">AI智能志愿填报</h1>
+                <p class="text-lg mb-8">让科技点亮你的未来</p>
+                <p class="max-w-2xl mx-auto">基于千万级高考数据和AI智能算法，精准匹配你的分数，让你的每一分都不浪费</p>
+            </div>
+        </section>
+
+        <!-- Recommendations Section -->
+        <section class="py-16">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">智能推荐方案</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="lightbulb" class="w-6 h-6 text-orange-500"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">基于分数的精准推荐</h3>
+                        <p class="text-gray-600">根据你的高考成绩，智能筛选出最适合你的院校和专业，提供个性化的志愿填报方案。</p>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 mt-4 inline-block">查看更多</a>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="compass" class="w-6 h-6 text-green-500"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">个性化生涯规划</h3>
+                        <p class="text-gray-600">通过AI测评，深入了解你的兴趣、性格与能力，为你量身定制未来的职业发展路径。</p>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 mt-4 inline-block">查看更多</a>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="bar-chart-3" class="w-6 h-6 text-blue-500"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">权威数据分析</h3>
+                        <p class="text-gray-600">汇总整理最新的招生政策、院校分数线和就业前景等关键数据，助你科学决策。</p>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 mt-4 inline-block">查看更多</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Features Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">核心功能</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="bot" class="w-6 h-6 text-purple-500"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">AI志愿填报</h3>
+                        <p class="text-gray-600">利用人工智能技术，结合你的高考成绩、兴趣特长和职业意向，生成最优的志愿填报方案。</p>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 mt-4 inline-block">了解更多 &rarr;</a>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="user-check" class="w-6 h-6 text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">院校专业查询</h3>
+                        <p class="text-gray-600">全面收录全国高校的详细信息，包括专业设置、录取分数线、就业情况等，供你随时查询。</p>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 mt-4 inline-block">了解更多 &rarr;</a>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-md p-6 card-hover">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                            <i data-lucide="book-open" class="w-6 h-6 text-green-500"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">专业解析</h3>
+                        <p class="text-gray-600">深入解析各专业的学习内容、发展前景和就业方向，帮助你更清晰地认识自己的选择。</p>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 mt-4 inline-block">了解更多 &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Support Section -->
+        <section class="py-16">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">专业业务保障</h2>
+                <p class="text-center text-gray-600 mb-12">权威、专业、全面的数据资源和服务</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="database" class="w-8 h-8 text-purple-500"></i>
+                        </div>
+                        <h3 class="font-semibold">AI算法</h3>
+                        <p class="text-sm text-gray-500">基于千万级数据训练的智能算法，精准匹配你的分数与院校。</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="shield-check" class="w-8 h-8 text-blue-500"></i>
+                        </div>
+                        <h3 class="font-semibold">数据资源</h3>
+                        <p class="text-sm text-gray-500">独家收录全国2000+高校、1200+专业的详细数据，持续更新。</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="users" class="w-8 h-8 text-orange-500"></i>
+                        </div>
+                        <h3 class="font-semibold">专家团队</h3>
+                        <p class="text-sm text-gray-500">汇聚高考志愿填报专家和行业资深人士，提供专业指导。</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="headphones" class="w-8 h-8 text-green-500"></i>
+                        </div>
+                        <h3 class="font-semibold">贴心服务</h3>
+                        <p class="text-sm text-gray-500">一对一咨询，全程陪伴，为你的升学之路保驾护航。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partner Schools Section -->
+        <section class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">合作院校</h2>
+                <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                    <div class="w-24 h-24 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                        <i data-lucide="school" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <div class="w-24 h-24 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                        <i data-lucide="school" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <div class="w-24 h-24 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                        <i data-lucide="school" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <div class="w-24 h-24 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                        <i data-lucide="school" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                    <div class="w-24 h-24 bg-white rounded-lg shadow-sm flex items-center justify-center">
+                        <i data-lucide="school" class="w-12 h-12 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">志愿AI</h3>
+                    <p class="text-gray-400">AI智能高考志愿填报平台，让科技助力梦想，让每一分都有价值。</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">服务项目</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">AI志愿填报</a></li>
+                        <li><a href="#" class="hover:text-white">生涯规划</a></li>
+                        <li><a href="#" class="hover:text-white">院校库</a></li>
+                        <li><a href="#" class="hover:text-white">专业库</a></li>
+                        <li><a href="#" class="hover:text-white">高考工具箱</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">关于我们</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">公司简介</a></li>
+                        <li><a href="#" class="hover:text-white">团队介绍</a></li>
+                        <li><a href="#" class="hover:text-white">联系我们</a></li>
+                        <li><a href="#" class="hover:text-white">加入我们</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">联系方式</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i data-lucide="mail" class="inline-block w-4 h-4 mr-2"></i> contact@zhiyuanai.com</li>
+                        <li><i data-lucide="phone" class="inline-block w-4 h-4 mr-2"></i> 400-123-4567</li>
+                        <li class="flex items-center mt-4">
+                            <i data-lucide="map-pin" class="inline-block w-4 h-4 mr-2"></i>
+                            <span>北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                <p>&copy; 2025 志愿AI 版权所有 | 京ICP备12345678号-1</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

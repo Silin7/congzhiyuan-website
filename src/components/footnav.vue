@@ -1,152 +1,139 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import useHeaderStore from '@/store/modules/header'
-import { zhfooterApi } from '@/api/interface'
-import windowOpen from '@/hooks/windowOpen'
-
-const headerStore = useHeaderStore()
-
-const selectedTab = computed(() => {
-  return headerStore.selectedTab
-})
-
-// 用户端-获取所有有效系统信息（如系统名称、版权信息等，按Key排序）
-const sysInfos: any = ref({})
-
-function getSysinfosApi() {
-  zhfooterApi().then((res: any) => {
-    sysInfos.value = res.data.footer
-  })
-}
+import { onMounted, nextTick } from 'vue'
 
 onMounted(() => {
-  getSysinfosApi()
+  // 确保 DOM 完全渲染后再初始化 lucide 图标
+  nextTick(() => {
+    if (typeof window !== 'undefined' && (window as any).lucide) {
+      (window as any).lucide.createIcons()
+    }
+  })
 })
 </script>
 
 <template>
-  <div class="footnav">
-    <div v-if="selectedTab === 'home'" class="footRow">
-      <div class="quickbox">
-        <div class="contactUs frsc">
-          <div class="contactFa">
-            <i class="fa fa-map-marker"></i>
-          </div>
-          <div class="contacttext">{{ sysInfos.contentSource }}</div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-column">
+          <h3 class="footer-title">志愿AI</h3>
+          <p class="footer-text">AI智能高考志愿填报平台，让科技助力梦想，让每一分都有价值。</p>
         </div>
-        <div class="contactUs frsc">
-          <div class="contactFa">
-            <i class="fa fa-phone"></i>
-          </div>
-          <div class="contacttext">{{ sysInfos.contentShortTitle }}</div>
+        <div class="footer-column">
+          <h3 class="footer-title">服务项目</h3>
+          <ul class="footer-list">
+            <li><a href="#" class="footer-link">AI志愿填报</a></li>
+            <li><a href="#" class="footer-link">生涯规划</a></li>
+            <li><a href="#" class="footer-link">院校库</a></li>
+            <li><a href="#" class="footer-link">专业库</a></li>
+            <li><a href="#" class="footer-link">高考工具箱</a></li>
+          </ul>
         </div>
-        <div class="contactUs frsc">
-          <div class="contactFa">
-            <i class="fa fa-envelope"></i>
-          </div>
-          <div class="contacttext">{{ sysInfos.contentAuthor }}</div>
+        <div class="footer-column">
+          <h3 class="footer-title">关于我们</h3>
+          <ul class="footer-list">
+            <li><a href="#" class="footer-link">公司简介</a></li>
+            <li><a href="#" class="footer-link">团队介绍</a></li>
+            <li><a href="#" class="footer-link">联系我们</a></li>
+            <li><a href="#" class="footer-link">加入我们</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h3 class="footer-title">联系方式</h3>
+          <ul class="footer-list">
+            <li><i data-lucide="mail" class="footer-icon"></i> contact@zhiyuanai.com</li>
+            <li><i data-lucide="phone" class="footer-icon"></i> 400-123-4567</li>
+            <li class="footer-address">
+              <i data-lucide="map-pin" class="footer-icon"></i>
+              <span>北京市海淀区中关村大街1号</span>
+            </li>
+          </ul>
         </div>
       </div>
-      <img :src="sysInfos.contentImg" alt="" />
-    </div>
-    <div class="footBottom" :style="selectedTab !== 'home' ? 'margin-top: 0;' : ''">
-      <div class="footInfo">{{ sysInfos.contentKeyword }}</div>
-      <div class="footInfo" @click="windowOpen('https://beian.miit.gov.cn/#/Integrated/recordQuery', true)">
-        {{ sysInfos.contentDescription }}
+      <div class="footer-bottom">
+        <p>&copy; 2025 志愿AI 版权所有 | 京ICP备12345678号-1</p>
       </div>
     </div>
-  </div>
+  </footer>
 </template>
+
 <style lang="scss" scoped>
-.footnav {
-  padding: 1rem;
-  background-color: #1f3e85;
+/* Footer */
+.footer {
+  background: #111827;
+  color: white;
+  padding: 3rem 0;
+}
 
-  .footRow {
-    margin: 0 auto;
-    max-width: 1400px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
-    border-bottom: 1px solid #1a3670;
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
 
-    .quickbox {
-      max-width: calc(100% - 8rem);
-      flex-shrink: 0;
-      display: flex;
-      flex-flow: column;
-      flex-wrap: wrap;
-      align-items: center;
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
 
-      .contactUs {
-        width: 100%;
-        flex-shrink: 0;
-        padding: 0 1rem 1rem 0;
-        display: flex;
-        align-items: flex-start;
-
-        @media (max-width: 768px) {
-          padding: 0 0.5rem 0.5rem 0;
-        }
-
-        .contactFa {
-          margin-right: 0.5rem;
-          width: 1.5rem;
-          height: 1.5rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: rgb(22 93 255 / 0.1);
-          border-radius: 1.5rem;
-
-          i {
-            font-size: 0.85rem;
-            color: #165dff;
-          }
-        }
-
-        .contacttext {
-          max-width: calc(100% - 2rem);
-          line-height: 1.5rem;
-          color: #fff;
-        }
-      }
-
-      .contactUs:last-child {
-        margin-right: 0;
-      }
-    }
-
-    img {
-      margin-bottom: 1rem;
-      width: 8rem;
-      height: 8rem;
-
-      @media (max-width: 768px) {
-        margin-bottom: 0;
-      }
-    }
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
+}
 
-  .footBottom {
-    margin-top: 1rem;
+.footer-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
 
-    .footInfo {
-      text-align: center;
-      font-size: 1rem;
-      line-height: 1.5rem;
-      color: #fff;
-    }
+.footer-text {
+  color: #9ca3af;
+  line-height: 1.5;
+}
 
-    .footInfo:last-child {
-      margin-top: 0.5rem;
-      cursor: pointer;
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
+.footer-list li {
+  margin-bottom: 0.5rem;
+  color: #9ca3af;
+}
+
+.footer-link {
+  color: #9ca3af;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: white;
+}
+
+.footer-icon {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+}
+
+.footer-address {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.footer-bottom {
+  border-top: 1px solid #374151;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  text-align: center;
+  color: #6b7280;
 }
 </style>
