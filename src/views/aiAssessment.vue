@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import sideTop from '@/components/sideTop.vue'
 
 // 学业能力测评维度
 const academicDimensions = ref([
@@ -149,6 +150,7 @@ const careerTypes = ref([
         </div>
       </section>
     </main>
+    <sideTop />
   </div>
 </template>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import sideTop from '@/components/sideTop.vue'
 
 // 筛选条件
 const filters = reactive({
@@ -256,6 +257,7 @@ const filterMajors = () => {
         </table>
       </div>
     </main>
+    <sideTop />
 
   </div>
 </template>

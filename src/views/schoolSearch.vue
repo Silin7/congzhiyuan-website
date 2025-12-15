@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, nextTick } from 'vue'
+import sideTop from '@/components/sideTop.vue'
 
 onMounted(() => {
   // 确保 DOM 完全渲染后再初始化 lucide 图标
@@ -317,6 +318,7 @@ onMounted(() => {
         </div>
       </section>
     </main>
+    <sideTop />
   </div>
 </template>
 

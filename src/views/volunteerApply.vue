@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import Headnav from '@/components/headnav.vue'
-import Footnav from '@/components/footnav.vue'
+import sideTop from '@/components/sideTop.vue'
 
 // 筛选条件
 const filters = reactive({
@@ -279,6 +278,7 @@ const resetFilters = () => {
           :disabled="pagination.currentPage === Math.ceil(pagination.total / pagination.pageSize)">下一页</button>
       </div>
     </main>
+    <sideTop />
 
   </div>
 </template>
