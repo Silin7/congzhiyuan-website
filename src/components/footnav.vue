@@ -5,46 +5,47 @@ import { Message, Phone, Location } from '@element-plus/icons-vue'
 <template>
   <!-- Footer -->
   <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-grid">
-        <div class="footer-column">
-          <h3 class="footer-title">志愿AI</h3>
-          <p class="footer-text">AI智能高考志愿填报平台，让科技助力梦想，让每一分都有价值。</p>
-        </div>
-        <div class="footer-column">
-          <h3 class="footer-title">服务项目</h3>
-          <ul class="footer-list">
-            <li><a href="#" class="footer-link">AI志愿填报</a></li>
-            <li><a href="#" class="footer-link">生涯规划</a></li>
-            <li><a href="#" class="footer-link">院校库</a></li>
-            <li><a href="#" class="footer-link">专业库</a></li>
-            <li><a href="#" class="footer-link">高考工具箱</a></li>
-          </ul>
-        </div>
-        <div class="footer-column">
-          <h3 class="footer-title">关于我们</h3>
-          <ul class="footer-list">
-            <li><a href="#" class="footer-link">公司简介</a></li>
-            <li><a href="#" class="footer-link">团队介绍</a></li>
-            <li><a href="#" class="footer-link">联系我们</a></li>
-            <li><a href="#" class="footer-link">加入我们</a></li>
-          </ul>
-        </div>
-        <div class="footer-column">
-          <h3 class="footer-title">联系方式</h3>
-          <ul class="footer-list">
-            <li><el-icon class="footer-icon"><Message /></el-icon> contact@zhiyuanai.com</li>
-            <li><el-icon class="footer-icon"><Phone /></el-icon> 400-123-4567</li>
-            <li class="footer-address">
-              <el-icon class="footer-icon"><Location /></el-icon>
-              <span>北京市海淀区中关村大街1号</span>
-            </li>
-          </ul>
-        </div>
+    <div class="max-w-5xl mx-auto grid grid-cols-4 gap-8">
+      <div class="footer-column">
+        <h3 class="footer-title">聪志愿</h3>
+        <p class="footer-text">AI高考志愿填报服务平台</p>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 志愿AI 版权所有 | 京ICP备12345678号-1</p>
+      <div class="footer-column">
+        <h3 class="footer-title">服务项目</h3>
+        <ul class="footer-list">
+          <li><a href="#" class="footer-link">志愿填报</a></li>
+          <li><a href="#" class="footer-link">院校查询</a></li>
+          <li><a href="#" class="footer-link">专业解析</a></li>
+          <li><a href="#" class="footer-link">AI测评</a></li>
+        </ul>
       </div>
+      <div class="footer-column">
+        <h3 class="footer-title">关于我们</h3>
+        <ul class="footer-list">
+          <li><a href="#" class="footer-link">团队介绍</a></li>
+          <li><a href="#" class="footer-link">联系我们</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h3 class="footer-title">联系方式</h3>
+        <ul class="footer-list">
+          <li><el-icon class="footer-icon">
+              <Message />
+            </el-icon> contact@qingxueai.com</li>
+          <li><el-icon class="footer-icon">
+              <Phone />
+            </el-icon> 400-123-4567</li>
+          <li class="footer-address">
+            <el-icon class="footer-icon">
+              <Location />
+            </el-icon>
+            <span>北京市海淀区中关村大街1号</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 聪志愿AI智能科技 版权所有 | 京ICP备12345678号</p>
     </div>
   </footer>
 </template>
@@ -52,27 +53,21 @@ import { Message, Phone, Location } from '@element-plus/icons-vue'
 <style lang="scss" scoped>
 /* Footer */
 .footer {
-  background: #111827;
-  color: white;
-  padding: 3rem 0;
-}
-
-.footer-container {
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 3rem 2rem;
+  max-width: 80vw;
+  min-width: 1200px;
+  color: white;
+  background: #111827;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-radius: 0 0 0.75rem 0.75rem;
 }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .footer-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .footer-title {

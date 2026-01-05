@@ -236,6 +236,9 @@ const handleLogin = () => {
   margin: 0 auto;
   padding: 1rem 1.5rem;
   background: #fff;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+    border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .header-container {
