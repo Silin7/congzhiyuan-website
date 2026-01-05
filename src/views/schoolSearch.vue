@@ -466,14 +466,14 @@ const handleSearch = () => {
 
 <style lang="scss" scoped>
 .school-search-page {
-  border-top: 1px solid #e5e7eb;
   max-width: 80vw;
   min-width: 1200px;
+  min-height: calc(100vh - 428px);
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
   background-color: #fff;
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-top: 1px solid #e5e7eb;
 }
 </style>
