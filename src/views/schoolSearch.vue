@@ -1,308 +1,464 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
+
+// 声明响应式变量
+// 院校省份 - 可选值：'all' 或省份代码
+const selectedProvince = ref('all')
+// 办学层次 - 可选值：'all', 'bachelor', 'college'
+const selectedLevel = ref('all')
+// 院校名称
+const schoolName = ref('')
+
+// 省份按钮点击事件处理函数
+const handleProvinceClick = (province: string) => {
+  selectedProvince.value = province
+  console.log(`选择了省份: ${province}`)
+}
+
+// 办学层次点击事件处理函数
+const handleLevelClick = (level: string) => {
+  selectedLevel.value = level
+  console.log(`选择了办学层次: ${level}`)
+}
+
+// 查询按钮点击事件处理函数
+const handleSearch = () => {
+  // 收集查询条件
+  const searchParams = {
+    province: selectedProvince.value,
+    level: selectedLevel.value,
+    schoolName: schoolName.value,
+  }
+  console.log('查询条件:', searchParams)
+  // 这里可以添加实际的查询逻辑，比如调用API
+}
 </script>
 
 <template>
   <div class="school-search-page">
-    <main>
-      <!-- Hero Section -->
-      <section class="hero-section">
-        <div class="hero-container">
-          <h1 class="hero-title">院校查询</h1>
-          <p class="hero-subtitle">智能匹配你的分数，精准找到适合你的院校</p>
-        </div>
-      </section>
-
-      <!-- Search Section -->
-      <section class="search-section">
-        <div class="section-container">
-          <div class="search-form">
-            <div class="search-input-group">
-              <label for="score" class="form-label">高考分数</label>
-              <input type="number" id="score" class="form-input" placeholder="请输入你的高考分数">
+    <main class="flex-grow container mx-auto px-6 py-8">
+      <div class="bg-white rounded-lg shadow-sm p-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">院校查询</h2>
+        <!-- 查询表单 -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-8">
+          <div class="grid grid-cols-1 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">院校省份</label>
+              <div class="grid grid-cols-4 md:grid-cols-8 gap-2">
+                <button @click="handleProvinceClick('all')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'all'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="all" type="button">
+                  全部
+                </button>
+                <button @click="handleProvinceClick('beijing')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'beijing'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="beijing" type="button">
+                  北京
+                </button>
+                <button @click="handleProvinceClick('tianjin')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'tianjin'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="tianjin" type="button">
+                  天津
+                </button>
+                <button @click="handleProvinceClick('hebei')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'hebei'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="hebei" type="button">
+                  河北
+                </button>
+                <button @click="handleProvinceClick('shanxi')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'shanxi'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="shanxi" type="button">
+                  山西
+                </button>
+                <button @click="handleProvinceClick('neimenggu')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'neimenggu'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="neimenggu" type="button">
+                  内蒙古
+                </button>
+                <button @click="handleProvinceClick('liaoning')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'liaoning'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="liaoning" type="button">
+                  辽宁
+                </button>
+                <button @click="handleProvinceClick('jilin')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'jilin'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="jilin" type="button">
+                  吉林
+                </button>
+                <button @click="handleProvinceClick('heilongjiang')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'heilongjiang'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="heilongjiang" type="button">
+                  黑龙江
+                </button>
+                <button @click="handleProvinceClick('shanghai')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'shanghai'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="shanghai" type="button">
+                  上海
+                </button>
+                <button @click="handleProvinceClick('jiangsu')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'jiangsu'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="jiangsu" type="button">
+                  江苏
+                </button>
+                <button @click="handleProvinceClick('zhejiang')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'zhejiang'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="zhejiang" type="button">
+                  浙江
+                </button>
+                <button @click="handleProvinceClick('anhui')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'anhui'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="anhui" type="button">
+                  安徽
+                </button>
+                <button @click="handleProvinceClick('fujian')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'fujian'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="fujian" type="button">
+                  福建
+                </button>
+                <button @click="handleProvinceClick('jiangxi')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'jiangxi'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="jiangxi" type="button">
+                  江西
+                </button>
+                <button @click="handleProvinceClick('shandong')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'shandong'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="shandong" type="button">
+                  山东
+                </button>
+                <button @click="handleProvinceClick('henan')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'henan'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="henan" type="button">
+                  河南
+                </button>
+                <button @click="handleProvinceClick('hubei')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'hubei'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="hubei" type="button">
+                  湖北
+                </button>
+                <button @click="handleProvinceClick('hunan')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'hunan'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="hunan" type="button">
+                  湖南
+                </button>
+                <button @click="handleProvinceClick('guangdong')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'guangdong'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="guangdong" type="button">
+                  广东
+                </button>
+                <button @click="handleProvinceClick('guangxi')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'guangxi'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="guangxi" type="button">
+                  广西
+                </button>
+                <button @click="handleProvinceClick('hainan')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'hainan'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="hainan" type="button">
+                  海南
+                </button>
+                <button @click="handleProvinceClick('chongqing')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'chongqing'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="chongqing" type="button">
+                  重庆
+                </button>
+                <button @click="handleProvinceClick('sichuan')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'sichuan'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="sichuan" type="button">
+                  四川
+                </button>
+                <button @click="handleProvinceClick('guizhou')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'guizhou'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="guizhou" type="button">
+                  贵州
+                </button>
+                <button @click="handleProvinceClick('yunnan')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'yunnan'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="yunnan" type="button">
+                  云南
+                </button>
+                <button @click="handleProvinceClick('xizang')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'xizang'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="xizang" type="button">
+                  西藏
+                </button>
+                <button @click="handleProvinceClick('shaanxi')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'shaanxi'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="shaanxi" type="button">
+                  陕西
+                </button>
+                <button @click="handleProvinceClick('gansu')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'gansu'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="gansu" type="button">
+                  甘肃
+                </button>
+                <button @click="handleProvinceClick('qinghai')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'qinghai'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="qinghai" type="button">
+                  青海
+                </button>
+                <button @click="handleProvinceClick('ningxia')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'ningxia'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="ningxia" type="button">
+                  宁夏
+                </button>
+                <button @click="handleProvinceClick('xinjiang')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedProvince === 'xinjiang'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-province="xinjiang" type="button">
+                  新疆
+                </button>
+              </div>
             </div>
-            <div class="search-input-group">
-              <label for="province" class="form-label">所在省份</label>
-              <select id="province" class="form-select">
-                <option value="">请选择省份</option>
-                <option value="北京">北京</option>
-                <option value="上海">上海</option>
-                <option value="广东">广东</option>
-                <option value="江苏">江苏</option>
-                <option value="浙江">浙江</option>
-              </select>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">办学层次</label>
+              <div class="flex gap-4">
+                <button @click="handleLevelClick('all')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedLevel === 'all'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-level="all">不限</button>
+                <button @click="handleLevelClick('bachelor')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedLevel === 'bachelor'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-level="bachelor">本科</button>
+                <button @click="handleLevelClick('college')" :class="[
+                  'text-sm py-2 px-3 rounded-md border transition',
+                  selectedLevel === 'college'
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                ]" data-level="college">专科</button>
+              </div>
             </div>
-            <div class="search-input-group">
-              <label for="subject" class="form-label">选科组合</label>
-              <select id="subject" class="form-select">
-                <option value="">请选择选科组合</option>
-                <option value="物理+化学+生物">物理+化学+生物</option>
-                <option value="物理+化学+地理">物理+化学+地理</option>
-                <option value="物理+生物+地理">物理+生物+地理</option>
-                <option value="历史+政治+地理">历史+政治+地理</option>
-                <option value="历史+政治+化学">历史+政治+化学</option>
-              </select>
+            <div class="flex items-end gap-4">
+              <div class="w-1/2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">院校名称</label>
+                <input v-model="schoolName"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  placeholder="请输入院校名称" type="text" />
+              </div>
             </div>
-            <div class="search-button-group">
-              <button class="search-btn primary-btn">立即查询</button>
-              <button class="search-btn secondary-btn">重置</button>
+            <div>
+              <button @click="handleSearch"
+                class="w-full bg-blue-700 hover:bg-blue-800 text-white py-2 px-4 rounded-md font-medium">
+                查询
+              </button>
             </div>
           </div>
         </div>
-      </section>
-
-      <!-- Filters Section -->
-      <section class="filters-section">
-        <div class="section-container">
-          <div class="filters-container">
-            <div class="filter-group">
-              <h3 class="filter-title">院校类型</h3>
-              <div class="filter-options">
-                <label class="filter-option">
-                  <input type="checkbox" name="school-type">
-                  <span>综合类</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-type">
-                  <span>理工类</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-type">
-                  <span>师范类</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-type">
-                  <span>农林类</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-type">
-                  <span>医药类</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-type">
-                  <span>财经类</span>
-                </label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <h3 class="filter-title">院校层次</h3>
-              <div class="filter-options">
-                <label class="filter-option">
-                  <input type="checkbox" name="school-level">
-                  <span>本科一批</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-level">
-                  <span>本科二批</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-level">
-                  <span>本科三批</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-level">
-                  <span>专科</span>
-                </label>
-              </div>
-            </div>
-            <div class="filter-group">
-              <h3 class="filter-title">院校地区</h3>
-              <div class="filter-options">
-                <label class="filter-option">
-                  <input type="checkbox" name="school-area">
-                  <span>华北地区</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-area">
-                  <span>华东地区</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-area">
-                  <span>华南地区</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-area">
-                  <span>华中地区</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-area">
-                  <span>西南地区</span>
-                </label>
-                <label class="filter-option">
-                  <input type="checkbox" name="school-area">
-                  <span>西北地区</span>
-                </label>
-              </div>
-            </div>
-          </div>
+        <!-- 查询结果表格 -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  院校名称
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  所在省份
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  城市
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  办学层次
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  院校性质
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  特色专业
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
+                  保研率
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">
+                    <a href="院校简介.html">北京大学</a>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-700">北京</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-700">北京市</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">本科</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">公办</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <span class="mr-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">双一流</span>
+                  <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">国家级优势</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">56%</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">清华大学</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-700">北京</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-700">北京市</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">本科</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">公办</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <span class="mr-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">双一流</span>
+                  <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">重点学科</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">58%</td>
+              </tr>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">复旦大学</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-700">上海</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-700">上海市</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">本科</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">公办</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <span class="mr-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">双一流</span>
+                  <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">特色专业</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">54%</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </section>
-
-      <!-- Results Section -->
-      <section class="results-section">
-        <div class="section-container">
-          <div class="results-header">
-            <div class="results-info">
-              <span class="results-count">共找到 <strong>1234</strong> 所院校</span>
-            </div>
-            <div class="results-sort">
-              <label class="sort-label">排序方式：</label>
-              <select class="sort-select">
-                <option value="relevance">相关性</option>
-                <option value="score-desc">分数从高到低</option>
-                <option value="score-asc">分数从低到高</option>
-                <option value="rank">院校排名</option>
-              </select>
-            </div>
+        <!-- 分页控件 -->
+        <div class="flex items-center justify-between border-t border-gray-200 pt-6">
+          <div class="text-sm text-gray-700">
+            共 <span class="font-medium">3</span> 条结果 | 第
+            <span class="font-medium">1</span> 页，共 <span class="font-medium">1</span> 页
           </div>
-
-          <!-- Results List -->
-          <div class="results-list">
-            <div class="result-item">
-              <div class="result-header">
-                <h3 class="school-name">清华大学</h3>
-                <span class="school-level">本科一批</span>
-              </div>
-              <div class="result-content">
-                <div class="school-info">
-                  <div class="info-item">
-                    <i class="fa fa-map-marker info-icon"></i>
-                    <span>北京</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-building info-icon"></i>
-                    <span>综合类</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-trophy info-icon"></i>
-                    <span>双一流</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-users info-icon"></i>
-                    <span>10000+在校生</span>
-                  </div>
-                </div>
-                <div class="school-score">
-                  <div class="score-item">
-                    <span class="score-label">最低录取分数：</span>
-                    <span class="score-value">680</span>
-                  </div>
-                  <div class="score-item">
-                    <span class="score-label">最低录取位次：</span>
-                    <span class="score-value">120</span>
-                  </div>
-                </div>
-              </div>
-              <div class="result-footer">
-                <button class="action-btn">查看详情</button>
-                <button class="action-btn secondary">加入志愿表</button>
-              </div>
-            </div>
-
-            <div class="result-item">
-              <div class="result-header">
-                <h3 class="school-name">北京大学</h3>
-                <span class="school-level">本科一批</span>
-              </div>
-              <div class="result-content">
-                <div class="school-info">
-                  <div class="info-item">
-                    <i class="fa fa-map-marker info-icon"></i>
-                    <span>北京</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-building info-icon"></i>
-                    <span>综合类</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-trophy info-icon"></i>
-                    <span>双一流</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-users info-icon"></i>
-                    <span>10000+在校生</span>
-                  </div>
-                </div>
-                <div class="school-score">
-                  <div class="score-item">
-                    <span class="score-label">最低录取分数：</span>
-                    <span class="score-value">678</span>
-                  </div>
-                  <div class="score-item">
-                    <span class="score-label">最低录取位次：</span>
-                    <span class="score-value">150</span>
-                  </div>
-                </div>
-              </div>
-              <div class="result-footer">
-                <button class="action-btn">查看详情</button>
-                <button class="action-btn secondary">加入志愿表</button>
-              </div>
-            </div>
-
-            <div class="result-item">
-              <div class="result-header">
-                <h3 class="school-name">复旦大学</h3>
-                <span class="school-level">本科一批</span>
-              </div>
-              <div class="result-content">
-                <div class="school-info">
-                  <div class="info-item">
-                    <i class="fa fa-map-marker info-icon"></i>
-                    <span>上海</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-building info-icon"></i>
-                    <span>综合类</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-trophy info-icon"></i>
-                    <span>双一流</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fa fa-users info-icon"></i>
-                    <span>10000+在校生</span>
-                  </div>
-                </div>
-                <div class="school-score">
-                  <div class="score-item">
-                    <span class="score-label">最低录取分数：</span>
-                    <span class="score-value">675</span>
-                  </div>
-                  <div class="score-item">
-                    <span class="score-label">最低录取位次：</span>
-                    <span class="score-value">200</span>
-                  </div>
-                </div>
-              </div>
-              <div class="result-footer">
-                <button class="action-btn">查看详情</button>
-                <button class="action-btn secondary">加入志愿表</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination -->
-          <div class="pagination">
-            <button class="page-btn disabled">
-              <i class="fa fa-chevron-left page-icon"></i>
-              上一页
+          <div class="flex space-x-2">
+            <button
+              class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+              &lt; 上一页
             </button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">4</button>
-            <button class="page-btn">5</button>
-            <button class="page-btn">...</button>
-            <button class="page-btn">124</button>
-            <button class="page-btn">
-              下一页
-              <i class="fa fa-chevron-right page-icon"></i>
+            <button class="px-3 py-1 bg-blue-700 text-white rounded-md font-medium">1</button>
+            <button
+              class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+              下一页 &gt;
             </button>
           </div>
         </div>
-      </section>
+      </div>
     </main>
     <sideTop />
   </div>
@@ -310,396 +466,14 @@ import sideTop from '@/components/sideTop.vue'
 
 <style lang="scss" scoped>
 .school-search-page {
+  border-top: 1px solid #e5e7eb;
+  max-width: 80vw;
+  min-width: 1200px;
+  margin: 0 auto;
   font-family: 'Inter', sans-serif;
-}
-
-/* Hero Section */
-.hero-section {
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 3rem 0;
-}
-
-.hero-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.hero-title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.hero-subtitle {
-  font-size: 1rem;
-}
-
-/* Section Common Styles */
-.section-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-/* Search Section */
-.search-section {
-  background: white;
-  padding: 2rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.search-form {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  align-items: end;
-}
-
-@media (min-width: 768px) {
-  .search-form {
-    grid-template-columns: repeat(3, 1fr) auto;
-  }
-}
-
-.search-input-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: #374151;
-}
-
-.form-input,
-.form-select {
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.form-input:focus,
-.form-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-button-group {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.search-btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
-}
-
-.search-btn.primary-btn {
-  background: #3b82f6;
-  color: white;
-}
-
-.search-btn.primary-btn:hover {
-  background: #2563eb;
-}
-
-.search-btn.secondary-btn {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.search-btn.secondary-btn:hover {
-  background: #e5e7eb;
-}
-
-/* Filters Section */
-.filters-section {
-  background: #f9fafb;
-  padding: 2rem 0;
-}
-
-.filters-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .filters-container {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.filter-group {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.filter-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #111827;
-}
-
-.filter-options {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.filter-option {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #4b5563;
-  cursor: pointer;
-  user-select: none;
-}
-
-.filter-option input[type="checkbox"] {
-  width: 1rem;
-  height: 1rem;
-  cursor: pointer;
-}
-
-/* Results Section */
-.results-section {
-  padding: 2rem 0;
-  background: white;
-}
-
-.results-header {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .results-header {
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-.results-info {
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.results-info strong {
-  color: #111827;
-}
-
-.results-sort {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.sort-label {
-  font-size: 0.875rem;
-  color: #4b5563;
-}
-
-.sort-select {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-}
-
-/* Results List */
-.results-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.result-item {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.result-item:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border-color: #d1d5db;
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.school-name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-
-.school-level {
-  background: #3b82f6;
-  color: white;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-weight: 500;
-}
-
-.result-content {
-  margin-bottom: 1.5rem;
-}
-
-.school-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #6b7280;
-}
-
-.info-icon {
-  width: 1rem;
-  height: 1rem;
-  color: #9ca3af;
-}
-
-.school-score {
-  background: white;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  border: 1px solid #e5e7eb;
-}
-
-.score-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.score-item:last-child {
-  margin-bottom: 0;
-}
-
-.score-label {
-  color: #6b7280;
-}
-
-.score-value {
-  font-weight: 600;
-  color: #3b82f6;
-}
-
-.result-footer {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-}
-
-.action-btn {
-  padding: 0.5rem 1.25rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.875rem;
-}
-
-.action-btn:not(.secondary) {
-  background: #3b82f6;
-  color: white;
-}
-
-.action-btn:not(.secondary):hover {
-  background: #2563eb;
-}
-
-.action-btn.secondary {
-  background: white;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
-}
-
-.action-btn.secondary:hover {
-  background: #eff6ff;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.page-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
-  background: white;
-  color: #374151;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.page-btn:hover:not(.disabled) {
-  background: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.page-btn.active {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.page-btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-icon {
-  width: 0.875rem;
-  height: 0.875rem;
+  background-color: #fff;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 </style>
