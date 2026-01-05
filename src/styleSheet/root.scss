@@ -1,4 +1,9 @@
 :root {
   // element primary color
-  --el-color-primary: #1f3e85 !important;
+  --el-color-primary: #2563EB !important;
+}
+
+// 登录弹窗关闭按钮大小
+.el-dialog__headerbtn .el-dialog__close {
+  font-size: 1.5rem !important;
 }

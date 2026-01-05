@@ -1,5 +1,9 @@
 import api from '@/api/index'
 
+export function phpTest() {
+  return api.post('/mod/index/testList.ajax.php')
+}
+
 // 登录注册 - 验证码
 export function authcodeApi() {
   return api.get('/app-api/member/auth/code')

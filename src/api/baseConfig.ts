@@ -1,4 +1,4 @@
-const baseURL = 'https://keruimed.com'
-const fileURL = 'http://xcadmin.duoqixin.com'
+const baseURL = 'https://sdklyinfo.com'
+const fileURL = 'https://sdklyinfo.com'
 
 export { baseURL, fileURL }

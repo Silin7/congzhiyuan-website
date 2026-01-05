@@ -7,15 +7,14 @@ const api = axios.create({
   timeout: 1000 * 60,
   responseType: 'json',
   headers: {
-    'tenant-id': '1',
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': '*',
   },
 })
 
 api.interceptors.request.use((request) => {
   // 设置请求头
   if (request.headers && localStorage.getItem('accessToken')) {
+    request.headers.token = localStorage.getItem('accessToken') ?? ''
     request.headers.Authorization = `Bearer ${localStorage.getItem('accessToken') ?? ''}`
   }
   return request
