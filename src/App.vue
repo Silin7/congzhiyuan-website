@@ -7,7 +7,7 @@ const routeInfo = useRoute()
 </script>
 
 <template>
-  <div>
+  <div style="min-height: 100vh; background-color: #f9fafb;">
     <component v-if="routeInfo.meta.hashead" :is="headnav" ref="headnavRef" />
     <RouterView />
     <component v-if="routeInfo.meta.hasfoot" :is="footnav" ref="footnavRef" />
