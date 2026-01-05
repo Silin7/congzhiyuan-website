@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { Icon } from '@iconify/vue'
 
 // 声明院校层次响应式变量 - 可选值：'不限', '本科', '专科'
 const selectedSchoolLevel = ref('本科')
@@ -158,8 +159,7 @@ const handleAdmissionRangeChange = (event: Event) => {
             <!-- 院校名称 -->
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
-              <input
-                v-model="schoolName"
+              <input v-model="schoolName"
                 class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none"
                 placeholder="输入院校名称" type="text" />
             </div>
@@ -453,8 +453,7 @@ const handleAdmissionRangeChange = (event: Event) => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">专业名称</label>
-                <input
-                  v-model="majorName"
+                <input v-model="majorName"
                   class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none"
                   placeholder="输入专业名称" type="text" />
               </div>
@@ -501,20 +500,23 @@ const handleAdmissionRangeChange = (event: Event) => {
               <label class="block text-sm font-medium mb-2 text-gray-800">录取范围</label>
               <div class="flex flex-wrap bg-white border border-gray-300 rounded-md p-3 gap-4">
                 <label class="flex items-center space-x-2 text-sm">
-                  <input v-model="admissionRange" @change="handleAdmissionRangeChange" class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio"
-                    value="全部" />
+                  <input v-model="admissionRange" @change="handleAdmissionRangeChange"
+                    class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="全部" />
                   <span class="text-gray-700">全部</span>
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
-                  <input v-model="admissionRange" @change="handleAdmissionRangeChange" class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="可冲击" />
+                  <input v-model="admissionRange" @change="handleAdmissionRangeChange"
+                    class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="可冲击" />
                   <span class="text-gray-700">可冲击</span>
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
-                  <input v-model="admissionRange" @change="handleAdmissionRangeChange" class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="较稳妥" />
+                  <input v-model="admissionRange" @change="handleAdmissionRangeChange"
+                    class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="较稳妥" />
                   <span class="text-gray-700">较稳妥</span>
                 </label>
                 <label class="flex items-center space-x-2 text-sm">
-                  <input v-model="admissionRange" @change="handleAdmissionRangeChange" class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="可保底" />
+                  <input v-model="admissionRange" @change="handleAdmissionRangeChange"
+                    class="h-4 w-4 text-blue-600 bg-white" name="admission_range" type="radio" value="可保底" />
                   <span class="text-gray-700">可保底</span>
                 </label>
               </div>
@@ -535,8 +537,7 @@ const handleAdmissionRangeChange = (event: Event) => {
             <button
               class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-green-500 hover:to-teal-500 transition">
               <span class="flex items-center space-x-2">
-                <!-- <iconify-icon class="text-lg" icon="material-symbols:add"></iconify-icon> -->
-                <i class="fa fa-plus"></i>
+                <Icon class="text-lg" icon="material-symbols:add" />
                 <span>批量填报</span>
               </span>
             </button>
@@ -544,7 +545,7 @@ const handleAdmissionRangeChange = (event: Event) => {
               class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-500 hover:to-purple-500 transition"
               id="openWishesBtn">
               <span class="flex items-center space-x-2">
-                <iconify-icon class="text-lg" icon="mdi:heart"></iconify-icon>
+                <Icon class="text-lg" icon="mdi:heart" />
                 <span>我的志愿</span>
               </span>
             </button>
@@ -675,8 +676,7 @@ const handleAdmissionRangeChange = (event: Event) => {
               <!-- 翻页按钮 -->
               <div class="flex items-center gap-2">
                 <button
-                  class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled="">
+                  class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
                   <span class="flex items-center gap-1">
                     <iconify-icon class="text-lg" icon="mdi:chevron-left"></iconify-icon>
                     上一页
@@ -687,8 +687,7 @@ const handleAdmissionRangeChange = (event: Event) => {
                   <button class="bg-blue-600 text-white px-3 py-2 rounded-md font-medium">1</button>
                 </div>
                 <button
-                  class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled="">
+                  class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
                   <span class="flex items-center gap-1">
                     下一页
                     <iconify-icon class="text-lg" icon="mdi:chevron-right"></iconify-icon>
