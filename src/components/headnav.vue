@@ -3,10 +3,10 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
-import { phpTest } from '@/api/interface'
+import * as api from '@/api/interface'
 
 onMounted(() => {
-  phpTest().then(res => {
+  api.phpTest().then(res => {
     console.log(res)
   })
 })
@@ -52,7 +52,7 @@ const loginType = ref('phone') // phone, account, card
 
 // 登录表单数据
 const loginForm = reactive({
-  phone: '',
+  phone: '13256605200',
   code: '',
   account: '',
   password: '',
@@ -85,6 +85,16 @@ const sendCode = () => {
     ElMessage.warning('请输入手机号码')
     return
   }
+  if (!/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(loginForm.phone)) {
+    ElMessage.warning('请输入正确的手机号码')
+    return
+  }
+  api.authcodeApi({
+    phone: loginForm.phone,
+    scene: 5
+  }).then(res => {
+    console.log(res)
+  })
   ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
 }
 

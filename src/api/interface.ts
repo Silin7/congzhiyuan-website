@@ -5,8 +5,8 @@ export function phpTest() {
 }
 
 // 登录注册 - 验证码
-export function authcodeApi() {
-  return api.get('/app-api/member/auth/code')
+export function authcodeApi(data: any) {
+  return api.post('/?ctl=ajax&mod=gen&act=SmsSend', data)
 }
 
 // 登录注册 - 验证码 参数 -- mobile: 手机号; scene: 2 修改手机号 3 重置密码 4 忘记密码 5 注册
