@@ -250,7 +250,6 @@ import sideTop from '@/components/sideTop.vue'
   max-width: 80vw;
   min-width: 1200px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
   background-color: #fff;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
