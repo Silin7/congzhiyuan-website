@@ -58,6 +58,17 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/personalInfo',
+    name: 'personalInfo',
+    component: () => import('@/views/personalInfo.vue'),
+    meta: {
+      title: '个人信息',
+      stcode: 'personalInfo',
+      hashead: true,
+      hasfoot: true,
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   }
