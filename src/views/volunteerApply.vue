@@ -87,8 +87,8 @@ const majorName = ref('')
       <section class="mb-10">
         <h2 class="text-2xl font-bold text-center mb-6">志愿填报查询</h2>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
+            <!-- 院校层次  录取批次 录取类型 -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- 院校层次 -->
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校层次</label>
               <div class="grid grid-cols-3 gap-2">
@@ -110,7 +110,6 @@ const majorName = ref('')
                 </button>
               </div>
             </div>
-            <!-- 录取批次 -->
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">录取批次</label>
               <div class="grid grid-cols-3 gap-2">
@@ -140,7 +139,6 @@ const majorName = ref('')
                 </button>
               </div>
             </div>
-            <!-- 录取类型 -->
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">录取类型</label>
               <div class="grid grid-cols-3 gap-2">
@@ -171,15 +169,14 @@ const majorName = ref('')
               </div>
             </div>
           </div>
+            <!-- 院校名称 院校性质 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <!-- 院校名称 -->
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
               <input v-model="schoolName"
                 class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none"
                 placeholder="输入院校名称" type="text" />
             </div>
-            <!-- 院校性质 -->
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校性质</label>
               <div class="grid grid-cols-3 gap-2">
@@ -202,7 +199,7 @@ const majorName = ref('')
               </div>
             </div>
           </div>
-          <!-- 院校省份 - 单独一行 -->
+          <!-- 院校省份（可多选）-->
           <div class="mt-6">
             <label class="block text-sm font-medium mb-2 text-gray-800">院校省份（可多选）</label>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
@@ -457,7 +454,7 @@ const majorName = ref('')
             </div>
           </div>
           <div class="grid grid-cols-1 gap-6 mt-6">
-            <!-- 专业名称和院校特色 -->
+            <!-- 专业名称 院校特色 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">专业名称</label>
@@ -495,8 +492,8 @@ const majorName = ref('')
                 </div>
               </div>
             </div>
+            <!-- 学科门类 一级学科 二级学科 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <!-- 学科门类 -->
               <div>
                 <div>
                   <label class="block text-sm font-medium mb-2 text-gray-800">学科门类</label>
@@ -510,7 +507,6 @@ const majorName = ref('')
                   </select>
                 </div>
               </div>
-              <!-- 一级学科 -->
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">一级学科</label>
                 <select v-model="firstDiscipline" @change="firstDisciplineChange"
@@ -521,7 +517,6 @@ const majorName = ref('')
                   <option>软件工程</option>
                 </select>
               </div>
-              <!-- 二级学科 -->
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">二级学科</label>
                 <select v-model="subDiscipline" @change="subDisciplineChange"
@@ -533,6 +528,7 @@ const majorName = ref('')
                 </select>
               </div>
             </div>
+            <!-- 录取概率范围预警 -->
             <section class="bg-blue-50/50 p-6 rounded-2xl space-y-8">
               <div>
                 <div class="flex items-center space-x-2 text-slate-700 font-semibold mb-3 text-sm">
@@ -587,11 +583,8 @@ const majorName = ref('')
                 </div>
               </div>
             </section>
+            <!-- 立即开始智能检索 -->
             <div class="mt-8 flex justify-center">
-              <!-- <button
-                class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-medium hover:from-blue-500 hover:to-purple-500 transition-all duration-300 shadow-lg">
-                查询
-              </button> -->
               <button
                 class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
