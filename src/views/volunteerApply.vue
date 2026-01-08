@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Icon } from '@iconify/vue'
+import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination } from 'element-plus'
 
 // 声明院校层次响应式变量 - 可选值：'本科', '专科'
 const selectedSchoolLevel = ref('')
@@ -82,6 +83,91 @@ const riskThreshold = ref(15)
 
 // “冲” “保” 安全阈值响应式变量
 const safeThreshold = ref(85)
+
+// 声明表格数据响应式变量
+const tableData = ref([
+  {
+    id: 1,
+    schoolName: '山东大学',
+    schoolInfo: '山东省 济南市 公办',
+    schoolCode: 'A422',
+    schoolTags: '一流大学 一流学科建设高校 211 985',
+    majorName: '人工智能',
+    majorRequirements: '物理和化学',
+    majorCode: '34',
+    tuition: '6600',
+    disciplineEvaluation: 'B',
+    remark: '国家级卓越计划',
+    batch: '常规批',
+    type: '普通类',
+    plan: '120人',
+    scoreAnalysis: [
+      '精确:25年最低位:62，最低分:620，录取数:120',
+      '精确:24年最低位:71，最低分:625，录取数:115',
+      '精确:23年最低位:59，最低分:624，录取数:110'
+    ],
+    admissionProbability: '75%',
+    probabilityLevel: '可冲击',
+    probabilityColor: 'bg-blue-100 text-blue-800'
+  },
+  {
+    id: 2,
+    schoolName: '中国海洋大学',
+    schoolInfo: '山东省 青岛市 公办',
+    schoolCode: 'A423',
+    schoolTags: '一流大学 211 985',
+    majorName: '法学',
+    majorRequirements: '不限',
+    majorCode: '49',
+    tuition: '5280',
+    disciplineEvaluation: 'B',
+    remark: '教育部涉外法治人才协同培养创新基地',
+    batch: '常规批',
+    type: '普通类',
+    plan: '80人',
+    scoreAnalysis: [
+      '精确:25年最低位:621，最低分:610，录取数:80',
+      '精确:24年最低位:711，最低分:611，录取数:90',
+      '精确:23年最低位:519，最低分:615，录取数:90'
+    ],
+    admissionProbability: '82%',
+    probabilityLevel: '较稳妥',
+    probabilityColor: 'bg-green-100 text-green-800'
+  }
+])
+
+// 声明分页相关变量
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(tableData.value.length)
+
+// 声明排序相关变量
+const sortField = ref('')
+const sortOrder = ref('')
+
+// 处理选择事件
+const handleSelectionChange = (selection: any[]) => {
+  console.log('选中的数据:', selection)
+}
+
+// 处理分页变化
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  console.log(`当前页码: ${page}`)
+}
+
+// 处理排序变化
+const handleSortChange = (column: any) => {
+  console.log('-------->', column)
+  sortField.value = column.prop
+  sortOrder.value = column.order
+  console.log(`排序字段: ${column.prop}, 排序顺序: ${column.order}`)
+}
+
+// 处理填报操作
+const handleApply = (row: any) => {
+  console.log(`填报院校: ${row.schoolName}, 专业: ${row.majorName}`)
+}
 </script>
 
 <template>
@@ -631,159 +717,95 @@ const safeThreshold = ref(85)
             </button>
           </div>
         </div>
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-          <div class="overflow-x-auto">
-            <table class="min-w-full">
-              <colgroup>
-                <col class="min-w-[50px]" width="5%" />
-                <col class="min-w-[60px]" width="8%" />
-                <col class="min-w-[80px]" width="15%" />
-                <col class="min-w-[80px]" width="15%" />
-                <col class="min-w-[70px]" width="10%" />
-                <col class="min-w-[60px]" width="8%" />
-                <col class="min-w-[130px]" width="27%" />
-                <col class="min-w-[60px]" width="7%" />
-                <col class="min-w-[50px]" width="5%" />
-              </colgroup>
-              <thead class="bg-gray-100 text-sm text-left">
-                <tr>
-                  <th class="px-2 py-3 whitespace-nowrap">选择</th>
-                  <th class="px-2 py-3 whitespace-nowrap">招生院校</th>
-                  <th class="px-2 py-3 whitespace-nowrap">招生专业</th>
-                  <th class="px-2 py-3">备注</th>
-                  <th class="px-2 py-3 whitespace-nowrap">批次类型</th>
-                  <th class="px-2 py-3 whitespace-nowrap">本年计划</th>
-                  <th class="px-2 py-3 whitespace-nowrap">成绩分析</th>
-                  <th class="px-2 py-3 whitespace-nowrap">录取概率</th>
-                  <th class="px-2 py-3 whitespace-nowrap">填报操作</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 text-sm">
-                <tr>
-                  <td class="px-2 py-4 text-center">
-                    <input class="w-4 h-4" type="checkbox" />
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div class="font-medium">山东大学</div>
-                    <div class="text-xs text-gray-500">山东省 济南市 公办</div>
-                    <div class="text-xs text-gray-500">院校代码：A422</div>
-                    <div class="text-xs text-gray-500">一流大学 一流学科建设高校 211 985</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>人工智能</div>
-                    <div class="text-xs text-gray-500">物理和化学</div>
-                    <div class="text-xs text-gray-500">代号:34 学费:6600</div>
-                    <div class="text-xs text-gray-500">学科评估:B</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div class="text-xs text-gray-500">国家级卓越计划</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>批次：常规批</div>
-                    <div>类型：普通类</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>120人</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>精确:25年最低位:62，最低分:620，录取数:120</div>
-                    <div>精确:24年最低位:71，最低分:625，录取数:115</div>
-                    <div>精确:23年最低位:59，最低分:624，录取数:110</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-center">
-                      75%
-                    </div>
-                    <div class="text-center">可冲击</div>
-                  </td>
-                  <td class="px-2 py-4 text-center">
-                    <button class="text-blue-600 font-medium">填报</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="px-2 py-4 text-center">
-                    <input class="w-4 h-4" type="checkbox" />
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div class="font-medium">中国海洋大学</div>
-                    <div class="text-xs text-gray-500">山东省 青岛市 公办</div>
-                    <div class="text-xs text-gray-500">院校代码：A423</div>
-                    <div class="text-xs text-gray-500">一流大学 211 985</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>法学</div>
-                    <div class="text-xs text-gray-500">不限</div>
-                    <div class="text-xs text-gray-500">代号:49 学费:5280</div>
-                    <div class="text-xs text-gray-500">学科评估:B</div>
-                  </td>
-                  <td class="px-2 py-4">
-                    <div class="text-xs text-gray-500">教育部涉外法治人才协同培养创新基地</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>批次：常规批</div>
-                    <div>类型：普通类</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>80人</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div>精确:25年最低位:621，最低分:610，录取数:80</div>
-                    <div>精确:24年最低位:711，最低分:611，录取数:90</div>
-                    <div>精确:23年最低位:519，最低分:615，录取数:90</div>
-                  </td>
-                  <td class="px-2 py-4 whitespace-nowrap">
-                    <div class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-center">
-                      82%
-                    </div>
-                    <div class="text-center">较稳妥</div>
-                  </td>
-                  <td class="px-2 py-4 text-center">
-                    <button class="text-blue-600 font-medium">填报</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <!-- 分页信息和翻页按钮 -->
+        <div>
+          <!--  class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200" -->
+          <!-- Element Plus 表格 -->
+          <el-table v-loading="false" :data="tableData" style="width: 100%" @selection-change="handleSelectionChange"
+            @sort-change="handleSortChange" stripe border size="small" class="custom-table">
+            <!-- 选择列 -->
+            <el-table-column type="selection" width="40" align="center"></el-table-column>
+            <!-- 招生院校列 -->
+            <el-table-column prop="schoolName" label="招生院校" min-width="180" align="left">
+              <template #default="scope">
+                <div class="font-medium">{{ scope.row.schoolName }}</div>
+                <div class="text-xs text-gray-500">{{ scope.row.schoolInfo }}</div>
+                <div class="text-xs text-gray-500">院校代码：{{ scope.row.schoolCode }}</div>
+                <div class="text-xs text-gray-500">{{ scope.row.schoolTags }}</div>
+              </template>
+            </el-table-column>
+
+            <!-- 招生专业列 -->
+            <el-table-column prop="majorName" label="招生专业" min-width="180" align="left">
+              <template #default="scope">
+                <div class="font-medium">{{ scope.row.majorName }}</div>
+                <div class="text-xs text-gray-500">{{ scope.row.majorRequirements }}</div>
+                <div class="text-xs text-gray-500">代号:{{ scope.row.majorCode }} 学费:{{ scope.row.tuition }}</div>
+                <div class="text-xs text-gray-500">学科评估:{{ scope.row.disciplineEvaluation }}</div>
+              </template>
+            </el-table-column>
+
+            <!-- 备注列 -->
+            <el-table-column prop="remark" label="备注" min-width="120" align="left">
+              <template #default="scope">
+                <div class="text-xs text-gray-500">{{ scope.row.remark }}</div>
+              </template>
+            </el-table-column>
+
+            <!-- 批次类型列 -->
+            <el-table-column prop="batch" label="批次类型" min-width="120" align="left">
+              <template #default="scope">
+                <div class="text-xs">批次：{{ scope.row.batch }}</div>
+                <div class="text-xs">类型：{{ scope.row.type }}</div>
+              </template>
+            </el-table-column>
+
+            <!-- 本年计划列 -->
+            <el-table-column prop="plan" label="本年计划" min-width="100" align="center"></el-table-column>
+
+            <!-- 成绩分析列 -->
+            <el-table-column prop="scoreAnalysis" label="成绩分析" min-width="240" align="left">
+              <template #default="scope">
+                <div v-for="(item, index) in scope.row.scoreAnalysis" :key="index" class="text-xs">
+                  {{ item }}
+                </div>
+              </template>
+            </el-table-column>
+
+            <!-- 录取概率列 -->
+            <el-table-column prop="admissionProbability" label="录取概率" min-width="100" sortable align="center">
+              <template #default="scope">
+                <div :class="[scope.row.probabilityColor, 'px-2 py-1 rounded-full text-center text-xs']">
+                  {{ scope.row.admissionProbability }}
+                </div>
+                <div class="text-center text-xs mt-1">{{ scope.row.probabilityLevel }}</div>
+              </template>
+            </el-table-column>
+
+            <!-- 填报操作列 -->
+            <el-table-column label="填报操作" width="80" align="center">
+              <template #default="scope">
+                <el-button type="text" size="small" class="text-blue-600" @click="handleApply(scope.row)">
+                  填报
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <!-- Element Plus 分页 -->
           <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
               <!-- 结果总数显示 -->
               <div class="text-sm text-gray-600">
-                <span>共 <span class="font-semibold text-gray-900">3</span> 条结果 | 第
-                  <span class="font-semibold text-gray-900">1</span> 页，共
-                  <span class="font-semibold text-gray-900">1</span> 页</span>
+                <span>共 <span class="font-semibold text-gray-900">{{ total }}</span> 条结果 | 第
+                  <span class="font-semibold text-gray-900">{{ currentPage }}</span> 页，共
+                  <span class="font-semibold text-gray-900">{{ Math.ceil(total / pageSize) }}</span> 页</span>
               </div>
-              <!-- 翻页按钮 -->
-              <div class="flex items-center gap-2">
-                <button
-                  class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                  <span class="flex items-center gap-1">
-                    <iconify-icon class="text-lg" icon="mdi:chevron-left"></iconify-icon>
-                    上一页
-                  </span>
-                </button>
-                <!-- 页码显示 -->
-                <div class="flex items-center gap-1">
-                  <button class="bg-blue-600 text-white px-3 py-2 rounded-md font-medium">1</button>
-                </div>
-                <button
-                  class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                  <span class="flex items-center gap-1">
-                    下一页
-                    <iconify-icon class="text-lg" icon="mdi:chevron-right"></iconify-icon>
-                  </span>
-                </button>
-              </div>
-              <!-- 页码跳转 -->
-              <div class="flex items-center gap-2">
-                <label class="text-sm text-gray-600">跳转到第</label>
-                <input class="w-12 border border-gray-300 rounded-md px-2 py-1 text-sm text-gray-900" max="1" min="1"
-                  type="number" value="1" />
-                <label class="text-sm text-gray-600">页</label>
-                <button class="bg-blue-600 text-white px-4 py-1 rounded-md text-sm hover:bg-blue-700 transition">
-                  跳转
-                </button>
-              </div>
+
+              <!-- Element Plus 分页组件 -->
+              <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize"
+                :page-sizes="[10, 20, 50, 100]" :total="total" layout="sizes, prev, pager, next, jumper"
+                :prev-text="'上一页'" :next-text="'下一页'" @size-change="(size) => pageSize = size"
+                @current-change="handlePageChange"></el-pagination>
             </div>
           </div>
         </div>
