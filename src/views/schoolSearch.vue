@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
+import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
 
 // 声明响应式变量
 // 院校省份 - 可选值：'all' 或省份代码
@@ -9,6 +10,48 @@ const selectedProvince = ref('all')
 const selectedLevel = ref('all')
 // 院校名称
 const schoolName = ref('')
+
+// 声明表格数据响应式变量
+const tableData = ref([
+  {
+    id: 1,
+    schoolName: '北京大学',
+    province: '北京',
+    city: '北京市',
+    level: '本科',
+    nature: '公办',
+    features: ['双一流', '国家级优势'],
+    insuranceRate: '56%',
+    hasLink: true
+  },
+  {
+    id: 2,
+    schoolName: '清华大学',
+    province: '北京',
+    city: '北京市',
+    level: '本科',
+    nature: '公办',
+    features: ['双一流', '重点学科'],
+    insuranceRate: '58%',
+    hasLink: false
+  },
+  {
+    id: 3,
+    schoolName: '复旦大学',
+    province: '上海',
+    city: '上海市',
+    level: '本科',
+    nature: '公办',
+    features: ['双一流', '特色专业'],
+    insuranceRate: '54%',
+    hasLink: false
+  }
+])
+
+// 声明分页相关变量
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(tableData.value.length)
 
 // 省份按钮点击事件处理函数
 const handleProvinceClick = (province: string) => {
@@ -32,6 +75,19 @@ const handleSearch = () => {
   }
   console.log('查询条件:', searchParams)
   // 这里可以添加实际的查询逻辑，比如调用API
+}
+
+// 处理分页变化
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  console.log(`当前页码: ${page}`)
+}
+
+// 处理每页条数变化
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
+  currentPage.value = 1
+  console.log(`每页条数: ${size}`)
 }
 </script>
 
@@ -345,118 +401,68 @@ const handleSearch = () => {
         </div>
         <!-- 查询结果表格 -->
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  院校名称
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  所在省份
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  城市
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  办学层次
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  院校性质
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  特色专业
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" scope="col">
-                  保研率
-                </th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">
-                    <a href="院校简介.html">北京大学</a>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-700">北京</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-700">北京市</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">本科</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">公办</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  <span class="mr-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">双一流</span>
-                  <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">国家级优势</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">56%</td>
-              </tr>
-              <tr class="bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">清华大学</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-700">北京</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-700">北京市</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">本科</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">公办</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  <span class="mr-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">双一流</span>
-                  <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">重点学科</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">58%</td>
-              </tr>
-              <tr>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">复旦大学</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-700">上海</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-700">上海市</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">本科</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">公办</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  <span class="mr-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">双一流</span>
-                  <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">特色专业</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">54%</td>
-              </tr>
-            </tbody>
-          </table>
+          <el-table v-loading="false" :data="tableData" style="width: 100%" stripe border size="small"
+            class="custom-table">
+            <!-- 院校名称列 -->
+            <el-table-column prop="schoolName" label="院校名称" min-width="180" align="left">
+              <template #default="scope">
+                <div class="text-sm font-medium text-gray-900">
+                  <a v-if="scope.row.hasLink" href="院校简介.html" class="text-blue-600 hover:underline">
+                    {{ scope.row.schoolName }}
+                  </a>
+                  <span v-else>{{ scope.row.schoolName }}</span>
+                </div>
+              </template>
+            </el-table-column>
+
+            <!-- 所在省份列 -->
+            <el-table-column prop="province" label="所在省份" min-width="120" align="left"></el-table-column>
+
+            <!-- 城市列 -->
+            <el-table-column prop="city" label="城市" min-width="120" align="left"></el-table-column>
+
+            <!-- 办学层次列 -->
+            <el-table-column prop="level" label="办学层次" min-width="100" align="center">
+              <template #default="scope">
+                <span
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{
+                    scope.row.level }}</span>
+              </template>
+            </el-table-column>
+
+            <!-- 院校性质列 -->
+            <el-table-column prop="nature" label="院校性质" min-width="100" align="center"></el-table-column>
+
+            <!-- 特色专业列 -->
+            <el-table-column prop="features" label="特色专业" min-width="200" align="left">
+              <template #default="scope">
+                <span v-for="(feature, index) in scope.row.features" :key="index"
+                  class="mr-2 px-2 py-1 text-xs rounded-full" :class="{
+                    'bg-blue-100 text-blue-800': feature === '双一流',
+                    'bg-purple-100 text-purple-800': feature === '国家级优势',
+                    'bg-yellow-100 text-yellow-800': feature === '重点学科',
+                    'bg-red-100 text-red-800': feature === '特色专业'
+                  }">
+                  {{ feature }}
+                </span>
+              </template>
+            </el-table-column>
+
+            <!-- 保研率列 -->
+            <el-table-column prop="insuranceRate" label="保研率" min-width="80" sortable align="center"></el-table-column>
+          </el-table>
         </div>
         <!-- 分页控件 -->
         <div class="flex items-center justify-between border-t border-gray-200 pt-6">
           <div class="text-sm text-gray-700">
-            共 <span class="font-medium">3</span> 条结果 | 第
-            <span class="font-medium">1</span> 页，共 <span class="font-medium">1</span> 页
+            共 <span class="font-medium">{{ total }}</span> 条结果 | 第
+            <span class="font-medium">{{ currentPage }}</span> 页，共 <span class="font-medium">{{ Math.ceil(total /
+              pageSize)
+              }}</span> 页
           </div>
-          <div class="flex space-x-2">
-            <button
-              class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
-              &lt; 上一页
-            </button>
-            <button class="px-3 py-1 bg-blue-700 text-white rounded-md font-medium">1</button>
-            <button
-              class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
-              下一页 &gt;
-            </button>
-          </div>
+          <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[10, 20, 50, 100]"
+            :total="total" layout="sizes, prev, pager, next, jumper" :prev-text="'上一页'" :next-text="'下一页'"
+            @size-change="handleSizeChange" @current-change="handlePageChange"></el-pagination>
         </div>
       </div>
     </main>
