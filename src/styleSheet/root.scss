@@ -7,3 +7,11 @@
 .el-dialog__headerbtn .el-dialog__close {
   font-size: 1.5rem !important;
 }
+
+// select 高度 38px
+.select-tall38px {
+  .el-select__wrapper {
+    height: 38px;
+    line-height: 38px;
+  }
+}
