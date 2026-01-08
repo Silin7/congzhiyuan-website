@@ -177,7 +177,7 @@ const safeThreshold = ref(85)
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
               <input v-model="schoolName"
-                class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none"
+                class="w-full bg-white text-gray-900 border border-gray-300 rounded-md text-sm py-2 px-3 focus:border-blue-500 transition outline-none"
                 placeholder="输入院校名称" type="text" />
             </div>
             <div>
@@ -462,7 +462,7 @@ const safeThreshold = ref(85)
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">专业名称</label>
                 <input v-model="majorName"
-                  class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none"
+                  class="w-full bg-white text-gray-900 border border-gray-300 rounded-md text-sm py-2 px-3 focus:border-blue-500 transition outline-none"
                   placeholder="输入专业名称" type="text" />
               </div>
               <div>
