@@ -7,8 +7,19 @@ const api = axios.create({
   timeout: 1000 * 60,
   responseType: 'json',
   headers: {
-    'Content-Type': 'application/json; charset=utf-8',
+    // 'Cache-Control': 'private',
+    // 'Server': 'Microsoft-IIS/8.5',
+    // 'X-Powered-By': 'PHP/7.1.15',
     // 'Access-Control-Allow-Origin': '*',
+    // 'Access-Control-Max-Age': '3600',
+    // 'Date': 'Wed, 07 Jan 2026 06:58:04 GMT',
+    // 'Content-Type': 'text/html; charset=utf-8',
+    // 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    // 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    // 'Content-Length': '35',
+    // 'Content-Type': 'text/html; charset=utf-8',
+    // 'Access-Control-Allow-Origin': '*',
+    // 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   },
 })
 

@@ -1,12 +1,12 @@
 import api from '@/api/index'
 
 export function phpTest() {
-  return api.post('/mod/index/testList.ajax.php')
+  return api.post('/mod/zhiYuan/testCross.ajax.php')
 }
 
 // 登录注册 - 验证码
 export function authcodeApi(data: any) {
-  return api.post('/?ctl=ajax&mod=gen&act=SmsSend', data)
+  return api.post('', data)
 }
 
 // 登录注册 - 验证码 参数 -- mobile: 手机号; scene: 2 修改手机号 3 重置密码 4 忘记密码 5 注册

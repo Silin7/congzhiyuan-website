@@ -3,7 +3,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
-import * as api from '@/api/interface'
+import * as api from '@/api/interfaceapi'
 
 onMounted(() => {
   api.phpTest().then(res => {
