@@ -45,24 +45,21 @@ const handleProvinceClick = (province: string) => {
 
 // 声明学科类型响应式变量
 const disciplineCategories = ref('')
-const disciplineCategoriesChange = (event: Event) => {
-  const value = (event.target as HTMLSelectElement).value
+const disciplineCategoriesChange = (value: string) => {
   disciplineCategories.value = value
   console.log(`选择了学科类型: ${value}`)
 }
 
 // 声明一级学科响应式变量
 const firstDiscipline = ref('')
-const firstDisciplineChange = (event: Event) => {
-  const value = (event.target as HTMLSelectElement).value
+const firstDisciplineChange = (value: string) => {
   firstDiscipline.value = value
   console.log(`选择了录取类型: ${value}`)
 }
 
 // 声明二级学科响应式变量
 const subDiscipline = ref('')
-const subDisciplineChange = (event: Event) => {
-  const value = (event.target as HTMLSelectElement).value
+const subDisciplineChange = (value: string) => {
   subDiscipline.value = value
   console.log(`选择了二级学科: ${value}`)
 }
@@ -79,6 +76,12 @@ const schoolName = ref('')
 
 // 声明专业名称响应式变量
 const majorName = ref('')
+
+// “冲” 风险阈值响应式变量
+const riskThreshold = ref(15)
+
+// “冲” “保” 安全阈值响应式变量
+const safeThreshold = ref(85)
 </script>
 
 <template>
@@ -87,7 +90,7 @@ const majorName = ref('')
       <section class="mb-10">
         <h2 class="text-2xl font-bold text-center mb-6">志愿填报查询</h2>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
-            <!-- 院校层次  录取批次 录取类型 -->
+          <!-- 院校层次  录取批次 录取类型 -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校层次</label>
@@ -169,7 +172,7 @@ const majorName = ref('')
               </div>
             </div>
           </div>
-            <!-- 院校名称 院校性质 -->
+          <!-- 院校名称 院校性质 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
@@ -497,35 +500,32 @@ const majorName = ref('')
               <div>
                 <div>
                   <label class="block text-sm font-medium mb-2 text-gray-800">学科门类</label>
-                  <select v-model="disciplineCategories" @change="disciplineCategoriesChange"
-                    class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none">
-                    <option value="" disabled selected hidden>请选择学科门类</option>
-                    <option>工学</option>
-                    <option>理学</option>
-                    <option>医学</option>
-                    <option>文学</option>
-                  </select>
+                  <el-select v-model="disciplineCategories" placeholder="请选择学科门类" class="select-tall38px"
+                    @change="disciplineCategoriesChange">
+                    <el-option value="工学">工学</el-option>
+                    <el-option value="理学">理学</el-option>
+                    <el-option value="医学">医学</el-option>
+                    <el-option value="文学">文学</el-option>
+                  </el-select>
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">一级学科</label>
-                <select v-model="firstDiscipline" @change="firstDisciplineChange"
-                  class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none">
-                  <option value="" disabled selected hidden>请选择一级学科</option>
-                  <option>计算机科学与技术</option>
-                  <option>电子信息</option>
-                  <option>软件工程</option>
-                </select>
+                <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px"
+                  @change="firstDisciplineChange">
+                  <el-option value="计算机科学与技术">计算机科学与技术</el-option>
+                  <el-option value="电子信息">电子信息</el-option>
+                  <el-option value="软件工程">软件工程</el-option>
+                </el-select>
               </div>
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">二级学科</label>
-                <select v-model="subDiscipline" @change="subDisciplineChange"
-                  class="w-full bg-white text-gray-900 border border-gray-300 rounded-md py-2 px-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50 transition outline-none">
-                  <option value="" disabled selected hidden>请选择二级学科</option>
-                  <option>人工智能</option>
-                  <option>数据科学</option>
-                  <option>网络安全</option>
-                </select>
+                <el-select v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px"
+                  @change="subDisciplineChange">
+                  <el-option value="人工智能">人工智能</el-option>
+                  <el-option value="数据科学">数据科学</el-option>
+                  <el-option value="网络安全">网络安全</el-option>
+                </el-select>
               </div>
             </div>
             <!-- 录取概率范围预警 -->
@@ -566,19 +566,17 @@ const majorName = ref('')
                 <div class="space-y-4">
                   <div class="flex justify-between items-center">
                     <label class="text-sm font-semibold text-slate-700">“冲” 风险阈值</label>
-                    <span class="text-red-500 font-bold" id="val-chong">15%</span>
+                    <span class="text-red-500 font-bold" id="val-chong">{{ riskThreshold }}%</span>
                   </div>
-                  <input class="w-full" max="30" min="0"
-                    oninput="document.getElementById('val-chong').innerText = this.value + '%'" type="range" value="15">
+                  <input class="w-full" max="30" min="0" type="range" v-model="riskThreshold">
                   <p class="text-xs text-slate-400 text-center">风险越高，录取可能性越低，建议作为前置志愿</p>
                 </div>
                 <div class="space-y-4">
                   <div class="flex justify-between items-center">
                     <label class="text-sm font-semibold text-slate-700">“保” 安全阈值</label>
-                    <span class="text-green-600 font-bold" id="val-bao">85%</span>
+                    <span class="text-green-600 font-bold" id="val-bao">{{ safeThreshold }}%</span>
                   </div>
-                  <input class="w-full" max="100" min="70"
-                    oninput="document.getElementById('val-bao').innerText = this.value + '%'" type="range" value="85">
+                  <input class="w-full" max="100" min="70" type="range" v-model="safeThreshold">
                   <p class="text-xs text-slate-400 text-center">安全越高，录取稳定性越强，建议作为保底志愿</p>
                 </div>
               </div>
