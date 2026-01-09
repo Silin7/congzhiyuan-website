@@ -1,4 +1,4 @@
-const baseURL = 'https://congzhiYuan.cn'
-const fileURL = 'https://sdklyinfo.com'
+const baseURL = 'http://congzhiyuan.cn'
+const fileURL = 'http://congzhiyuan.cn'
 
 export { baseURL, fileURL }
