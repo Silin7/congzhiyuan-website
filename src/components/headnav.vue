@@ -1,21 +1,23 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, unref } from 'vue'
 import { useRoute } from 'vue-router'
-import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage } from 'element-plus'
+import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import * as api from '@/api/interfaceapi'
 
-// onMounted(() => {
-//   api.testListApi({}).then(res => {
-//     console.log(res)
-//   })
-// })
-
 // Get current route
 const route = useRoute()
-
 // Compute active menu based on current route path
 const currentPath = computed(() => route.path)
+
+const userInfo = ref<any>(null)
+onMounted(() => {
+  userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
+  // 上部导航栏显示查询
+  api.navQueryApi().then(res => {
+    console.log(res)
+  })
+})
 
 // 选择的省份
 const shengfen: any = ref('beijing')
@@ -94,15 +96,12 @@ const sendCode = () => {
     type: 1
   }).then(res => {
     console.log(res)
+    ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
   })
-  ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
 }
 
 // 登录提交
 const handleLogin = () => {
-  // api.signOutApi().then(res => {
-  //   console.log(res)
-  // })
   if (!loginForm.agree) {
     ElMessage.warning('请阅读并同意用户协议')
     return
@@ -126,6 +125,11 @@ const handleLogin = () => {
       type: 1
     }).then(res => {
       console.log(res)
+      localStorage.setItem('userInfo', JSON.stringify(res.data))
+      localStorage.setItem('token', res.data.token)
+      ElMessage.success('登录成功')
+      closeLoginModal()
+      userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
     })
   }
   else if (loginType.value === 'account') {
@@ -148,10 +152,30 @@ const handleLogin = () => {
       return
     }
   }
+}
 
-  // 模拟登录成功
-  ElMessage.success('登录成功')
-  closeLoginModal()
+const buttonRef = ref()
+const popoverRef = ref()
+function onClickOutside() {
+  unref(popoverRef).popperRef?.delayHide?.()
+}
+// 跳转个人信息
+function goUserCenter() {
+  window.location.href = '/personalInfo'
+}
+// 退出登录
+function logoutFunction() {
+  api.signOutApi().then((res: any) => {
+    if (res) {
+      ElMessage({
+        type: 'success',
+        message: '退出成功',
+      })
+      window.localStorage.removeItem('token')
+      window.localStorage.removeItem('userInfo')
+      userInfo.value = {}
+    }
+  })
 }
 </script>
 
@@ -176,7 +200,21 @@ const handleLogin = () => {
         <a href="/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
         <a href="/aiAssessment" class="nav-link" :class="{ active: currentPath === '/aiAssessment' }">AI测评</a>
       </div>
-      <button
+      <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
+        <i class="fa fa-user-circle mr-2"></i>
+        <span class="nameStyle">{{ userInfo.userName }}</span>
+        <el-popover placement="bottom" :virtual-ref="buttonRef" virtual-triggering :width="160" trigger="click">
+          <div class="userPopover">
+            <div class="popoverItem" @click="goUserCenter">
+              个人信息
+            </div>
+            <div class="popoverItem" @click="logoutFunction">
+              退出登录
+            </div>
+          </div>
+        </el-popover>
+      </div>
+      <button v-else
         class="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-4 py-2 rounded-lg hover:from-blue-500 hover:to-purple-600 transition-all duration-300"
         @click="openLoginModal('phone')">登录</button>
     </div>
@@ -268,13 +306,11 @@ const handleLogin = () => {
         </el-form>
       </el-tab-pane>
     </el-tabs>
-
     <div class="form-agreement">
       <el-checkbox v-model="loginForm.agree">
         阅读并同意 《用户协议》
       </el-checkbox>
     </div>
-
     <div class="dialog-footer">
       <el-button type="primary" @click="handleLogin" style="width: 100%; height: 48px;">
         登录
@@ -396,5 +432,65 @@ const handleLogin = () => {
 
 .dialog-footer {
   margin-top: 1rem;
+}
+
+.username {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  // font-size: 1.25rem;
+
+  .nameStyle {
+    display: inline-block;
+    max-width: 210px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.popoverItem {
+  line-height: 30px;
+  color: #262626;
+  text-align: center;
+  cursor: pointer;
+}
+
+.popoverItem:hover {
+  color: #165dff;
+  background-color: #eee;
+}
+</style>
+<style lang="scss">
+.el-collapse {
+  border: 0 !important;
+
+  .el-icon {
+    display: none;
+  }
+
+  .el-collapse-item__header {
+    border: 0 !important;
+  }
+
+  .el-collapse-item__header:hover {
+    color: #165dff !important;
+  }
+
+  .el-collapse-item__title {
+    font-size: 1.25rem !important;
+  }
+
+  .el-collapse-item__wrap {
+    border: 0 !important;
+  }
+
+  .el-collapse-item__content {
+    display: none;
+  }
+
+  .is-active {
+    color: #165dff !important;
+  }
 }
 </style>

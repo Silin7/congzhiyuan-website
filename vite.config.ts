@@ -10,7 +10,7 @@ export default defineConfig({
   server: {
     open: true,
     host: '0.0.0.0',
-    port: 3005,
+    port: 3010,
   },
   plugins: [
     vue(),

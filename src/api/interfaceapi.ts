@@ -1,10 +1,5 @@
 import api from '@/api/index'
 
-// // /mod/index/testList.ajax.php
-// export function testListApi(data: any) {
-//   return api.post('/mod/index/testList.ajax.php', data)
-// }
-
 // 登录注册 - 验证码
 // a.phone: 手机号
 // b.type:发送类型 1 注册登录二合一 2 重置密码
@@ -17,7 +12,7 @@ export function authcodeApi(data: any) {
 // b.vfCode: 验证码
 // c.type:验证码类型 1 短信 2 密码
 export function loginOrRegisterApi(data: any) {
-  return api.post('/mod/gen/SignIn.ajax', data)
+  return api.post('/mod/gen/SignIn.ajax.php', data)
 }
 
 // 退出登录
@@ -42,8 +37,8 @@ export function passModiApi(data: any) {
 }
 
 // 上部导航栏显示查询
-export function navQueryApi(data: any) {
-  return api.post('/mod/homePage/NavigationQuery.ajax.php', data)
+export function navQueryApi() {
+  return api.post('/mod/homePage/NavigationQuery.ajax.php')
 }
 
 // 首页上部显示查询

@@ -8,20 +8,17 @@ const api = axios.create({
   responseType: 'json',
   headers: {
     'Content-Type': 'application/json; charset=utf-8',
-    // 'Access-Control-Allow-Origin': '*',
-    // 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    // 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   },
 })
 
-// api.interceptors.request.use((request) => {
-//   // 设置请求头
-//   if (request.headers && localStorage.getItem('accessToken')) {
-//     request.headers.token = localStorage.getItem('accessToken') ?? ''
-//     request.headers.Authorization = `Bearer ${localStorage.getItem('accessToken') ?? ''}`
-//   }
-//   return request
-// })
+api.interceptors.request.use((request) => {
+  // 设置请求头
+  if (request.headers && localStorage.getItem('token')) {
+    // request.headers.token = localStorage.getItem('token') ?? ''
+    request.headers.Authorization = `Bearer ${localStorage.getItem('token') ?? ''}`
+  }
+  return request
+})
 
 api.interceptors.response.use(
   async (response) => {
@@ -30,9 +27,7 @@ api.interceptors.response.use(
     }
     // 401 登录失效
     if (response.data && response.data.code === 401) {
-      window.localStorage.removeItem('accessToken')
-      window.localStorage.removeItem('refreshToken')
-      window.localStorage.removeItem('expiresTime')
+      window.localStorage.removeItem('token')
       window.localStorage.removeItem('userInfo')
     }
     // 其他错误
