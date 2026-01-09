@@ -120,7 +120,7 @@ const handleSubjectClick = (subject: string) => {
       <div class="w-full md:w-3/4">
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <!-- 表单标题区 -->
-          <div class="gradient-border p-6">
+          <div class="gradient-border background-gradient p-6">
             <div class="flex items-center">
               <h1 class="text-2xl font-bold text-white">个人信息设置</h1>
             </div>
@@ -306,7 +306,7 @@ const handleSubjectClick = (subject: string) => {
                   取消
                 </button>
                 <button
-                  class="px-8 py-3 bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
+                  class="px-8 py-3 background-gradient bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
                   type="submit">
                   保存个人信息
                 </button>
@@ -332,16 +332,18 @@ const handleSubjectClick = (subject: string) => {
   border-top: 1px solid #e5e7eb;
 
   .gradient-border {
-    background: linear-gradient(to right, #1890ff, #6c5ce7);
     background-color: rgba(0, 0, 0, 0);
     background-position-x: 0%;
     background-position-y: 0%;
     background-repeat: repeat;
     background-attachment: scroll;
-    background-image: linear-gradient(to right, rgb(24, 144, 255), rgb(108, 92, 231));
     background-size: auto;
     background-origin: padding-box;
     background-clip: border-box;
+  }
+
+  .background-gradient {
+    background-image: linear-gradient(to right, rgb(24, 144, 255), rgb(108, 92, 231));
   }
 
   .text-primary {
