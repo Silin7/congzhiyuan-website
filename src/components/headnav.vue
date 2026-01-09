@@ -1,3 +1,143 @@
+<template>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="frcc">
+        <a href="/" class="logo">
+          <i class="fa fa-graduation-cap logo-icon"></i>
+          <span
+            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">聪志愿AI</span>
+        </a>
+        <el-select v-model="shengfen" placeholder="Select" class="shengfen-select" @change="handleShengfenChange">
+          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </div>
+      <div class="nav-menu">
+        <a href="/" class="nav-link" :class="{ active: currentPath === '/' }">首页</a>
+        <a href="/volunteerApply" class="nav-link" :class="{ active: currentPath === '/volunteerApply' }">志愿填报</a>
+        <a href="/schoolSearch" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
+        <a href="/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
+        <a href="/aiAssessment" class="nav-link" :class="{ active: currentPath === '/aiAssessment' }">AI测评</a>
+      </div>
+      <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
+        <i class="fa fa-user-circle mr-2"></i>
+        <span class="nameStyle">{{ userInfo.userName }}</span>
+        <el-popover placement="bottom" :virtual-ref="buttonRef" virtual-triggering :width="160" trigger="click">
+          <div class="userPopover">
+            <div class="popoverItem" @click="goUserCenter">
+              个人信息
+            </div>
+            <div class="popoverItem" @click="logoutFunction">
+              退出登录
+            </div>
+          </div>
+        </el-popover>
+      </div>
+      <button v-else
+        class="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-4 py-2 rounded-lg hover:from-blue-500 hover:to-purple-600 transition-all duration-300"
+        @click="openLoginModal('phone')">登录</button>
+    </div>
+  </header>
+
+  <!-- 登录弹窗 -->
+  <el-dialog v-model="showLoginModal" width="448px" center @close="closeLoginModal"
+    style="padding: 1.5rem; border-radius: 0.75rem">
+    <template #header>
+      <h2 class="text-2xl font-bold text-gray-800">
+        登录聪志愿AI
+      </h2>
+    </template>
+    <el-tabs v-model="loginType" class="login-tabs">
+      <el-tab-pane label="手机登录" name="phone">
+        <el-form label-position="top">
+          <el-form-item label="手机号码">
+            <el-input v-model="loginForm.phone" type="tel" placeholder="请输入手机号码"
+              style="height: 48px; line-height: 48px;">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <PhoneFilled />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="验证码">
+            <el-input v-model="loginForm.code" placeholder="请输入验证码" clearable style="height: 48px; line-height: 48px;">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <GoodsFilled />
+                </el-icon>
+              </template>
+              <template #append>
+                <el-button @click="sendCode">获取验证码</el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="账号登录" name="account">
+        <el-form label-position="top">
+          <el-form-item label="账号/手机号">
+            <el-input v-model="loginForm.account" placeholder="请输入账号或手机号码" style="height: 48px; line-height: 48px;">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <user-filled />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" show-password
+              style="height: 48px; line-height: 48px;">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <GoodsFilled />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <div class="form-options">
+            <el-checkbox v-model="loginForm.remember">记住密码</el-checkbox>
+            <a href="#" class="forgot-link">忘记密码？</a>
+          </div>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane label="志愿卡登录" name="card">
+        <el-form label-position="top">
+          <el-form-item label="志愿卡号">
+            <el-input v-model="loginForm.cardNumber" placeholder="请输入志愿卡号" style="height: 48px; line-height: 48px;">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <Platform />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="loginForm.cardPassword" type="password" placeholder="请输入密码" show-password
+              style="height: 48px; line-height: 48px;">
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <GoodsFilled />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
+    <div class="form-agreement">
+      <el-checkbox v-model="loginForm.agree">
+        阅读并同意 《用户协议》
+      </el-checkbox>
+    </div>
+    <div class="dialog-footer">
+      <el-button type="primary" @click="handleLogin" style="width: 100%; height: 48px;">
+        登录
+      </el-button>
+    </div>
+  </el-dialog>
+</template>
+
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, unref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -177,147 +317,7 @@ function logoutFunction() {
     }
   })
 }
-</script>
-
-<template>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-container">
-      <div class="frcc">
-        <a href="/" class="logo">
-          <i class="fa fa-graduation-cap logo-icon"></i>
-          <span
-            class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">聪志愿AI</span>
-        </a>
-        <el-select v-model="shengfen" placeholder="Select" class="shengfen-select" @change="handleShengfenChange">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </div>
-      <div class="nav-menu">
-        <a href="/" class="nav-link" :class="{ active: currentPath === '/' }">首页</a>
-        <a href="/volunteerApply" class="nav-link" :class="{ active: currentPath === '/volunteerApply' }">志愿填报</a>
-        <a href="/schoolSearch" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
-        <a href="/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
-        <a href="/aiAssessment" class="nav-link" :class="{ active: currentPath === '/aiAssessment' }">AI测评</a>
-      </div>
-      <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
-        <i class="fa fa-user-circle mr-2"></i>
-        <span class="nameStyle">{{ userInfo.userName }}</span>
-        <el-popover placement="bottom" :virtual-ref="buttonRef" virtual-triggering :width="160" trigger="click">
-          <div class="userPopover">
-            <div class="popoverItem" @click="goUserCenter">
-              个人信息
-            </div>
-            <div class="popoverItem" @click="logoutFunction">
-              退出登录
-            </div>
-          </div>
-        </el-popover>
-      </div>
-      <button v-else
-        class="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-4 py-2 rounded-lg hover:from-blue-500 hover:to-purple-600 transition-all duration-300"
-        @click="openLoginModal('phone')">登录</button>
-    </div>
-  </header>
-
-  <!-- 登录弹窗 -->
-  <el-dialog v-model="showLoginModal" width="448px" center @close="closeLoginModal"
-    style="padding: 1.5rem; border-radius: 0.75rem">
-    <template #header>
-      <h2 class="text-2xl font-bold text-gray-800">
-        登录聪志愿AI
-      </h2>
-    </template>
-    <el-tabs v-model="loginType" class="login-tabs">
-      <el-tab-pane label="手机登录" name="phone">
-        <el-form label-position="top">
-          <el-form-item label="手机号码">
-            <el-input v-model="loginForm.phone" type="tel" placeholder="请输入手机号码"
-              style="height: 48px; line-height: 48px;">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <PhoneFilled />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="验证码">
-            <el-input v-model="loginForm.code" placeholder="请输入验证码" clearable style="height: 48px; line-height: 48px;">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <GoodsFilled />
-                </el-icon>
-              </template>
-              <template #append>
-                <el-button @click="sendCode">获取验证码</el-button>
-              </template>
-            </el-input>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="账号登录" name="account">
-        <el-form label-position="top">
-          <el-form-item label="账号/手机号">
-            <el-input v-model="loginForm.account" placeholder="请输入账号或手机号码" style="height: 48px; line-height: 48px;">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <user-filled />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" show-password
-              style="height: 48px; line-height: 48px;">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <GoodsFilled />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <div class="form-options">
-            <el-checkbox v-model="loginForm.remember">记住密码</el-checkbox>
-            <a href="#" class="forgot-link">忘记密码？</a>
-          </div>
-        </el-form>
-      </el-tab-pane>
-      <el-tab-pane label="志愿卡登录" name="card">
-        <el-form label-position="top">
-          <el-form-item label="志愿卡号">
-            <el-input v-model="loginForm.cardNumber" placeholder="请输入志愿卡号" style="height: 48px; line-height: 48px;">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <Platform />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="loginForm.cardPassword" type="password" placeholder="请输入密码" show-password
-              style="height: 48px; line-height: 48px;">
-              <template #prefix>
-                <el-icon class="el-input__icon">
-                  <GoodsFilled />
-                </el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-    </el-tabs>
-    <div class="form-agreement">
-      <el-checkbox v-model="loginForm.agree">
-        阅读并同意 《用户协议》
-      </el-checkbox>
-    </div>
-    <div class="dialog-footer">
-      <el-button type="primary" @click="handleLogin" style="width: 100%; height: 48px;">
-        登录
-      </el-button>
-    </div>
-  </el-dialog>
-</template>
+</script> 
 
 <style lang="scss" scoped>
 .header {

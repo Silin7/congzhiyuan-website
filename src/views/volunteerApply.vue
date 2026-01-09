@@ -1,175 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { Icon } from '@iconify/vue'
-import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination } from 'element-plus'
-
-// 声明院校层次响应式变量 - 可选值：'本科', '专科'
-const selectedSchoolLevel = ref('')
-const handleSchoolLevelClick = (level: string) => {
-  selectedSchoolLevel.value = level
-  console.log(`选择了院校层次: ${level}`)
-}
-
-// 声明录取批次响应式变量 - 可选值：'本科提前批', '本科常规批', '专科批次'
-const selectedAdmissionBatch = ref('')
-const handleAdmissionBatchClick = (batch: string) => {
-  selectedAdmissionBatch.value = batch
-  console.log(`选择了录取批次: ${batch}`)
-}
-
-// 声明录取类型响应式变量 - 可选值：'普通类', '地方专项', '中外合作'
-const selectedAdmissionType = ref('')
-const handleAdmissionTypeChange = (value: string) => {
-  selectedAdmissionType.value = value
-  console.log(`选择了录取类型: ${value}`)
-}
-
-// 声明院校性质响应式变量 - 可选值：'公办', '民办'
-const selectedSchoolNature = ref('')
-const handleSchoolNatureClick = (nature: string) => {
-  selectedSchoolNature.value = nature
-  console.log(`选择了院校性质: ${nature}`)
-}
-
-// 声明院校省份响应式变量 - 支持多选
-const selectedProvince = ref<string[]>([])
-const handleProvinceClick = (province: string) => {
-  // 切换省份选中状态
-  const index = selectedProvince.value.indexOf(province)
-  if (index > -1) {
-    selectedProvince.value.splice(index, 1)
-  } else {
-    selectedProvince.value.push(province)
-  }
-  console.log(`选择了省份: ${province}, 当前选中: ${selectedProvince.value.join(', ')}`)
-}
-
-// 声明学科类型响应式变量
-const disciplineCategories = ref('')
-const disciplineCategoriesChange = (value: string) => {
-  disciplineCategories.value = value
-  console.log(`选择了学科类型: ${value}`)
-}
-
-// 声明一级学科响应式变量
-const firstDiscipline = ref('')
-const firstDisciplineChange = (value: string) => {
-  firstDiscipline.value = value
-  console.log(`选择了录取类型: ${value}`)
-}
-
-// 声明二级学科响应式变量
-const subDiscipline = ref('')
-const subDisciplineChange = (value: string) => {
-  subDiscipline.value = value
-  console.log(`选择了二级学科: ${value}`)
-}
-
-// 声明院校特色响应式变量 - 可选值：'双万计划', '卓越计划', '强基示范', '国家级优势'
-const selectedMajorFeature = ref('')
-const handleMajorFeatureClick = (feature: string) => {
-  selectedMajorFeature.value = feature
-  console.log(`选择了院校特色: ${feature}`)
-}
-
-// 声明院校名称响应式变量
-const schoolName = ref('')
-
-// 声明专业名称响应式变量
-const majorName = ref('')
-
-// “冲” 风险阈值响应式变量
-const riskThreshold = ref(15)
-
-// “冲” “保” 安全阈值响应式变量
-const safeThreshold = ref(85)
-
-// 声明表格数据响应式变量
-const tableData = ref([
-  {
-    id: 1,
-    schoolName: '山东大学',
-    schoolInfo: '山东省 济南市 公办',
-    schoolCode: 'A422',
-    schoolTags: '一流大学 一流学科建设高校 211 985',
-    majorName: '人工智能',
-    majorRequirements: '物理和化学',
-    majorCode: '34',
-    tuition: '6600',
-    disciplineEvaluation: 'B',
-    remark: '国家级卓越计划',
-    batch: '常规批',
-    type: '普通类',
-    plan: '120人',
-    scoreAnalysis: [
-      '精确:25年最低位:62，最低分:620，录取数:120',
-      '精确:24年最低位:71，最低分:625，录取数:115',
-      '精确:23年最低位:59，最低分:624，录取数:110'
-    ],
-    admissionProbability: '75%',
-    probabilityLevel: '可冲击',
-    probabilityColor: 'bg-blue-100 text-blue-800'
-  },
-  {
-    id: 2,
-    schoolName: '中国海洋大学',
-    schoolInfo: '山东省 青岛市 公办',
-    schoolCode: 'A423',
-    schoolTags: '一流大学 211 985',
-    majorName: '法学',
-    majorRequirements: '不限',
-    majorCode: '49',
-    tuition: '5280',
-    disciplineEvaluation: 'B',
-    remark: '教育部涉外法治人才协同培养创新基地',
-    batch: '常规批',
-    type: '普通类',
-    plan: '80人',
-    scoreAnalysis: [
-      '精确:25年最低位:621，最低分:610，录取数:80',
-      '精确:24年最低位:711，最低分:611，录取数:90',
-      '精确:23年最低位:519，最低分:615，录取数:90'
-    ],
-    admissionProbability: '82%',
-    probabilityLevel: '较稳妥',
-    probabilityColor: 'bg-green-100 text-green-800'
-  }
-])
-
-// 声明分页相关变量
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(tableData.value.length)
-
-// 声明排序相关变量
-const sortField = ref('')
-const sortOrder = ref('')
-
-// 处理选择事件
-const handleSelectionChange = (selection: any[]) => {
-  console.log('选中的数据:', selection)
-}
-
-// 处理分页变化
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-  console.log(`当前页码: ${page}`)
-}
-
-// 处理排序变化
-const handleSortChange = (column: any) => {
-  console.log('-------->', column)
-  sortField.value = column.prop
-  sortOrder.value = column.order
-  console.log(`排序字段: ${column.prop}, 排序顺序: ${column.order}`)
-}
-
-// 处理填报操作
-const handleApply = (row: any) => {
-  console.log(`填报院校: ${row.schoolName}, 专业: ${row.majorName}`)
-}
-</script>
-
 <template>
   <div class="volunteer-apply-page">
     <main class="max-w-7xl mx-auto px-4 py-8">
@@ -181,17 +9,17 @@ const handleApply = (row: any) => {
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校层次</label>
               <div class="grid grid-cols-3 gap-2">
-                <button @click="handleSchoolLevelClick('本科')" :class="[
+                <button @click="handleSchoolLevelClick('1')" :class="[
                   'text-sm py-2 px-3 rounded-md border transition',
-                  selectedSchoolLevel === '本科'
+                  selectedSchoolLevel === '1'
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
                 ]">
                   本科
                 </button>
-                <button @click="handleSchoolLevelClick('专科')" :class="[
+                <button @click="handleSchoolLevelClick('2')" :class="[
                   'text-sm py-2 px-3 rounded-md border transition',
-                  selectedSchoolLevel === '专科'
+                  selectedSchoolLevel === '2'
                     ? 'bg-blue-600 text-white border-blue-600'
                     : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
                 ]">
@@ -202,58 +30,28 @@ const handleApply = (row: any) => {
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">录取批次</label>
               <div class="grid grid-cols-3 gap-2">
-                <button @click="handleAdmissionBatchClick('本科提前批')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedAdmissionBatch === '本科提前批'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  本科提前批
-                </button>
-                <button @click="handleAdmissionBatchClick('本科常规批')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedAdmissionBatch === '本科常规批'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  本科常规批
-                </button>
-                <button @click="handleAdmissionBatchClick('专科批次')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedAdmissionBatch === '专科批次'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  专科批次
+                <button v-for="(item, index) in admissionBatch" :key="index"
+                  @click="handleAdmissionBatchClick(item.pcdm)" :class="[
+                    'text-sm py-2 px-3 rounded-md border transition',
+                    selectedAdmissionBatch === item.pcdm
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                  ]">
+                  {{ item.pcmc }}
                 </button>
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">录取类型</label>
               <div class="grid grid-cols-3 gap-2">
-                <button @click="handleAdmissionTypeChange('普通类')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedAdmissionType === '普通类'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  普通类
-                </button>
-                <button @click="handleAdmissionTypeChange('地方专项')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedAdmissionType === '地方专项'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  地方专项
-                </button>
-                <button @click="handleAdmissionTypeChange('中外合作')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedAdmissionType === '中外合作'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  中外合作
+                <button v-for="(item, index) in admissionTypes" :key="index"
+                  @click="handleAdmissionTypeChange(item.tddw)" :class="[
+                    'text-sm py-2 px-3 rounded-md border transition',
+                    selectedAdmissionType === item.tddw
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                  ]">
+                  {{ item.tdmc }}
                 </button>
               </div>
             </div>
@@ -262,9 +60,11 @@ const handleApply = (row: any) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
-              <input v-model="schoolName"
-                class="w-full bg-white text-gray-900 border border-gray-300 rounded-md text-sm py-2 px-3 focus:border-blue-500 transition outline-none"
-                placeholder="输入院校名称" type="text" />
+              <el-select v-model="schoolName" filterable remote reserve-keyword placeholder="输入院校名称"
+                :remote-method="getSchoolNameOptions" :loading="getSchoolNameLoading" class="select-tall38px">
+                <el-option v-for="(item, index) in schoolNameOptions" :key="index" :label="item.yxmc"
+                  :value="item.id" />
+              </el-select>
             </div>
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校性质</label>
@@ -547,9 +347,11 @@ const handleApply = (row: any) => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">专业名称</label>
-                <input v-model="majorName"
-                  class="w-full bg-white text-gray-900 border border-gray-300 rounded-md text-sm py-2 px-3 focus:border-blue-500 transition outline-none"
-                  placeholder="输入专业名称" type="text" />
+                <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
+                  :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" class="select-tall38px">
+                  <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.zymc"
+                    :value="item.zydm" />
+                </el-select>
               </div>
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">院校特色</label>
@@ -588,10 +390,8 @@ const handleApply = (row: any) => {
                   <label class="block text-sm font-medium mb-2 text-gray-800">学科门类</label>
                   <el-select v-model="disciplineCategories" placeholder="请选择学科门类" class="select-tall38px"
                     @change="disciplineCategoriesChange">
-                    <el-option value="工学">工学</el-option>
-                    <el-option value="理学">理学</el-option>
-                    <el-option value="医学">医学</el-option>
-                    <el-option value="文学">文学</el-option>
+                    <el-option v-for="(item, index) in disciplineCategoriesList" :key="index" :value="item.zydm"
+                      :label="item.zymc" />
                   </el-select>
                 </div>
               </div>
@@ -599,18 +399,16 @@ const handleApply = (row: any) => {
                 <label class="block text-sm font-medium mb-2 text-gray-800">一级学科</label>
                 <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px"
                   @change="firstDisciplineChange">
-                  <el-option value="计算机科学与技术">计算机科学与技术</el-option>
-                  <el-option value="电子信息">电子信息</el-option>
-                  <el-option value="软件工程">软件工程</el-option>
+                  <el-option v-for="(item, index) in firstDisciplineList" :key="index" :value="item.zydm"
+                    :label="item.zymc" />
                 </el-select>
               </div>
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">二级学科</label>
                 <el-select v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px"
                   @change="subDisciplineChange">
-                  <el-option value="人工智能">人工智能</el-option>
-                  <el-option value="数据科学">数据科学</el-option>
-                  <el-option value="网络安全">网络安全</el-option>
+                  <el-option v-for="(item, index) in subDisciplineList" :key="index" :value="item.zydm"
+                    :label="item.zymc" />
                 </el-select>
               </div>
             </div>
@@ -814,6 +612,283 @@ const handleApply = (row: any) => {
     <sideTop />
   </div>
 </template>
+
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage } from 'element-plus'
+import * as api from '@/api/interfaceapi'
+
+onMounted(() => {
+  getGenListQuery()
+})
+
+// 声明院校层次响应式变量 - 可选值：'本科', '专科'
+const selectedSchoolLevel = ref('')
+const handleSchoolLevelClick = (level: string) => {
+  selectedSchoolLevel.value = level
+  selectedAdmissionBatch.value = ''
+  selectedAdmissionType.value = ''
+  getPcList()
+  getDisciplineCategoriesList()
+}
+
+// 志愿填报页批次查询
+function getPcList() {
+  api.pcListApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value
+  }).then(res => {
+    admissionBatch.value = res.data.Rs || []
+  })
+}
+
+// 声明录取批次响应式变量 - 可选值：'本科提前批', '本科常规批', '专科批次'
+const admissionBatch: any = ref([{ pcdm: '1', pcmc: '本科提前批' }, { pcdm: '2', pcmc: '本科常规批' }, { pcdm: '3', pcmc: '专科批次' }])
+const selectedAdmissionBatch = ref('')
+const handleAdmissionBatchClick = (batch: string) => {
+  if (selectedSchoolLevel.value === '') {
+    ElMessage.error('请先选择院校层次')
+    return
+  }
+  selectedAdmissionBatch.value = batch
+  selectedAdmissionType.value = ''
+  getTddwList()
+}
+function getTddwList() {
+  api.tddwListApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value,
+    pcdm: selectedAdmissionBatch.value
+  }).then(res => {
+    admissionTypes.value = res.data.Rs || []
+  })
+}
+
+// 声明录取类型响应式变量 - 可选值：'普通计划', '地方专项', '中外合作'
+const admissionTypes: any = ref([{ dddw: '1', tdmc: '普通计划' }, { dddw: '2', tdmc: '地方专项' }, { dddw: '3', tdmc: '中外合作' }])
+const selectedAdmissionType = ref('')
+const handleAdmissionTypeChange = (value: string) => {
+  if (selectedSchoolLevel.value === '' || selectedAdmissionBatch.value === '') {
+    ElMessage.error('请先选择院校层次和录取批次')
+    return
+  }
+  selectedAdmissionType.value = value
+  console.log(`选择了录取类型: ${value}`)
+}
+
+// 声明院校性质响应式变量 - 可选值：'公办', '民办'
+const schoolNatures: any = ref([])
+function getGenListQuery() {
+  api.genListQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    genType: 'zyts'
+  }).then(res => {
+    schoolNatures.value = res.data.Rs || []
+  })
+}
+const selectedSchoolNature = ref('')
+const handleSchoolNatureClick = (nature: string) => {
+  selectedSchoolNature.value = nature
+  console.log(`选择了院校性质: ${nature}`)
+}
+
+// 声明院校省份响应式变量 - 支持多选
+const selectedProvince = ref<string[]>([])
+const handleProvinceClick = (province: string) => {
+  // 切换省份选中状态
+  const index = selectedProvince.value.indexOf(province)
+  if (index > -1) {
+    selectedProvince.value.splice(index, 1)
+  } else {
+    selectedProvince.value.push(province)
+  }
+  console.log(`选择了省份: ${province}, 当前选中: ${selectedProvince.value.join(', ')}`)
+}
+
+// 声明学科类型响应式变量
+const disciplineCategoriesList: any = ref([])
+function getDisciplineCategoriesList() {
+  api.xkmllistApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value
+  }).then(res => {
+    disciplineCategoriesList.value = res.data.Rs || []
+  })
+}
+const disciplineCategories = ref('')
+const disciplineCategoriesChange = (value: string) => {
+  disciplineCategories.value = value
+  firstDiscipline.value = ''
+  subDiscipline.value = ''
+  getFirstDisciplineList()
+}
+
+// 声明一级学科响应式变量
+const firstDisciplineList: any = ref([])
+function getFirstDisciplineList() {
+  api.yjxklistApi({
+    token: window.localStorage.getItem('token') || '',
+    xkml: disciplineCategories.value
+  }).then(res => {
+    firstDisciplineList.value = res.data.Rs || []
+  })
+}
+const firstDiscipline = ref('')
+const firstDisciplineChange = (value: string) => {
+  firstDiscipline.value = value
+  subDiscipline.value = ''
+  getSubDisciplineList()
+}
+
+// 声明二级学科响应式变量
+const subDisciplineList: any = ref([])
+function getSubDisciplineList() {
+  api.ejxklistApi({
+    token: window.localStorage.getItem('token') || '',
+    yjxk: firstDiscipline.value
+  }).then(res => {
+    subDisciplineList.value = res.data || []
+  })
+}
+const subDiscipline = ref('')
+const subDisciplineChange = (value: string) => {
+  subDiscipline.value = value
+  console.log(`选择了二级学科: ${value}`)
+}
+
+// 声明院校特色响应式变量 - 可选值：'双万计划', '卓越计划', '强基示范', '国家级优势'
+const selectedMajorFeature = ref('')
+const handleMajorFeatureClick = (feature: string) => {
+  selectedMajorFeature.value = feature
+  console.log(`选择了院校特色: ${feature}`)
+}
+
+// 声明院校名称响应式变量
+const schoolName = ref('')
+const getSchoolNameLoading = ref(false)
+const schoolNameOptions: any = ref([])
+function getSchoolNameOptions() {
+  getSchoolNameLoading.value = true
+  api.yxqueryBymcApi({
+    token: window.localStorage.getItem('token') || '',
+    yxmc: schoolName.value
+  }).then(res => {
+    schoolNameOptions.value = res.data.Rs || []
+  }).finally(() => {
+    getSchoolNameLoading.value = false
+  })
+}
+
+// 声明专业名称响应式变量
+const majorName = ref('')
+const getMajorNameLoading = ref(false)
+const majorNameOptions: any = ref([])
+function getMajorNameOptions() {
+  getMajorNameLoading.value = true
+  api.zyqueryBymcApi({
+    token: window.localStorage.getItem('token') || '',
+    zymc: majorName.value
+  }).then(res => {
+    majorNameOptions.value = res.data.Rs || []
+  }).finally(() => {
+    getMajorNameLoading.value = false
+  })
+}
+
+
+
+// “冲” 风险阈值响应式变量
+const riskThreshold = ref(15)
+
+// “冲” “保” 安全阈值响应式变量
+const safeThreshold = ref(85)
+
+// 声明表格数据响应式变量
+const tableData = ref([
+  {
+    id: 1,
+    schoolName: '山东大学',
+    schoolInfo: '山东省 济南市 公办',
+    schoolCode: 'A422',
+    schoolTags: '一流大学 一流学科建设高校 211 985',
+    majorName: '人工智能',
+    majorRequirements: '物理和化学',
+    majorCode: '34',
+    tuition: '6600',
+    disciplineEvaluation: 'B',
+    remark: '国家级卓越计划',
+    batch: '常规批',
+    type: '普通计划',
+    plan: '120人',
+    scoreAnalysis: [
+      '精确:25年最低位:62，最低分:620，录取数:120',
+      '精确:24年最低位:71，最低分:625，录取数:115',
+      '精确:23年最低位:59，最低分:624，录取数:110'
+    ],
+    admissionProbability: '75%',
+    probabilityLevel: '可冲击',
+    probabilityColor: 'bg-blue-100 text-blue-800'
+  },
+  {
+    id: 2,
+    schoolName: '中国海洋大学',
+    schoolInfo: '山东省 青岛市 公办',
+    schoolCode: 'A423',
+    schoolTags: '一流大学 211 985',
+    majorName: '法学',
+    majorRequirements: '不限',
+    majorCode: '49',
+    tuition: '5280',
+    disciplineEvaluation: 'B',
+    remark: '教育部涉外法治人才协同培养创新基地',
+    batch: '常规批',
+    type: '普通计划',
+    plan: '80人',
+    scoreAnalysis: [
+      '精确:25年最低位:621，最低分:610，录取数:80',
+      '精确:24年最低位:711，最低分:611，录取数:90',
+      '精确:23年最低位:519，最低分:615，录取数:90'
+    ],
+    admissionProbability: '82%',
+    probabilityLevel: '较稳妥',
+    probabilityColor: 'bg-green-100 text-green-800'
+  }
+])
+
+// 声明分页相关变量
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(tableData.value.length)
+
+// 声明排序相关变量
+const sortField = ref('')
+const sortOrder = ref('')
+
+// 处理选择事件
+const handleSelectionChange = (selection: any[]) => {
+  console.log('选中的数据:', selection)
+}
+
+// 处理分页变化
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  console.log(`当前页码: ${page}`)
+}
+
+// 处理排序变化
+const handleSortChange = (column: any) => {
+  console.log('-------->', column)
+  sortField.value = column.prop
+  sortOrder.value = column.order
+  console.log(`排序字段: ${column.prop}, 排序顺序: ${column.order}`)
+}
+
+// 处理填报操作
+const handleApply = (row: any) => {
+  console.log(`填报院校: ${row.schoolName}, 专业: ${row.majorName}`)
+}
+</script>
 
 <style lang="scss" scoped>
 .volunteer-apply-page {
