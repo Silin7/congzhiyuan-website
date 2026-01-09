@@ -1,5 +1,10 @@
 import api from '@/api/index'
 
+// // /mod/index/testList.ajax.php
+// export function testListApi(data: any) {
+//   return api.post('/mod/index/testList.ajax.php', data)
+// }
+
 // 登录注册 - 验证码
 // a.phone: 手机号
 // b.type:发送类型 1 注册登录二合一 2 重置密码

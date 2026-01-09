@@ -5,11 +5,11 @@ import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElC
 import { UserFilled } from '@element-plus/icons-vue'
 import * as api from '@/api/interface'
 
-onMounted(() => {
-  api.phpTest().then(res => {
-    console.log(res)
-  })
-})
+// onMounted(() => {
+//   api.testListApi({}).then(res => {
+//     console.log(res)
+//   })
+// })
 
 // Get current route
 const route = useRoute()
@@ -91,7 +91,7 @@ const sendCode = () => {
   }
   api.authcodeApi({
     phone: loginForm.phone,
-    scene: 5
+    type: 1
   }).then(res => {
     console.log(res)
   })
@@ -100,9 +100,53 @@ const sendCode = () => {
 
 // 登录提交
 const handleLogin = () => {
+  // api.signOutApi().then(res => {
+  //   console.log(res)
+  // })
   if (!loginForm.agree) {
     ElMessage.warning('请阅读并同意用户协议')
     return
+  }
+  if (loginType.value === 'phone') {
+    if (!loginForm.phone) {
+      ElMessage.warning('请输入手机号码')
+      return
+    }
+    if (!/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(loginForm.phone)) {
+      ElMessage.warning('请输入正确的手机号码')
+      return
+    }
+    if (!loginForm.code) {
+      ElMessage.warning('请输入验证码')
+      return
+    }
+    api.loginOrRegisterApi({
+      usercode: loginForm.phone,
+      vfCode: loginForm.code,
+      type: 1
+    }).then(res => {
+      console.log(res)
+    })
+  }
+  else if (loginType.value === 'account') {
+    if (!loginForm.account) {
+      ElMessage.warning('请输入账号')
+      return
+    }
+    if (!loginForm.password) {
+      ElMessage.warning('请输入密码')
+      return
+    }
+  }
+  else if (loginType.value === 'card') {
+    if (!loginForm.cardNumber) {
+      ElMessage.warning('请输入卡号')
+      return
+    }
+    if (!loginForm.cardPassword) {
+      ElMessage.warning('请输入密码')
+      return
+    }
   }
 
   // 模拟登录成功
@@ -248,7 +292,7 @@ const handleLogin = () => {
   background: #fff;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
-    border-radius: 0.75rem 0.75rem 0 0;
+  border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .header-container {

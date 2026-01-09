@@ -9,17 +9,19 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json; charset=utf-8',
     // 'Access-Control-Allow-Origin': '*',
+    // 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    // 'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   },
 })
 
-api.interceptors.request.use((request) => {
-  // 设置请求头
-  if (request.headers && localStorage.getItem('accessToken')) {
-    request.headers.token = localStorage.getItem('accessToken') ?? ''
-    request.headers.Authorization = `Bearer ${localStorage.getItem('accessToken') ?? ''}`
-  }
-  return request
-})
+// api.interceptors.request.use((request) => {
+//   // 设置请求头
+//   if (request.headers && localStorage.getItem('accessToken')) {
+//     request.headers.token = localStorage.getItem('accessToken') ?? ''
+//     request.headers.Authorization = `Bearer ${localStorage.getItem('accessToken') ?? ''}`
+//   }
+//   return request
+// })
 
 api.interceptors.response.use(
   async (response) => {
