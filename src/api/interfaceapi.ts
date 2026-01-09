@@ -20,7 +20,6 @@ export function signOutApi() {
   return api.post('/mod/gen/SignOut.ajax.php')
 }
 
-// Tip: 未开发
 // 手机用户设置密码
 // a.token:用户token，必选
 // a.newPass:新密码
@@ -29,7 +28,6 @@ export function passResetApi(data: any) {
   return api.post('/mod/gen/PassReset.ajax.php', data)
 }
 
-// Tip: 未开发
 // 用户修改密码
 // a.token:用户token，必选
 // b.oldPass:旧密码
@@ -203,6 +201,7 @@ export function delChoiceGroupApi(data: any) {
   return api.post('/mod/zhiYuan/DelChoiceGroup.ajax.php', data)
 }
 
+// Tip: xuankeStr物理,化学，生物 逗号分割
 // 个人信息查询
 // a.token:用户token，必选
 export function myuserInfoQueryApi(data: any) {

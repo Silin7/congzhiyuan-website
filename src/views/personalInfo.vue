@@ -1,21 +1,33 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import * as api from '@/api/interfaceapi'
+import { ElMessage } from 'element-plus'
+
+onMounted(() => {
+  getMyuserInfoQuery()
+})
+
+const personalInfo = ref<any>({})
+function getMyuserInfoQuery() {
+  api.myuserInfoQueryApi({
+    token: window.localStorage.getItem('token') || ''
+  }).then(res => {
+    personalInfo.value = res.data || {}
+    selectedSubjects.value = personalInfo.value.xuankeStr.split(',') || []
+  })
+}
 
 // 声明响应式变量
-// 选中的导航项 - 可选值：'basic-info', 'security-settings', 'account-settings', 'my-collections'
+// 选中的导航项 - 可选值：'basic-info', 'seeting-password', 'change-password', 'my-collections'
 const selectedNavItem = ref('basic-info')
-
-// 选科信息 - 存储选中的科目，类型为字符串数组，可选值：'physics', 'chemistry', 'biology', 'politics', 'history', 'geography'
-const selectedSubjects = ref<string[]>([])
-
-// 导航菜单点击事件处理函数
 const handleNavItemClick = (navItem: string) => {
   selectedNavItem.value = navItem
   console.log(`选择了导航项: ${navItem}`)
   // 这里可以添加页面切换或内容加载逻辑
 }
 
-// 科目选择点击事件处理函数
+// 选科信息
+const selectedSubjects = ref<string[]>([])
 const handleSubjectClick = (subject: string) => {
   // 切换科目选中状态
   const index = selectedSubjects.value.indexOf(subject)
@@ -25,7 +37,101 @@ const handleSubjectClick = (subject: string) => {
     selectedSubjects.value.push(subject)
   }
   console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(', ')}`)
-  // 这里可以添加选科后的业务逻辑，如分数计算、专业推荐等
+}
+
+// 设置密码
+const seetingpwdForm = ref({
+  phone: '',
+  code: '',
+  newPass: '',
+  confirmPass: '',
+})
+function handlePasswordSubmit() {
+  if (!seetingpwdForm.value.code) {
+    ElMessage.warning('请输入验证码')
+    return
+  }
+  if (!seetingpwdForm.value.newPass) {
+    ElMessage.warning('请输入新密码')
+    return
+  }
+  if (!seetingpwdForm.value.confirmPass) {
+    ElMessage.warning('请确认新密码')
+    return
+  }
+  if (seetingpwdForm.value.newPass !== seetingpwdForm.value.confirmPass) {
+    ElMessage.warning('两次输入的密码不一致')
+    return
+  }
+
+  api.passResetApi({
+    token: window.localStorage.getItem('token') || '',
+    newPass: seetingpwdForm.value.newPass,
+    vfCode: seetingpwdForm.value.code,
+  }).then(res => {
+    console.log(res);
+    ElMessage.success('密码设置成功')
+    // 清空密码输入框
+    seetingpwdForm.value.phone = ''
+    seetingpwdForm.value.code = ''
+    seetingpwdForm.value.newPass = ''
+    seetingpwdForm.value.confirmPass = ''
+  })
+}
+
+// 发送验证码
+const sendCode = () => {
+  if (!seetingpwdForm.value.phone) {
+    ElMessage.warning('请输入手机号码')
+    return
+  }
+  if (!/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(seetingpwdForm.value.phone)) {
+    ElMessage.warning('请输入正确的手机号码')
+    return
+  }
+  api.authcodeApi({
+    phone: seetingpwdForm.value.phone,
+    type: 1
+  }).then(res => {
+    console.log(res)
+    ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+  })
+}
+
+const changePasswordForm = ref({
+  oldPass: '',
+  newPass: '',
+  confirmPass: '',
+})
+function handleChangePasswordSubmit() {
+  if (!changePasswordForm.value.oldPass) {
+    ElMessage.warning('请输入旧密码')
+    return
+  }
+  if (!changePasswordForm.value.newPass) {
+    ElMessage.warning('请输入新密码')
+    return
+  }
+  if (!changePasswordForm.value.confirmPass) {
+    ElMessage.warning('请确认新密码')
+    return
+  }
+  if (changePasswordForm.value.newPass !== changePasswordForm.value.confirmPass) {
+    ElMessage.warning('两次输入的密码不一致')
+    return
+  }
+  api.passModiApi({
+    token: window.localStorage.getItem('token') || '',
+    oldPass: changePasswordForm.value.oldPass,
+    newPass: changePasswordForm.value.newPass,
+  }).then(res => {
+    console.log(res);
+    ElMessage.success('密码修改成功')
+    // 清空密码输入框
+    changePasswordForm.value.oldPass = ''
+    changePasswordForm.value.newPass = ''
+    changePasswordForm.value.confirmPass = ''
+  })
 }
 </script>
 
@@ -48,8 +154,8 @@ const handleSubjectClick = (subject: string) => {
               </svg>
             </div>
             <div class="ml-4">
-              <h3 class="text-lg font-bold text-neutral">王同学</h3>
-              <p class="text-sm text-neutral-400">山东</p>
+              <h3 class="text-lg font-bold text-neutral">{{ personalInfo.userName || '' }}</h3>
+              <p class="text-sm text-neutral-400">山东(zw)</p>
             </div>
           </div>
           <nav class="mt-6 space-y-2">
@@ -67,9 +173,9 @@ const handleSubjectClick = (subject: string) => {
               </svg>
               <span class="font-medium">基本信息</span>
             </a>
-            <a @click="handleNavItemClick('security-settings')" :class="[
+            <a @click="handleNavItemClick('seeting-password')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
-              selectedNavItem === 'security-settings'
+              selectedNavItem === 'seeting-password'
                 ? 'bg-primary bg-opacity-10 text-primary'
                 : 'text-neutral hover:bg-gray-100',
             ]">
@@ -80,11 +186,11 @@ const handleSubjectClick = (subject: string) => {
                 </path>
                 <circle cx="22" cy="10" r="2" fill="currentColor"></circle>
               </svg>
-              <span class="font-medium">安全设置</span>
+              <span class="font-medium">设置密码</span>
             </a>
-            <a @click="handleNavItemClick('account-settings')" :class="[
+            <a @click="handleNavItemClick('change-password')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
-              selectedNavItem === 'account-settings'
+              selectedNavItem === 'change-password'
                 ? 'bg-primary bg-opacity-10 text-primary'
                 : 'text-neutral hover:bg-gray-100',
             ]">
@@ -97,7 +203,7 @@ const handleSubjectClick = (subject: string) => {
                   d="M16 22a6 6 0 1 1 6-6a5.94 5.94 0 0 1-6 6m0-10a3.91 3.91 0 0 0-4 4a3.91 3.91 0 0 0 4 4a3.91 3.91 0 0 0 4-4a3.91 3.91 0 0 0-4-4">
                 </path>
               </svg>
-              <span class="font-medium">账号设置</span>
+              <span class="font-medium">修改密码</span>
             </a>
             <a @click="handleNavItemClick('my-collections')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
@@ -117,7 +223,7 @@ const handleSubjectClick = (subject: string) => {
         </div>
       </aside>
       <!-- 个人信息表单 -->
-      <div class="w-full md:w-3/4">
+      <div v-if="selectedNavItem === 'basic-info'" class="w-full md:w-3/4">
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <!-- 表单标题区 -->
           <div class="gradient-border background-gradient p-6">
@@ -140,7 +246,7 @@ const handleSubjectClick = (subject: string) => {
                     <div class="relative">
                       <input
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                        name="mobile" pattern="1[0-9]{10}" :required="true" type="tel" value="13800138000" />
+                        name="mobile" pattern="1[0-9]{10}" :required="true" type="tel" value="13800138000(zw)" />
                       <div class="absolute top-1/2 transform -translate-y-1/2 right-4">
                         <span class="text-accent">已验证</span>
                       </div>
@@ -153,7 +259,8 @@ const handleSubjectClick = (subject: string) => {
                     <div class="flex">
                       <input
                         class="flex-grow px-4 py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                        maxlength="16" name="nickname" :required="true" type="text" value="王同学" />
+                        maxlength="16" name="nickname" :required="true" type="text"
+                        :value="personalInfo.userName || ''" />
                       <button
                         class="px-4 bg-gray-100 border-y border-r border-gray-300 rounded-r-lg text-neutral-600 hover:bg-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
@@ -170,7 +277,7 @@ const handleSubjectClick = (subject: string) => {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- 性别 -->
                   <div>
-                    <label class="block text-sm font-medium text-neutral mb-2">性别</label>
+                    <label class="block text-sm font-medium text-neutral mb-2">性别(zw)</label>
                     <div class="flex space-x-6">
                       <label class="flex items-center">
                         <input class="h-4 w-4 text-primary border-gray-300 focus:ring-primary" name="gender"
@@ -228,49 +335,49 @@ const handleSubjectClick = (subject: string) => {
                 <div>
                   <label class="block text-sm font-medium text-neutral mb-3">选科信息</label>
                   <div class="flex flex-wrap gap-3">
-                    <label @click.stop="handleSubjectClick('physics')" :class="[
+                    <label @click.stop="handleSubjectClick('物理')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('physics')
+                      selectedSubjects.includes('物理')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">物理</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('chemistry')" :class="[
+                    <label @click.stop="handleSubjectClick('化学')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('chemistry')
+                      selectedSubjects.includes('化学')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">化学</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('biology')" :class="[
+                    <label @click.stop="handleSubjectClick('生物')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('biology')
+                      selectedSubjects.includes('生物')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">生物</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('politics')" :class="[
+                    <label @click.stop="handleSubjectClick('政治')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('politics')
+                      selectedSubjects.includes('政治')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">政治</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('history')" :class="[
+                    <label @click.stop="handleSubjectClick('历史')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('history')
+                      selectedSubjects.includes('历史')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">历史</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('geography')" :class="[
+                    <label @click.stop="handleSubjectClick('地理')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('geography')
+                      selectedSubjects.includes('地理')
                         ? 'active'
                         : '',
                     ]">
@@ -286,7 +393,8 @@ const handleSubjectClick = (subject: string) => {
                     <label class="block text-sm font-medium text-neutral mb-2">高考分数</label>
                     <input
                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                      max="750" min="0" name="score" placeholder="请输入您的高考总分" type="number" value="" />
+                      max="750" min="0" name="score" placeholder="请输入您的高考总分" type="number"
+                      :value="personalInfo.cj || ''" />
                     <p class="mt-2 text-sm text-neutral-400">总分范围：0-750分</p>
                   </div>
                   <!-- 位次 -->
@@ -294,7 +402,7 @@ const handleSubjectClick = (subject: string) => {
                     <label class="block text-sm font-medium text-neutral mb-2">位次</label>
                     <input
                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                      min="1" name="ranking" placeholder="请输入您的省内位次" type="number" value="" />
+                      min="1" name="ranking" placeholder="请输入您的省内位次" type="number" :value="personalInfo.wc || ''" />
                     <p class="mt-2 text-sm text-neutral-400">请输入省内排名位次</p>
                   </div>
                 </div>
@@ -312,6 +420,123 @@ const handleSubjectClick = (subject: string) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+      <!-- 设置密码 -->
+      <div v-if="selectedNavItem === 'seeting-password'" class="w-full md:w-3/4">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <!-- 表单标题区 -->
+          <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
+            <h2 class="text-2xl font-bold text-white">设置密码</h2>
+          </div>
+          <!-- 密码设置表单 -->
+          <div class="p-6">
+            <el-form label-position="top">
+              <el-form-item label="手机号码">
+                <el-input v-model="seetingpwdForm.phone" type="tel" placeholder="请输入手机号码"
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <PhoneFilled />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="验证码">
+                <el-input v-model="seetingpwdForm.code" placeholder="请输入验证码" clearable
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <GoodsFilled />
+                    </el-icon>
+                  </template>
+                  <template #append>
+                    <el-button @click="sendCode">获取验证码</el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="密码">
+                <el-input v-model="seetingpwdForm.newPass" type="password" placeholder="请输入密码"
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <GoodsFilled />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="确认密码">
+                <el-input v-model="seetingpwdForm.confirmPass" type="password" placeholder="请确认密码"
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <GoodsFilled />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <!-- 表单操作区 -->
+            <div class="border-t mt-8 pt-8 flex justify-end space-x-4">
+              <button
+                class="px-8 py-3 background-gradient bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
+                type="submit" @click="handlePasswordSubmit">
+                保存密码
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 修改密码 -->
+      <div v-if="selectedNavItem === 'change-password'" class="w-full md:w-3/4">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <!-- 表单标题区 -->
+          <div class="bg-gradient-to-r from-primary to-secondary px-6 py-4">
+            <h2 class="text-2xl font-bold text-white">修改密码</h2>
+          </div>
+          <!-- 密码设置表单 -->
+          <div class="p-6">
+            <el-form label-position="top">
+              <el-form-item label="旧密码">
+                <el-input v-model="changePasswordForm.oldPass" type="password" placeholder="请输入旧密码"
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <GoodsFilled />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="新密码">
+                <el-input v-model="changePasswordForm.newPass" type="password" placeholder="请输入新密码"
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <GoodsFilled />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="确认密码">
+                <el-input v-model="changePasswordForm.confirmPass" type="password" placeholder="请确认新密码"
+                  style="height: 48px; line-height: 48px;">
+                  <template #prefix>
+                    <el-icon class="el-input__icon">
+                      <GoodsFilled />
+                    </el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <!-- 表单操作区 -->
+            <div class="border-t mt-8 pt-8 flex justify-end space-x-4">
+              <button
+                class="px-8 py-3 background-gradient bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
+                type="submit" @click="handleChangePasswordSubmit">
+                保存密码
+              </button>
+            </div>
           </div>
         </div>
       </div>

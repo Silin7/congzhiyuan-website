@@ -317,7 +317,7 @@ function logoutFunction() {
     }
   })
 }
-</script> 
+</script>
 
 <style lang="scss" scoped>
 .header {
