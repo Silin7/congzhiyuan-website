@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import sideTop from '@/components/sideTop.vue'
-</script>
-
 <template>
   <div class="home-page">
     <main>
@@ -26,10 +21,11 @@ import sideTop from '@/components/sideTop.vue'
           <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-gradient-to-r from-amber-50 to-yellow-50 py-4 text-center">
               <span
-                class="inline-block bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium">冲刺院校方案</span>
+                class="inline-block bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium">{{
+                  topInfo[0]?.title }}</span>
             </div>
             <div class="p-6">
-              <p class="text-gray-600 mb-4">基于您的分数匹配略高于档位的优质院校，最大化录取潜力</p>
+              <p class="text-gray-600 mb-4">{{ topInfo[0]?.text }}</p>
               <div class="flex items-center">
                 <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 96%</span>
               </div>
@@ -39,10 +35,11 @@ import sideTop from '@/components/sideTop.vue'
           <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-gradient-to-r from-emerald-50 to-teal-50 py-4 text-center">
               <span
-                class="inline-block bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1 rounded-full text-sm font-medium">稳妥报考方案</span>
+                class="inline-block bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-4 py-1 rounded-full text-sm font-medium">{{
+                  topInfo[1]?.title }}</span>
             </div>
             <div class="p-6">
-              <p class="text-gray-600 mb-4">精准匹配您最可能录取的院校组合，确保理想大学</p>
+              <p class="text-gray-600 mb-4">{{ topInfo[1]?.text }}</p>
               <div class="flex items-center">
                 <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 92%</span>
               </div>
@@ -52,10 +49,11 @@ import sideTop from '@/components/sideTop.vue'
           <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 py-4 text-center">
               <span
-                class="inline-block bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-medium">保底稳录方案</span>
+                class="inline-block bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-medium">{{
+                  topInfo[2]?.title }}</span>
             </div>
             <div class="p-6">
-              <p class="text-gray-600 mb-4">确保安全录取的保守方案，结合兴趣匹配专业方向</p>
+              <p class="text-gray-600 mb-4">{{ topInfo[2]?.text }}</p>
               <div class="flex items-center">
                 <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 98%</span>
               </div>
@@ -244,6 +242,25 @@ import sideTop from '@/components/sideTop.vue'
     <sideTop />
   </div>
 </template>
+
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import sideTop from '@/components/sideTop.vue'
+import * as api from '@/api/interfaceapi'
+onMounted(() => {
+  getTopInfo()
+})
+
+// 上部导航栏显示查询
+const topInfo = ref<any>([])
+function getTopInfo() {
+  api.topInfoApi({
+    province: '北京',
+  }).then((res: any) => {
+    topInfo.value = res.data.Rs
+  })
+}
+</script>
 
 <style lang="scss" scoped>
 .home-page {
