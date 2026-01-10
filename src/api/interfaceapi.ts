@@ -62,7 +62,11 @@ export function navQueryApi() {
 // 首页上部显示查询
 // a.provice:省份
 export function topInfoApi(data: any) {
-  return api.post('/mod/homePage/TopInfo.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/homePage/TopInfo.ajax.php`, params)
 }
 
 // 志愿填报页批次查询

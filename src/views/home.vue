@@ -2,18 +2,27 @@
 import { onMounted, ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
 import * as api from '@/api/interfaceapi'
+import { ElMessage } from 'element-plus'
 onMounted(() => {
   getTopInfo()
 })
 
-// 上部导航栏显示查询
+// 上部导航栏显示查询 - 智能推荐方案
 const topInfo = ref<any>([])
-function getTopInfo() {
-  api.topInfoApi({
-    province: '北京',
-  }).then((res: any) => {
-    topInfo.value = res.data.Rs
-  })
+const getTopInfo = async () => {
+  try {
+    await api.topInfoApi({
+      province: '山东',
+    }).then((res: any) => {
+      if (res.data.code === 0) {
+        topInfo.value = res.data.data.Rs || []
+      } else {
+        ElMessage.error(res.data.message || '获取省份列表失败')
+      }
+    })
+  } catch (error) {
+    ElMessage.error('获取省份列表失败')
+  }
 }
 </script>
 
