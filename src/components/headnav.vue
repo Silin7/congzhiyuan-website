@@ -82,7 +82,7 @@ const closeLoginModal = () => {
 }
 
 // 发送验证码
-const sendCode = () => {
+const sendCode = async () => {
   if (!loginForm.phone) {
     ElMessage.warning('请输入手机号码')
     return
@@ -91,13 +91,19 @@ const sendCode = () => {
     ElMessage.warning('请输入正确的手机号码')
     return
   }
-  api.authcodeApi({
-    phone: loginForm.phone,
-    type: 1
-  }).then(res => {
-    console.log(res)
-    ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
-  })
+  try {
+    const res: any = await api.authcodeApi({
+      phone: loginForm.phone,
+      type: 1
+    })
+    if (res.data.code === 0) {
+      ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
+    } else {
+      ElMessage.error(res.data.message || '发送验证码失败')
+    }
+  } catch (error) {
+    ElMessage.error('发送验证码失败')
+  }
 }
 
 // 登录提交

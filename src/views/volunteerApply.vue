@@ -3,6 +3,8 @@ import { onMounted, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
+import axios from 'axios'
+import { baseURL } from '@/api/baseConfig'
 
 onMounted(() => {
   getGenListQuery()
@@ -65,10 +67,20 @@ const handleAdmissionTypeChange = (value: string) => {
 // 声明院校性质响应式变量 - 可选值：'公办', '民办'
 const schoolNatures: any = ref([])
 function getGenListQuery() {
+  var params = new FormData();
+  params.append('token', window.localStorage.getItem('token') || '');
+  params.append('genType', 'yxxz');
+  // axios.post(`${baseURL}/mod/zhiYuan/GenListQuery.ajax.php`, params)
+  //   .then((res: any) => {
+  //     schoolNatures.value = res.data.Rs || []
+  //   }).catch((error: any) => {
+  //     return Promise.reject(error)
+  //   })
   api.genListQueryApi({
     token: window.localStorage.getItem('token') || '',
-    genType: 'zyts'
-  }).then(res => {
+    genType: 'yxxz'
+  }).then((res: any) => {
+    console.log('-------->', res)
     schoolNatures.value = res.data.Rs || []
   })
 }
@@ -164,6 +176,12 @@ function getSchoolNameOptions() {
     getSchoolNameLoading.value = false
   })
 }
+const selectedSchool = ref('')
+// 院校名称选择变化时触发
+const handleSchoolNameChange = (value: string) => {
+  selectedSchool.value = value
+  console.log(`选择了院校名称: ${value}`)
+}
 
 // 声明专业名称响应式变量
 const majorName = ref('')
@@ -180,14 +198,67 @@ function getMajorNameOptions() {
     getMajorNameLoading.value = false
   })
 }
+const selectedMajor = ref('')
+// 专业名称选择变化时触发
+const handleMajorNameChange = (value: string) => {
+  selectedMajor.value = value
+  console.log(`选择了专业名称: ${value}`)
+}
 
+
+
+// 声明风险等级响应式变量 - 用于控制录取概率范围选择
+// 可选值：'high'（冲一冲 - 高风险，低录取概率）, 'medium'（稳一稳 - 中等风险，中等录取概率）, 'low'（保一保 - 低风险，高录取概率）
+const selectedRiskLevel = ref<'high' | 'medium' | 'low'>('medium') // 默认选择'稳一稳'
+
+// 监听风险等级变化，根据不同等级设置默认阈值
+const handleRiskLevelChange = () => {
+  // 根据风险等级调整默认阈值
+  switch (selectedRiskLevel.value) {
+    case 'high': // 冲一冲 - 高风险
+      riskThreshold.value = 25 // 较高风险阈值
+      safeThreshold.value = 75 // 保持较高安全阈值
+      break
+    case 'medium': // 稳一稳 - 中等风险
+      riskThreshold.value = 15 // 中等风险阈值
+      safeThreshold.value = 85 // 中等安全阈值
+      break
+    case 'low': // 保一保 - 低风险
+      riskThreshold.value = 10 // 较低风险阈值
+      safeThreshold.value = 90 // 较高安全阈值
+      break
+  }
+  console.log(`风险等级已切换为: ${selectedRiskLevel.value}, 风险阈值: ${riskThreshold.value}%, 安全阈值: ${safeThreshold.value}%`)
+}
 
 
 // “冲” 风险阈值响应式变量
 const riskThreshold = ref(15)
 
-// “冲” “保” 安全阈值响应式变量
+// “保” 安全阈值响应式变量
 const safeThreshold = ref(85)
+
+// 立即开始智能检索
+function submitForm() {
+  const data = {
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value,
+    pcdm: selectedAdmissionBatch.value,
+    tddw: selectedAdmissionType.value,
+    yxxz: selectedSchoolNature.value,
+    yxid: selectedSchool.value,
+    // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
+    zydm: selectedMajor.value,
+    lqdc: selectedRiskLevel.value === 'high' ? '4' : selectedRiskLevel.value === 'medium' ? '3' : '2',
+    startrow: currentPage.value,
+    pagesize: pageSize.value,
+    progressChong: riskThreshold.value,
+    progressBao: safeThreshold.value,
+  }
+  api.lqInfoZyQueryApi(data).then(res => {
+    console.log(res)
+  })
+}
 
 // 声明表格数据响应式变量
 const tableData = ref([
@@ -338,7 +409,8 @@ const handleApply = (row: any) => {
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
               <el-select v-model="schoolName" filterable remote reserve-keyword placeholder="输入院校名称"
-                :remote-method="getSchoolNameOptions" :loading="getSchoolNameLoading" class="select-tall38px">
+                :remote-method="getSchoolNameOptions" :loading="getSchoolNameLoading" @change="handleSchoolNameChange"
+                class="select-tall38px">
                 <el-option v-for="(item, index) in schoolNameOptions" :key="index" :label="item.yxmc"
                   :value="item.id" />
               </el-select>
@@ -625,7 +697,8 @@ const handleApply = (row: any) => {
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">专业名称</label>
                 <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
-                  :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" class="select-tall38px">
+                  :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" @change="handleMajorNameChange"
+                  class="select-tall38px">
                   <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.zymc"
                     :value="item.zydm" />
                 </el-select>
@@ -706,18 +779,24 @@ const handleApply = (row: any) => {
                   <span>录取概率范围预警</span>
                 </div>
                 <div class="flex gap-4">
+                  <!-- 冲一冲选项 - 高风险 -->
                   <label class="cursor-pointer">
-                    <input class="peer sr-only" name="range" type="radio">
+                    <input class="peer sr-only" name="range" type="radio" v-model="selectedRiskLevel" value="high"
+                      @change="handleRiskLevelChange">
                     <span
                       class="block px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm font-medium peer-checked:border-red-500 peer-checked:text-red-600 transition-all">冲一冲</span>
                   </label>
+                  <!-- 稳一稳选项 - 中等风险 -->
                   <label class="cursor-pointer">
-                    <input class="peer sr-only" name="range" type="radio">
+                    <input class="peer sr-only" name="range" type="radio" v-model="selectedRiskLevel" value="medium"
+                      @change="handleRiskLevelChange">
                     <span
                       class="block px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm font-medium peer-checked:border-orange-500 peer-checked:text-orange-600 transition-all">稳一稳</span>
                   </label>
+                  <!-- 保一保选项 - 低风险 -->
                   <label class="cursor-pointer">
-                    <input class="peer sr-only" name="range" type="radio">
+                    <input class="peer sr-only" name="range" type="radio" v-model="selectedRiskLevel" value="low"
+                      @change="handleRiskLevelChange">
                     <span
                       class="block px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm font-medium peer-checked:border-green-600 peer-checked:text-green-600 transition-all">保一保</span>
                   </label>
@@ -745,7 +824,8 @@ const handleApply = (row: any) => {
             <!-- 立即开始智能检索 -->
             <div class="mt-8 flex justify-center">
               <button
-                class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3">
+                class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
+                @click="submitForm">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
                   class="iconify text-2xl iconify--solar">

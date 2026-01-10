@@ -1,14 +1,16 @@
 import api from '@/api/index'
-
-export function testApi(data: any) {
-  return api.post('/?ctl=ajax&act=SmsSend&mod=gen', data)
-}
+import axios from 'axios'
+import { baseURL } from '@/api/baseConfig'
 
 // 登录注册 - 验证码
 // a.phone: 手机号
 // b.type:发送类型 1 注册登录二合一 2 重置密码
 export function authcodeApi(data: any) {
-  return api.post('/mod/gen/SmsSend.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/gen/SmsSend.ajax.php`, params)
 }
 
 // 登录或注册二合一
@@ -72,7 +74,11 @@ export function tddwListApi(data: any) {
 // a.token:用户token，必选
 // b.genType 查询类型字段（yxxz:院校性质prov:省份 yxts:院校特色zyts:专业特色）
 export function genListQueryApi(data: any) {
-  return api.post('/mod/zhiYuan/genListQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/GenListQuery.ajax.php`, params)
 }
 
 // 名称模糊查询院校列表
