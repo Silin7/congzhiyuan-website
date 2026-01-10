@@ -3,12 +3,16 @@ import { onMounted, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
+import { useRouter } from 'vue-router'
+
 
 onMounted(() => {
-  getGenListQuery()
+  getSchoolNatures()
+  getProvinceList()
+  getMajorFeatureList()
 })
 
-// 声明院校层次响应式变量 - 可选值：'本科', '专科'
+// 院校层次
 const selectedSchoolLevel = ref('')
 const handleSchoolLevelClick = (level: string) => {
   selectedSchoolLevel.value = level
@@ -18,18 +22,23 @@ const handleSchoolLevelClick = (level: string) => {
   getDisciplineCategoriesList()
 }
 
-// 志愿填报页批次查询
-function getPcList() {
-  api.pcListApi({
-    token: window.localStorage.getItem('token') || '',
-    ccdm: selectedSchoolLevel.value
-  }).then(res => {
-    admissionBatch.value = res.data.Rs || []
-  })
-}
-
-// 声明录取批次响应式变量 - 可选值：'本科提前批', '本科常规批', '专科批次'
+// 录取批次
 const admissionBatch: any = ref([{ pcdm: '1', pcmc: '本科提前批' }, { pcdm: '2', pcmc: '本科常规批' }, { pcdm: '3', pcmc: '专科批次' }])
+const getPcList = async () => {
+  try {
+    const res = await api.pcListApi({
+      token: window.localStorage.getItem('token') || '',
+      ccdm: selectedSchoolLevel.value
+    })
+    if (res.data.code === 0) {
+      admissionBatch.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取批次列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取批次列表失败')
+  }
+}
 const selectedAdmissionBatch = ref('')
 const handleAdmissionBatchClick = (batch: string) => {
   if (selectedSchoolLevel.value === '') {
@@ -40,18 +49,25 @@ const handleAdmissionBatchClick = (batch: string) => {
   selectedAdmissionType.value = ''
   getTddwList()
 }
-function getTddwList() {
-  api.tddwListApi({
-    token: window.localStorage.getItem('token') || '',
-    ccdm: selectedSchoolLevel.value,
-    pcdm: selectedAdmissionBatch.value
-  }).then(res => {
-    admissionTypes.value = res.data.Rs || []
-  })
-}
 
-// 声明录取类型响应式变量 - 可选值：'普通计划', '地方专项', '中外合作'
+// 录取类型
 const admissionTypes: any = ref([{ dddw: '1', tdmc: '普通计划' }, { dddw: '2', tdmc: '地方专项' }, { dddw: '3', tdmc: '中外合作' }])
+const getTddwList = async () => {
+  try {
+    const res = await api.tddwListApi({
+      token: window.localStorage.getItem('token') || '',
+      ccdm: selectedSchoolLevel.value,
+      pcdm: selectedAdmissionBatch.value
+    })
+    if (res.data.code === 0) {
+      admissionTypes.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取录取类型列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取录取类型列表失败')
+  }
+}
 const selectedAdmissionType = ref('')
 const handleAdmissionTypeChange = (value: string) => {
   if (selectedSchoolLevel.value === '' || selectedAdmissionBatch.value === '') {
@@ -62,24 +78,50 @@ const handleAdmissionTypeChange = (value: string) => {
   console.log(`选择了录取类型: ${value}`)
 }
 
-// 声明院校性质响应式变量 - 可选值：'公办', '民办'
+// 院校名称
+const schoolName = ref('')
+const getSchoolNameLoading = ref(false)
+const schoolNameOptions: any = ref([])
+const getSchoolNameOptions = async () => {
+  getSchoolNameLoading.value = true
+  try {
+    const res = await api.yxqueryBymcApi({
+      token: window.localStorage.getItem('token') || '',
+      yxmc: schoolName.value
+    })
+    if (res.data.code === 0) {
+      schoolNameOptions.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取院校名称列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取院校名称列表失败')
+  } finally {
+    getSchoolNameLoading.value = false
+  }
+}
+const selectedSchool = ref('')
+const handleSchoolNameChange = (value: string) => {
+  selectedSchool.value = value
+  console.log(`选择了院校名称: ${value}`)
+}
+
+// 院校性质
 const schoolNatures: any = ref([])
-function getGenListQuery() {
-  var params = new FormData();
-  params.append('token', window.localStorage.getItem('token') || '');
-  params.append('genType', 'yxxz');
-  // axios.post(`${baseURL}/mod/zhiYuan/GenListQuery.ajax.php`, params)
-  //   .then((res: any) => {
-  //     schoolNatures.value = res.data.Rs || []
-  //   }).catch((error: any) => {
-  //     return Promise.reject(error)
-  //   })
-  api.genListQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    genType: 'yxxz'
-  }).then((res: any) => {
-    schoolNatures.value = res.data.Rs || []
-  })
+const getSchoolNatures = async () => {
+  try {
+    const res = await api.genListQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      genType: 'yxxz'
+    })
+    if (res.data.code === 0) {
+      schoolNatures.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取院校性质列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取院校性质列表失败')
+  }
 }
 const selectedSchoolNature = ref('')
 const handleSchoolNatureClick = (nature: string) => {
@@ -87,7 +129,23 @@ const handleSchoolNatureClick = (nature: string) => {
   console.log(`选择了院校性质: ${nature}`)
 }
 
-// 声明院校省份响应式变量 - 支持多选
+// 院校省份
+const provinceList = ref<any>([])
+const getProvinceList = async () => {
+  try {
+    const res = await api.genListQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      genType: 'prov'
+    })
+    if (res.data.code == 0) {
+      provinceList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取省份列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取省份列表失败')
+  }
+}
 const selectedProvince = ref<string[]>([])
 const handleProvinceClick = (province: string) => {
   // 切换省份选中状态
@@ -100,15 +158,73 @@ const handleProvinceClick = (province: string) => {
   console.log(`选择了省份: ${province}, 当前选中: ${selectedProvince.value.join(', ')}`)
 }
 
-// 声明学科类型响应式变量
+// 专业名称
+const majorName = ref('')
+const getMajorNameLoading = ref(false)
+const majorNameOptions: any = ref([])
+const getMajorNameOptions = async () => {
+  getMajorNameLoading.value = true
+  try {
+    const res = await api.zyqueryBymcApi({
+      token: window.localStorage.getItem('token') || '',
+      zymc: majorName.value
+    })
+    if (res.data.code === 0) {
+      majorNameOptions.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取专业名称列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取专业名称列表失败')
+  } finally {
+    getMajorNameLoading.value = false
+  }
+}
+const selectedMajor = ref('')
+const handleMajorNameChange = (value: string) => {
+  selectedMajor.value = value
+  console.log(`选择了专业名称: ${value}`)
+}
+
+// 院校特色
+const selectedMajorFeatureList = ref<any>([])
+const getMajorFeatureList = async () => {
+  try {
+    const res = await api.genListQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      genType: 'yxts'
+    })
+    if (res.data.code == 0) {
+      selectedMajorFeatureList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取省份列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取省份列表失败')
+  }
+}
+const selectedMajorFeature = ref('')
+const handleMajorFeatureClick = (feature: string) => {
+  selectedMajorFeature.value = feature
+  console.log(`选择了院校特色: ${feature}`)
+}
+
+// 学科门类
 const disciplineCategoriesList: any = ref([])
-function getDisciplineCategoriesList() {
-  api.xkmllistApi({
-    token: window.localStorage.getItem('token') || '',
-    ccdm: selectedSchoolLevel.value
-  }).then(res => {
-    disciplineCategoriesList.value = res.data.Rs || []
-  })
+const getDisciplineCategoriesList = async () => {
+  try {
+    const res = await api.xkmllistApi({
+      token: window.localStorage.getItem('token') || '',
+      ccdm: selectedSchoolLevel.value
+    })
+    if (res.data.code == 0) {
+      disciplineCategoriesList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取学科门类列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取学科门类列表失败')
+  }
 }
 const disciplineCategories = ref('')
 const disciplineCategoriesChange = (value: string) => {
@@ -118,15 +234,22 @@ const disciplineCategoriesChange = (value: string) => {
   getFirstDisciplineList()
 }
 
-// 声明一级学科响应式变量
+// 一级学科
 const firstDisciplineList: any = ref([])
-function getFirstDisciplineList() {
-  api.yjxklistApi({
-    token: window.localStorage.getItem('token') || '',
-    xkml: disciplineCategories.value
-  }).then(res => {
-    firstDisciplineList.value = res.data.Rs || []
-  })
+const getFirstDisciplineList = async () => {
+  try {
+    const res = await api.yjxklistApi({
+      token: window.localStorage.getItem('token') || '',
+      xkml: disciplineCategories.value
+    })
+    if (res.data.code == 0) {
+      firstDisciplineList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取一级学科列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取一级学科列表失败')
+  }
 }
 const firstDiscipline = ref('')
 const firstDisciplineChange = (value: string) => {
@@ -135,15 +258,22 @@ const firstDisciplineChange = (value: string) => {
   getSubDisciplineList()
 }
 
-// 声明二级学科响应式变量
+// 二级学科
 const subDisciplineList: any = ref([])
-function getSubDisciplineList() {
-  api.ejxklistApi({
-    token: window.localStorage.getItem('token') || '',
-    yjxk: firstDiscipline.value
-  }).then(res => {
-    subDisciplineList.value = res.data || []
-  })
+const getSubDisciplineList = async () => {
+  try {
+    const res = await api.ejxklistApi({
+      token: window.localStorage.getItem('token') || '',
+      yjxk: firstDiscipline.value
+    })
+    if (res.data.code == 0) {
+      subDisciplineList.value = res.data.data || []
+    } else {
+      ElMessage.error(res.data.message || '获取二级学科列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取二级学科列表失败')
+  }
 }
 const subDiscipline = ref('')
 const subDisciplineChange = (value: string) => {
@@ -151,78 +281,24 @@ const subDisciplineChange = (value: string) => {
   console.log(`选择了二级学科: ${value}`)
 }
 
-// 声明院校特色响应式变量 - 可选值：'双万计划', '卓越计划', '强基示范', '国家级优势'
-const selectedMajorFeature = ref('')
-const handleMajorFeatureClick = (feature: string) => {
-  selectedMajorFeature.value = feature
-  console.log(`选择了院校特色: ${feature}`)
-}
-
-// 声明院校名称响应式变量
-const schoolName = ref('')
-const getSchoolNameLoading = ref(false)
-const schoolNameOptions: any = ref([])
-function getSchoolNameOptions() {
-  getSchoolNameLoading.value = true
-  api.yxqueryBymcApi({
-    token: window.localStorage.getItem('token') || '',
-    yxmc: schoolName.value
-  }).then(res => {
-    schoolNameOptions.value = res.data.Rs || []
-  }).finally(() => {
-    getSchoolNameLoading.value = false
-  })
-}
-const selectedSchool = ref('')
-// 院校名称选择变化时触发
-const handleSchoolNameChange = (value: string) => {
-  selectedSchool.value = value
-  console.log(`选择了院校名称: ${value}`)
-}
-
-// 声明专业名称响应式变量
-const majorName = ref('')
-const getMajorNameLoading = ref(false)
-const majorNameOptions: any = ref([])
-function getMajorNameOptions() {
-  getMajorNameLoading.value = true
-  api.zyqueryBymcApi({
-    token: window.localStorage.getItem('token') || '',
-    zymc: majorName.value
-  }).then(res => {
-    majorNameOptions.value = res.data.Rs || []
-  }).finally(() => {
-    getMajorNameLoading.value = false
-  })
-}
-const selectedMajor = ref('')
-// 专业名称选择变化时触发
-const handleMajorNameChange = (value: string) => {
-  selectedMajor.value = value
-  console.log(`选择了专业名称: ${value}`)
-}
-
-// 声明风险等级响应式变量 - 用于控制录取概率范围选择
-// 可选值：'high'（冲一冲 - 高风险，低录取概率）, 'medium'（稳一稳 - 中等风险，中等录取概率）, 'low'（保一保 - 低风险，高录取概率）
-const selectedRiskLevel = ref<'high' | 'medium' | 'low'>('medium') // 默认选择'稳一稳'
+// 录取概率范围预警 默认选择'稳一稳'
+const selectedRiskLevel = ref<'high' | 'medium' | 'low'>('medium')
 // 监听风险等级变化，根据不同等级设置默认阈值
 const handleRiskLevelChange = () => {
-  // 根据风险等级调整默认阈值
   switch (selectedRiskLevel.value) {
-    case 'high': // 冲一冲 - 高风险
+    case 'high':
       riskThreshold.value = 25 // 较高风险阈值
       safeThreshold.value = 75 // 保持较高安全阈值
       break
-    case 'medium': // 稳一稳 - 中等风险
+    case 'medium':
       riskThreshold.value = 15 // 中等风险阈值
       safeThreshold.value = 85 // 中等安全阈值
       break
-    case 'low': // 保一保 - 低风险
+    case 'low':
       riskThreshold.value = 10 // 较低风险阈值
       safeThreshold.value = 90 // 较高安全阈值
       break
   }
-  console.log(`风险等级已切换为: ${selectedRiskLevel.value}, 风险阈值: ${riskThreshold.value}%, 安全阈值: ${safeThreshold.value}%`)
 }
 // “冲” 风险阈值响应式变量
 const riskThreshold = ref(15)
@@ -237,7 +313,7 @@ const total = ref(0)
 const tableData: any = ref([])
 
 // 专业模式 - 志愿查询
-function lqInfoZyQuery() {
+const lqInfoZyQuery = async () => {
   const data = {
     token: window.localStorage.getItem('token') || '',
     ccdm: selectedSchoolLevel.value,
@@ -245,6 +321,7 @@ function lqInfoZyQuery() {
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value,
+    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value, genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
     zydm: selectedMajor.value,
     lqdc: selectedRiskLevel.value === 'high' ? '4' : selectedRiskLevel.value === 'medium' ? '3' : '2',
@@ -253,27 +330,45 @@ function lqInfoZyQuery() {
     progressChong: riskThreshold.value,
     progressBao: safeThreshold.value,
   }
-  api.lqInfoZyQueryApi(data).then((res: any) => {
-    console.log(res)
-    queryState.value = 'zyQuery'
-    tableData.value = res.data.Rs || []
-    total.value = res.recordsTotal || 0
-  })
+  console.log('专业模式 - 志愿查询 -------->', data, data.genList)
+  try {
+    const res = await api.lqInfoZyQueryApi(data)
+    if (res.data.code == 0) {
+      queryState.value = 'zyQuery'
+      tableData.value = res.data.data.Rs || []
+      total.value = res.data.recordsTotal || 0
+    } else {
+      ElMessage.error(res.data.message || '志愿查询失败')
+    }
+  } catch (error) {
+    ElMessage.error('志愿查询失败')
+  }
 }
 
 // 专业模式 - 填报
-const zyHandleApply = (row: any) => {
-  api.myChioesAddApi({
-    token: window.localStorage.getItem('token') || '',
-    zyId: row.zyid,
-    lqdc: row.lqdc,
-    lqbl: row.bl,
-  }).then(res => {
-    console.log(res)
-  })
+const zyHandleApply = async (row: any) => {
+  try {
+    const res = await api.myChioesAddApi({
+      token: window.localStorage.getItem('token') || '',
+      zyId: row.zyid,
+      lqdc: row.lqdc,
+      lqbl: row.bl,
+    })
+    if (res.data.code == 0) {
+      ElMessage.success('填报成功')
+    } else {
+      ElMessage.error(res.data.message || '填报失败')
+    }
+  } catch (error) {
+    ElMessage.error('填报失败')
+  }
 }
 
 // 专业模式 - 批量填报
+const selectedRows = ref<any[]>([])
+const handleSelectionChange = (selection: any[]) => {
+  selectedRows.value = selection
+}
 const handleBatchAdd = async () => {
   if (selectedRows.value.length === 0) {
     ElMessage.warning('请选择要填报的专业')
@@ -293,7 +388,11 @@ const handleBatchAdd = async () => {
       jsonStr: JSON.stringify({ Rs: datas.value }),
     }
     const res = await api.myChioesBatchAddApi(data)
-    console.log('-------->', res)
+    if (res.data.code == 0) {
+      ElMessage.success('批量填报成功')
+    } else {
+      ElMessage.error(res.data.message || '批量填报失败')
+    }
   } catch (error) {
     console.log(error)
     ElMessage.error('批量填报失败')
@@ -301,17 +400,24 @@ const handleBatchAdd = async () => {
 }
 
 // 专业模式 - 收藏
-const zyHandleCollect = (row: any) => {
-  api.zyChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    chGroupId: row.chId,
-  }).then(res => {
-    console.log(res)
-  })
+const zyHandleCollect = async (row: any) => {
+  try {
+    const res = await api.zyChoicesQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      chGroupId: row.chId,
+    })
+    if (res.data.code == 0) {
+      ElMessage.success('收藏成功')
+    } else {
+      ElMessage.error(res.data.message || '收藏失败')
+    }
+  } catch (error) {
+    ElMessage.error('收藏失败')
+  }
 }
 
 // 专业组模式志愿查询
-function lqInfoZyGroupQuery() {
+const lqInfoZyGroupQuery = async () => {
   const data = {
     token: window.localStorage.getItem('token') || '',
     ccdm: selectedSchoolLevel.value,
@@ -319,6 +425,7 @@ function lqInfoZyGroupQuery() {
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value,
+    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value, genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
     zydm: selectedMajor.value,
     lqdc: selectedRiskLevel.value === 'high' ? '4' : selectedRiskLevel.value === 'medium' ? '3' : '2',
@@ -327,22 +434,36 @@ function lqInfoZyGroupQuery() {
     progressChong: riskThreshold.value,
     progressBao: safeThreshold.value,
   }
-  api.lqInfoZyGroupQueryApi(data).then((res: any) => {
-    console.log(res)
-    queryState.value = 'zyGroupQuery'
-    tableData.value = res.data.Rs || []
-    total.value = res.recordsTotal || 0
-  })
+  console.log('专业组模式 - 志愿查询 -------->', data, data.genList)
+  try {
+    const res = await api.lqInfoZyGroupQueryApi(data)
+    if (res.data.code == 0) {
+      queryState.value = 'zyGroupQuery'
+      tableData.value = res.data.data.Rs || []
+      total.value = res.data.recordsTotal || 0
+    } else {
+      ElMessage.error(res.data.message || '志愿查询失败')
+    }
+  } catch (error) {
+    ElMessage.error('志愿查询失败')
+  }
 }
 
 // 专业组模式收藏查询
-const zyGroupHandleCollect = (row: any) => {
-  api.zyGroupChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    chGroupId: row.chId,
-  }).then(res => {
-    console.log(res)
-  })
+const zyGroupHandleCollect = async (row: any) => {
+  try {
+    const res = await api.zyGroupChoicesQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      chGroupId: row.chId,
+    })
+    if (res.data.code == 0) {
+      ElMessage.success('收藏成功')
+    } else {
+      ElMessage.error(res.data.message || '收藏失败')
+    }
+  } catch (error) {
+    ElMessage.error('收藏失败')
+  }
 }
 
 // 合并表格
@@ -350,29 +471,30 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
   console.log('-------->', row, rowIndex, columnIndex)
 }
 
-// 处理选择事件 - 多选
-const selectedRows = ref<any[]>([])
-const handleSelectionChange = (selection: any[]) => {
-  selectedRows.value = selection
-}
-
 // 处理分页变化
 const handlePageChange = (page: number) => {
   currentPage.value = page
-  console.log(`当前页码: ${page}`)
+  if (queryState.value === 'zyQuery') {
+    lqInfoZyQuery()
+  }
+  if (queryState.value === 'zyGroupQuery') {
+    lqInfoZyGroupQuery()
+  }
+}
+const handleSizeChange = (size: number) => {
+  pageSize.value = size
+  if (queryState.value === 'zyQuery') {
+    lqInfoZyQuery()
+  }
+  if (queryState.value === 'zyGroupQuery') {
+    lqInfoZyGroupQuery()
+  }
 }
 
-// 批量处置
-const handleBatchBtn = () => {
-  if (selectedRows.value.length === 0) {
-    ElMessage.warning('请选择要处置的专业')
-    return
-  }
-  if (queryState.value === 'zyQuery') {
-    handleBatchAdd()
-  } else if (queryState.value === 'zyGroupQuery') {
-    // handleBatchAdd()
-  }
+// goMyAspiration 跳转我的志愿页面
+const router = useRouter()
+const goMyAspiration = () => {
+  router.push({ path: '/personalInfo', query: { tab: 'my-collections' } })
 }
 </script>
 
@@ -448,21 +570,14 @@ const handleBatchBtn = () => {
             <div>
               <label class="block text-sm font-medium mb-2 text-gray-800">院校性质</label>
               <div class="grid grid-cols-3 gap-2">
-                <button @click="handleSchoolNatureClick('公办')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedSchoolNature === '公办'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  公办
-                </button>
-                <button @click="handleSchoolNatureClick('民办')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedSchoolNature === '民办'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  民办
+                <button v-for="(item, index) in schoolNatures" :key="index" @click="handleSchoolNatureClick(item.id)"
+                  :class="[
+                    'text-sm py-2 px-3 rounded-md border transition',
+                    selectedSchoolNature === item.id
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                  ]">
+                  {{ item.disp }}
                 </button>
               </div>
             </div>
@@ -471,253 +586,13 @@ const handleBatchBtn = () => {
           <div class="mt-6">
             <label class="block text-sm font-medium mb-2 text-gray-800">院校省份（可多选）</label>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-              <button @click="handleProvinceClick('北京')" :class="[
+              <button v-for="(item, index) in provinceList" :key="index" @click="handleProvinceClick(item.disp)" :class="[
                 'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('北京')
+                selectedProvince.includes(item.disp)
                   ? 'bg-blue-600 text-white border-blue-600'
                   : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
               ]">
-                北京
-              </button>
-              <button @click="handleProvinceClick('天津')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('天津')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                天津
-              </button>
-              <button @click="handleProvinceClick('河北')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('河北')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                河北
-              </button>
-              <button @click="handleProvinceClick('山西')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('山西')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                山西
-              </button>
-              <button @click="handleProvinceClick('内蒙古')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('内蒙古')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                内蒙古
-              </button>
-              <button @click="handleProvinceClick('辽宁')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('辽宁')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                辽宁
-              </button>
-              <button @click="handleProvinceClick('吉林')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('吉林')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                吉林
-              </button>
-              <button @click="handleProvinceClick('黑龙江')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('黑龙江')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                黑龙江
-              </button>
-              <button @click="handleProvinceClick('上海')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('上海')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                上海
-              </button>
-              <button @click="handleProvinceClick('江苏')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('江苏')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                江苏
-              </button>
-              <button @click="handleProvinceClick('浙江')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('浙江')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                浙江
-              </button>
-              <button @click="handleProvinceClick('安徽')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('安徽')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                安徽
-              </button>
-              <button @click="handleProvinceClick('福建')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('福建')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                福建
-              </button>
-              <button @click="handleProvinceClick('江西')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('江西')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                江西
-              </button>
-              <button @click="handleProvinceClick('山东')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('山东')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                山东
-              </button>
-              <button @click="handleProvinceClick('河南')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('河南')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                河南
-              </button>
-              <button @click="handleProvinceClick('湖北')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('湖北')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                湖北
-              </button>
-              <button @click="handleProvinceClick('湖南')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('湖南')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                湖南
-              </button>
-              <button @click="handleProvinceClick('广东')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('广东')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                广东
-              </button>
-              <button @click="handleProvinceClick('广西')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('广西')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                广西
-              </button>
-              <button @click="handleProvinceClick('海南')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('海南')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                海南
-              </button>
-              <button @click="handleProvinceClick('重庆')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('重庆')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                重庆
-              </button>
-              <button @click="handleProvinceClick('四川')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('四川')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                四川
-              </button>
-              <button @click="handleProvinceClick('贵州')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('贵州')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                贵州
-              </button>
-              <button @click="handleProvinceClick('云南')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('云南')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                云南
-              </button>
-              <button @click="handleProvinceClick('西藏')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('西藏')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                西藏
-              </button>
-              <button @click="handleProvinceClick('陕西')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('陕西')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                陕西
-              </button>
-              <button @click="handleProvinceClick('甘肃')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('甘肃')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                甘肃
-              </button>
-              <button @click="handleProvinceClick('青海')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('青海')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                青海
-              </button>
-              <button @click="handleProvinceClick('宁夏')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('宁夏')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                宁夏
-              </button>
-              <button @click="handleProvinceClick('新疆')" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes('新疆')
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                新疆
+                {{ item.disp }}
               </button>
             </div>
           </div>
@@ -736,29 +611,14 @@ const handleBatchBtn = () => {
               <div>
                 <label class="block text-sm font-medium mb-2 text-gray-800">院校特色</label>
                 <div class="grid grid-cols-3 gap-2">
-                  <button @click="handleMajorFeatureClick('双万计划')" :class="[
-                    'text-sm py-2 px-3 rounded-md border transition',
-                    selectedMajorFeature === '双万计划'
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                  ]">
-                    双万计划
-                  </button>
-                  <button @click="handleMajorFeatureClick('卓越计划')" :class="[
-                    'text-sm py-2 px-3 rounded-md border transition',
-                    selectedMajorFeature === '卓越计划'
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                  ]">
-                    卓越计划
-                  </button>
-                  <button @click="handleMajorFeatureClick('强基示范')" :class="[
-                    'text-sm py-2 px-3 rounded-md border transition',
-                    selectedMajorFeature === '强基示范'
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                  ]">
-                    强基示范
+                  <button v-for="(item, index) in selectedMajorFeatureList" :key="index"
+                    @click="handleMajorFeatureClick(item.id)" :class="[
+                      'text-sm py-2 px-3 rounded-md border transition',
+                      selectedMajorFeature === item.id
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
+                    ]">
+                    {{ item.disp }}
                   </button>
                 </div>
               </div>
@@ -913,7 +773,7 @@ const handleBatchBtn = () => {
           <div class="flex items-center gap-3">
             <button
               class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-green-500 hover:to-teal-500 transition"
-              @click="handleBatchBtn">
+              @click="handleBatchAdd">
               <span class="flex items-center space-x-2">
                 <Icon class="text-lg" icon="material-symbols:add" />
                 <span>批量填报</span>
@@ -921,7 +781,7 @@ const handleBatchBtn = () => {
             </button>
             <button
               class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-500 hover:to-purple-500 transition"
-              id="openWishesBtn">
+              @click="goMyAspiration">
               <span class="flex items-center space-x-2">
                 <Icon class="text-lg" icon="mdi:heart" />
                 <span>我的志愿</span>
@@ -1031,8 +891,7 @@ const handleBatchBtn = () => {
           </el-table>
           <!-- 专业组模式查询结果表格 -->
           <el-table v-if="queryState === 'zyGroupQuery' && tableData.length > 0" v-loading="false" :data="tableData"
-            @span-method="objectSpanMethod" @selection-change="handleSelectionChange" stripe border size="small"
-            class="custom-table" style="width: 100%">
+            @span-method="objectSpanMethod" stripe border size="small" class="custom-table" style="width: 100%">
             <el-table-column type="expand">
               <template #default="props">
                 <el-table :data="props.row.zyRs" border>
@@ -1045,8 +904,6 @@ const handleBatchBtn = () => {
                 </el-table>
               </template>
             </el-table-column>
-            <!-- 选择列 -->
-            <el-table-column type="selection" width="40" align="center"></el-table-column>
             <!-- 招生院校列 -->
             <el-table-column prop="schoolName" label="招生院校" min-width="180" align="left">
               <template #default="scope">
@@ -1128,11 +985,8 @@ const handleBatchBtn = () => {
                 <div class="text-center text-xs mt-1">{{ scope.row.bl }}%</div>
               </template>
             </el-table-column>
-            <el-table-column label="填报操作" width="120" align="center">
+            <el-table-column label="填报操作" width="80" align="center">
               <template #default="scope">
-                <el-button text type="primary" size="small" @click="zyHandleApply(scope.row)">
-                  填报
-                </el-button>
                 <el-button text type="warning" size="small" style="margin-left: 0 !important;"
                   @click="zyGroupHandleCollect(scope.row)">
                   收藏
@@ -1153,7 +1007,7 @@ const handleBatchBtn = () => {
               <!-- Element Plus 分页组件 -->
               <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize"
                 :page-sizes="[10, 20, 50, 100]" :total="total" layout="sizes, prev, pager, next, jumper"
-                :prev-text="'上一页'" :next-text="'下一页'" @size-change="(size) => pageSize = size"
+                :prev-text="'上一页'" :next-text="'下一页'" @size-change="handleSizeChange"
                 @current-change="handlePageChange"></el-pagination>
             </div>
           </div>

@@ -56,7 +56,7 @@ export function passModiApi(data: any) {
 
 // 上部导航栏显示查询
 export function navQueryApi() {
-  return api.post('/mod/homePage/NavigationQuery.ajax.php')
+  return axios.post(`${baseURL}/mod/homePage/NavigationQuery.ajax.php`)
 }
 
 // 首页上部显示查询
@@ -73,7 +73,11 @@ export function topInfoApi(data: any) {
 // a.token:用户token，必选
 // b.ccdm:  1 本科 2 专科
 export function pcListApi(data: any) {
-  return api.post('/mod/zhiYuan/PcList.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/PcList.ajax.php`, params)
 }
 
 // 志愿填报页投档单位查询
@@ -81,7 +85,11 @@ export function pcListApi(data: any) {
 // b.ccdm:  1 本科 2 专科
 // c.pcdm: 批次代码
 export function tddwListApi(data: any) {
-  return api.post('/mod/zhiYuan/TddwList.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/TddwList.ajax.php`, params)
 }
 
 // 通用复选框列表查询
@@ -99,35 +107,56 @@ export function genListQueryApi(data: any) {
 // a.token: 用户token，必选
 // b.yxmc：院校名称文字
 export function yxqueryBymcApi(data: any) {
-  return api.post('/mod/zhiYuan/YxqueryBymc.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/YxqueryBymc.ajax.php`, params)
 }
 
 // 名称模糊查询专业列表
 // a.token:用户token，必选
 // c.zymc:专业名称
 export function zyqueryBymcApi(data: any) {
-  return api.post('/mod/zhiYuan/ZyqueryBymc.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/ZyqueryBymc.ajax.php`, params)
 }
 
 // 学科门类查询
 // a.token: 用户token，必选
 // c.ccdm 层次 1 本科 2 专科
 export function xkmllistApi(data: any) {
-  return api.post('/mod/zhiYuan/Xkmllist.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/Xkmllist.ajax.php`, params)
 }
 
 // 一级学科查询
 // a.token:用户token，必选
 // b.xkml:学科门类代码
 export function yjxklistApi(data: any) {
-  return api.post('/mod/zhiYuan/Yjxklist.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/Yjxklist.ajax.php`, params)
 }
 
+// tips: 没有Rs data即为数组
 // 二级学科查询
 // c.token:用户token，必选
 // d.yjxk:一级学科代码
 export function ejxklistApi(data: any) {
-  return api.post('/mod/zhiYuan/Ejxklist.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/Ejxklist.ajax.php`, params)
 }
 
 // 专业模式志愿查询
@@ -145,7 +174,11 @@ export function ejxklistApi(data: any) {
 // l.progressBao 比例（0-100）
 // m.progressChong 比例（0-100）
 export function lqInfoZyQueryApi(data: any) {
-  return api.post('/mod/zhiYuan/LqInfoZyQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/LqInfoZyQuery.ajax.php`, params)
 }
 
 // 专业组模式志愿查询
@@ -163,7 +196,11 @@ export function lqInfoZyQueryApi(data: any) {
 // l.progressBao 比例（0-100）
 // m.progressChong 比例（0-100）
 export function lqInfoZyGroupQueryApi(data: any) {
-  return api.post('/mod/zhiYuan/LqInfoZyGroupQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/LqInfoZyGroupQuery.ajax.php`, params)
 }
 
 // 单个志愿填报
@@ -172,49 +209,77 @@ export function lqInfoZyGroupQueryApi(data: any) {
 // e.lqdc 录取档次
 // f.lqbl 录取比例
 export function myChioesAddApi(data: any) {
-  return api.post('/mod/zhiYuan/MyChioesAdd.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/MyChioesAdd.ajax.php`, params)
 }
 
 // 批量志愿填报
 // a.token:用户token，必选
 // g.jsonStr: json字符串，格式{"Rs":[{"zyid":2926,"lqbl":0.131,"lqdc":4}]}
 export function myChioesBatchAddApi(data: any) {
-  return api.post('/mod/zhiYuan/MyChioesBatchAdd.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/MyChioesBatchAdd.ajax.php`, params)
 }
 
 // 志愿分组查询
 // a.token:用户token，必选
 // b.ccdm  1 本科 2 专科 99全部
 export function myChioesGroupQueryApi(data: any) {
-  return api.post('/mod/zhiYuan/MyChoicesGroupQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/MyChoicesGroupQuery.ajax.php`, params)
 }
 
 // 专业模式收藏查询
 // c.token:用户token，必选
 // d.chGroupId 我的收藏组id
 export function zyChoicesQueryApi(data: any) {
-  return api.post('/mod/zhiYuan/ZyChoicesQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/ZyChoicesQuery.ajax.php`, params)
 }
 
 // 专业组模式收藏查询
 // a.token:用户token，必选
 // b.chGroupId 我的收藏组id
 export function zyGroupChoicesQueryApi(data: any) {
-  return api.post('/mod/zhiYuan/ZyGroupChoicesQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/ZyGroupChoicesQuery.ajax.php`, params)
 }
 
 // 删除收藏专业
 // a.token:用户token，必选
 // b.chId 要删除的专业id
 export function delChoiceApi(data: any) {
-  return api.post('/mod/zhiYuan/DelChoice.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/DelChoice.ajax.php`, params)
 }
 
 // 删除收藏专业组
 // a.token:用户token，必选
 // b.chZyGroupId 要删除的分组id
 export function delChoiceGroupApi(data: any) {
-  return api.post('/mod/zhiYuan/DelChoiceGroup.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/zhiYuan/DelChoiceGroup.ajax.php`, params)
 }
 
 // 个人信息查询
