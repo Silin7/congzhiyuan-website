@@ -1,5 +1,9 @@
 import api from '@/api/index'
 
+export function testApi(data: any) {
+  return api.post('/?ctl=ajax&act=SmsSend&mod=gen', data)
+}
+
 // 登录注册 - 验证码
 // a.phone: 手机号
 // b.type:发送类型 1 注册登录二合一 2 重置密码

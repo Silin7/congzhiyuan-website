@@ -1,3 +1,280 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { Icon } from '@iconify/vue'
+import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage } from 'element-plus'
+import * as api from '@/api/interfaceapi'
+
+onMounted(() => {
+  getGenListQuery()
+})
+
+// 声明院校层次响应式变量 - 可选值：'本科', '专科'
+const selectedSchoolLevel = ref('')
+const handleSchoolLevelClick = (level: string) => {
+  selectedSchoolLevel.value = level
+  selectedAdmissionBatch.value = ''
+  selectedAdmissionType.value = ''
+  getPcList()
+  getDisciplineCategoriesList()
+}
+
+// 志愿填报页批次查询
+function getPcList() {
+  api.pcListApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value
+  }).then(res => {
+    admissionBatch.value = res.data.Rs || []
+  })
+}
+
+// 声明录取批次响应式变量 - 可选值：'本科提前批', '本科常规批', '专科批次'
+const admissionBatch: any = ref([{ pcdm: '1', pcmc: '本科提前批' }, { pcdm: '2', pcmc: '本科常规批' }, { pcdm: '3', pcmc: '专科批次' }])
+const selectedAdmissionBatch = ref('')
+const handleAdmissionBatchClick = (batch: string) => {
+  if (selectedSchoolLevel.value === '') {
+    ElMessage.error('请先选择院校层次')
+    return
+  }
+  selectedAdmissionBatch.value = batch
+  selectedAdmissionType.value = ''
+  getTddwList()
+}
+function getTddwList() {
+  api.tddwListApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value,
+    pcdm: selectedAdmissionBatch.value
+  }).then(res => {
+    admissionTypes.value = res.data.Rs || []
+  })
+}
+
+// 声明录取类型响应式变量 - 可选值：'普通计划', '地方专项', '中外合作'
+const admissionTypes: any = ref([{ dddw: '1', tdmc: '普通计划' }, { dddw: '2', tdmc: '地方专项' }, { dddw: '3', tdmc: '中外合作' }])
+const selectedAdmissionType = ref('')
+const handleAdmissionTypeChange = (value: string) => {
+  if (selectedSchoolLevel.value === '' || selectedAdmissionBatch.value === '') {
+    ElMessage.error('请先选择院校层次和录取批次')
+    return
+  }
+  selectedAdmissionType.value = value
+  console.log(`选择了录取类型: ${value}`)
+}
+
+// 声明院校性质响应式变量 - 可选值：'公办', '民办'
+const schoolNatures: any = ref([])
+function getGenListQuery() {
+  api.genListQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    genType: 'zyts'
+  }).then(res => {
+    schoolNatures.value = res.data.Rs || []
+  })
+}
+const selectedSchoolNature = ref('')
+const handleSchoolNatureClick = (nature: string) => {
+  selectedSchoolNature.value = nature
+  console.log(`选择了院校性质: ${nature}`)
+}
+
+// 声明院校省份响应式变量 - 支持多选
+const selectedProvince = ref<string[]>([])
+const handleProvinceClick = (province: string) => {
+  // 切换省份选中状态
+  const index = selectedProvince.value.indexOf(province)
+  if (index > -1) {
+    selectedProvince.value.splice(index, 1)
+  } else {
+    selectedProvince.value.push(province)
+  }
+  console.log(`选择了省份: ${province}, 当前选中: ${selectedProvince.value.join(', ')}`)
+}
+
+// 声明学科类型响应式变量
+const disciplineCategoriesList: any = ref([])
+function getDisciplineCategoriesList() {
+  api.xkmllistApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value
+  }).then(res => {
+    disciplineCategoriesList.value = res.data.Rs || []
+  })
+}
+const disciplineCategories = ref('')
+const disciplineCategoriesChange = (value: string) => {
+  disciplineCategories.value = value
+  firstDiscipline.value = ''
+  subDiscipline.value = ''
+  getFirstDisciplineList()
+}
+
+// 声明一级学科响应式变量
+const firstDisciplineList: any = ref([])
+function getFirstDisciplineList() {
+  api.yjxklistApi({
+    token: window.localStorage.getItem('token') || '',
+    xkml: disciplineCategories.value
+  }).then(res => {
+    firstDisciplineList.value = res.data.Rs || []
+  })
+}
+const firstDiscipline = ref('')
+const firstDisciplineChange = (value: string) => {
+  firstDiscipline.value = value
+  subDiscipline.value = ''
+  getSubDisciplineList()
+}
+
+// 声明二级学科响应式变量
+const subDisciplineList: any = ref([])
+function getSubDisciplineList() {
+  api.ejxklistApi({
+    token: window.localStorage.getItem('token') || '',
+    yjxk: firstDiscipline.value
+  }).then(res => {
+    subDisciplineList.value = res.data || []
+  })
+}
+const subDiscipline = ref('')
+const subDisciplineChange = (value: string) => {
+  subDiscipline.value = value
+  console.log(`选择了二级学科: ${value}`)
+}
+
+// 声明院校特色响应式变量 - 可选值：'双万计划', '卓越计划', '强基示范', '国家级优势'
+const selectedMajorFeature = ref('')
+const handleMajorFeatureClick = (feature: string) => {
+  selectedMajorFeature.value = feature
+  console.log(`选择了院校特色: ${feature}`)
+}
+
+// 声明院校名称响应式变量
+const schoolName = ref('')
+const getSchoolNameLoading = ref(false)
+const schoolNameOptions: any = ref([])
+function getSchoolNameOptions() {
+  getSchoolNameLoading.value = true
+  api.yxqueryBymcApi({
+    token: window.localStorage.getItem('token') || '',
+    yxmc: schoolName.value
+  }).then(res => {
+    schoolNameOptions.value = res.data.Rs || []
+  }).finally(() => {
+    getSchoolNameLoading.value = false
+  })
+}
+
+// 声明专业名称响应式变量
+const majorName = ref('')
+const getMajorNameLoading = ref(false)
+const majorNameOptions: any = ref([])
+function getMajorNameOptions() {
+  getMajorNameLoading.value = true
+  api.zyqueryBymcApi({
+    token: window.localStorage.getItem('token') || '',
+    zymc: majorName.value
+  }).then(res => {
+    majorNameOptions.value = res.data.Rs || []
+  }).finally(() => {
+    getMajorNameLoading.value = false
+  })
+}
+
+
+
+// “冲” 风险阈值响应式变量
+const riskThreshold = ref(15)
+
+// “冲” “保” 安全阈值响应式变量
+const safeThreshold = ref(85)
+
+// 声明表格数据响应式变量
+const tableData = ref([
+  {
+    id: 1,
+    schoolName: '山东大学',
+    schoolInfo: '山东省 济南市 公办',
+    schoolCode: 'A422',
+    schoolTags: '一流大学 一流学科建设高校 211 985',
+    majorName: '人工智能',
+    majorRequirements: '物理和化学',
+    majorCode: '34',
+    tuition: '6600',
+    disciplineEvaluation: 'B',
+    remark: '国家级卓越计划',
+    batch: '常规批',
+    type: '普通计划',
+    plan: '120人',
+    scoreAnalysis: [
+      '精确:25年最低位:62，最低分:620，录取数:120',
+      '精确:24年最低位:71，最低分:625，录取数:115',
+      '精确:23年最低位:59，最低分:624，录取数:110'
+    ],
+    admissionProbability: '75%',
+    probabilityLevel: '可冲击',
+    probabilityColor: 'bg-blue-100 text-blue-800'
+  },
+  {
+    id: 2,
+    schoolName: '中国海洋大学',
+    schoolInfo: '山东省 青岛市 公办',
+    schoolCode: 'A423',
+    schoolTags: '一流大学 211 985',
+    majorName: '法学',
+    majorRequirements: '不限',
+    majorCode: '49',
+    tuition: '5280',
+    disciplineEvaluation: 'B',
+    remark: '教育部涉外法治人才协同培养创新基地',
+    batch: '常规批',
+    type: '普通计划',
+    plan: '80人',
+    scoreAnalysis: [
+      '精确:25年最低位:621，最低分:610，录取数:80',
+      '精确:24年最低位:711，最低分:611，录取数:90',
+      '精确:23年最低位:519，最低分:615，录取数:90'
+    ],
+    admissionProbability: '82%',
+    probabilityLevel: '较稳妥',
+    probabilityColor: 'bg-green-100 text-green-800'
+  }
+])
+
+// 声明分页相关变量
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(tableData.value.length)
+
+// 声明排序相关变量
+const sortField = ref('')
+const sortOrder = ref('')
+
+// 处理选择事件
+const handleSelectionChange = (selection: any[]) => {
+  console.log('选中的数据:', selection)
+}
+
+// 处理分页变化
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  console.log(`当前页码: ${page}`)
+}
+
+// 处理排序变化
+const handleSortChange = (column: any) => {
+  console.log('-------->', column)
+  sortField.value = column.prop
+  sortOrder.value = column.order
+  console.log(`排序字段: ${column.prop}, 排序顺序: ${column.order}`)
+}
+
+// 处理填报操作
+const handleApply = (row: any) => {
+  console.log(`填报院校: ${row.schoolName}, 专业: ${row.majorName}`)
+}
+</script>
+
 <template>
   <div class="volunteer-apply-page">
     <main class="max-w-7xl mx-auto px-4 py-8">
@@ -612,283 +889,6 @@
     <sideTop />
   </div>
 </template>
-
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { Icon } from '@iconify/vue'
-import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage } from 'element-plus'
-import * as api from '@/api/interfaceapi'
-
-onMounted(() => {
-  getGenListQuery()
-})
-
-// 声明院校层次响应式变量 - 可选值：'本科', '专科'
-const selectedSchoolLevel = ref('')
-const handleSchoolLevelClick = (level: string) => {
-  selectedSchoolLevel.value = level
-  selectedAdmissionBatch.value = ''
-  selectedAdmissionType.value = ''
-  getPcList()
-  getDisciplineCategoriesList()
-}
-
-// 志愿填报页批次查询
-function getPcList() {
-  api.pcListApi({
-    token: window.localStorage.getItem('token') || '',
-    ccdm: selectedSchoolLevel.value
-  }).then(res => {
-    admissionBatch.value = res.data.Rs || []
-  })
-}
-
-// 声明录取批次响应式变量 - 可选值：'本科提前批', '本科常规批', '专科批次'
-const admissionBatch: any = ref([{ pcdm: '1', pcmc: '本科提前批' }, { pcdm: '2', pcmc: '本科常规批' }, { pcdm: '3', pcmc: '专科批次' }])
-const selectedAdmissionBatch = ref('')
-const handleAdmissionBatchClick = (batch: string) => {
-  if (selectedSchoolLevel.value === '') {
-    ElMessage.error('请先选择院校层次')
-    return
-  }
-  selectedAdmissionBatch.value = batch
-  selectedAdmissionType.value = ''
-  getTddwList()
-}
-function getTddwList() {
-  api.tddwListApi({
-    token: window.localStorage.getItem('token') || '',
-    ccdm: selectedSchoolLevel.value,
-    pcdm: selectedAdmissionBatch.value
-  }).then(res => {
-    admissionTypes.value = res.data.Rs || []
-  })
-}
-
-// 声明录取类型响应式变量 - 可选值：'普通计划', '地方专项', '中外合作'
-const admissionTypes: any = ref([{ dddw: '1', tdmc: '普通计划' }, { dddw: '2', tdmc: '地方专项' }, { dddw: '3', tdmc: '中外合作' }])
-const selectedAdmissionType = ref('')
-const handleAdmissionTypeChange = (value: string) => {
-  if (selectedSchoolLevel.value === '' || selectedAdmissionBatch.value === '') {
-    ElMessage.error('请先选择院校层次和录取批次')
-    return
-  }
-  selectedAdmissionType.value = value
-  console.log(`选择了录取类型: ${value}`)
-}
-
-// 声明院校性质响应式变量 - 可选值：'公办', '民办'
-const schoolNatures: any = ref([])
-function getGenListQuery() {
-  api.genListQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    genType: 'zyts'
-  }).then(res => {
-    schoolNatures.value = res.data.Rs || []
-  })
-}
-const selectedSchoolNature = ref('')
-const handleSchoolNatureClick = (nature: string) => {
-  selectedSchoolNature.value = nature
-  console.log(`选择了院校性质: ${nature}`)
-}
-
-// 声明院校省份响应式变量 - 支持多选
-const selectedProvince = ref<string[]>([])
-const handleProvinceClick = (province: string) => {
-  // 切换省份选中状态
-  const index = selectedProvince.value.indexOf(province)
-  if (index > -1) {
-    selectedProvince.value.splice(index, 1)
-  } else {
-    selectedProvince.value.push(province)
-  }
-  console.log(`选择了省份: ${province}, 当前选中: ${selectedProvince.value.join(', ')}`)
-}
-
-// 声明学科类型响应式变量
-const disciplineCategoriesList: any = ref([])
-function getDisciplineCategoriesList() {
-  api.xkmllistApi({
-    token: window.localStorage.getItem('token') || '',
-    ccdm: selectedSchoolLevel.value
-  }).then(res => {
-    disciplineCategoriesList.value = res.data.Rs || []
-  })
-}
-const disciplineCategories = ref('')
-const disciplineCategoriesChange = (value: string) => {
-  disciplineCategories.value = value
-  firstDiscipline.value = ''
-  subDiscipline.value = ''
-  getFirstDisciplineList()
-}
-
-// 声明一级学科响应式变量
-const firstDisciplineList: any = ref([])
-function getFirstDisciplineList() {
-  api.yjxklistApi({
-    token: window.localStorage.getItem('token') || '',
-    xkml: disciplineCategories.value
-  }).then(res => {
-    firstDisciplineList.value = res.data.Rs || []
-  })
-}
-const firstDiscipline = ref('')
-const firstDisciplineChange = (value: string) => {
-  firstDiscipline.value = value
-  subDiscipline.value = ''
-  getSubDisciplineList()
-}
-
-// 声明二级学科响应式变量
-const subDisciplineList: any = ref([])
-function getSubDisciplineList() {
-  api.ejxklistApi({
-    token: window.localStorage.getItem('token') || '',
-    yjxk: firstDiscipline.value
-  }).then(res => {
-    subDisciplineList.value = res.data || []
-  })
-}
-const subDiscipline = ref('')
-const subDisciplineChange = (value: string) => {
-  subDiscipline.value = value
-  console.log(`选择了二级学科: ${value}`)
-}
-
-// 声明院校特色响应式变量 - 可选值：'双万计划', '卓越计划', '强基示范', '国家级优势'
-const selectedMajorFeature = ref('')
-const handleMajorFeatureClick = (feature: string) => {
-  selectedMajorFeature.value = feature
-  console.log(`选择了院校特色: ${feature}`)
-}
-
-// 声明院校名称响应式变量
-const schoolName = ref('')
-const getSchoolNameLoading = ref(false)
-const schoolNameOptions: any = ref([])
-function getSchoolNameOptions() {
-  getSchoolNameLoading.value = true
-  api.yxqueryBymcApi({
-    token: window.localStorage.getItem('token') || '',
-    yxmc: schoolName.value
-  }).then(res => {
-    schoolNameOptions.value = res.data.Rs || []
-  }).finally(() => {
-    getSchoolNameLoading.value = false
-  })
-}
-
-// 声明专业名称响应式变量
-const majorName = ref('')
-const getMajorNameLoading = ref(false)
-const majorNameOptions: any = ref([])
-function getMajorNameOptions() {
-  getMajorNameLoading.value = true
-  api.zyqueryBymcApi({
-    token: window.localStorage.getItem('token') || '',
-    zymc: majorName.value
-  }).then(res => {
-    majorNameOptions.value = res.data.Rs || []
-  }).finally(() => {
-    getMajorNameLoading.value = false
-  })
-}
-
-
-
-// “冲” 风险阈值响应式变量
-const riskThreshold = ref(15)
-
-// “冲” “保” 安全阈值响应式变量
-const safeThreshold = ref(85)
-
-// 声明表格数据响应式变量
-const tableData = ref([
-  {
-    id: 1,
-    schoolName: '山东大学',
-    schoolInfo: '山东省 济南市 公办',
-    schoolCode: 'A422',
-    schoolTags: '一流大学 一流学科建设高校 211 985',
-    majorName: '人工智能',
-    majorRequirements: '物理和化学',
-    majorCode: '34',
-    tuition: '6600',
-    disciplineEvaluation: 'B',
-    remark: '国家级卓越计划',
-    batch: '常规批',
-    type: '普通计划',
-    plan: '120人',
-    scoreAnalysis: [
-      '精确:25年最低位:62，最低分:620，录取数:120',
-      '精确:24年最低位:71，最低分:625，录取数:115',
-      '精确:23年最低位:59，最低分:624，录取数:110'
-    ],
-    admissionProbability: '75%',
-    probabilityLevel: '可冲击',
-    probabilityColor: 'bg-blue-100 text-blue-800'
-  },
-  {
-    id: 2,
-    schoolName: '中国海洋大学',
-    schoolInfo: '山东省 青岛市 公办',
-    schoolCode: 'A423',
-    schoolTags: '一流大学 211 985',
-    majorName: '法学',
-    majorRequirements: '不限',
-    majorCode: '49',
-    tuition: '5280',
-    disciplineEvaluation: 'B',
-    remark: '教育部涉外法治人才协同培养创新基地',
-    batch: '常规批',
-    type: '普通计划',
-    plan: '80人',
-    scoreAnalysis: [
-      '精确:25年最低位:621，最低分:610，录取数:80',
-      '精确:24年最低位:711，最低分:611，录取数:90',
-      '精确:23年最低位:519，最低分:615，录取数:90'
-    ],
-    admissionProbability: '82%',
-    probabilityLevel: '较稳妥',
-    probabilityColor: 'bg-green-100 text-green-800'
-  }
-])
-
-// 声明分页相关变量
-const currentPage = ref(1)
-const pageSize = ref(10)
-const total = ref(tableData.value.length)
-
-// 声明排序相关变量
-const sortField = ref('')
-const sortOrder = ref('')
-
-// 处理选择事件
-const handleSelectionChange = (selection: any[]) => {
-  console.log('选中的数据:', selection)
-}
-
-// 处理分页变化
-const handlePageChange = (page: number) => {
-  currentPage.value = page
-  console.log(`当前页码: ${page}`)
-}
-
-// 处理排序变化
-const handleSortChange = (column: any) => {
-  console.log('-------->', column)
-  sortField.value = column.prop
-  sortOrder.value = column.order
-  console.log(`排序字段: ${column.prop}, 排序顺序: ${column.order}`)
-}
-
-// 处理填报操作
-const handleApply = (row: any) => {
-  console.log(`填报院校: ${row.schoolName}, 专业: ${row.majorName}`)
-}
-</script>
 
 <style lang="scss" scoped>
 .volunteer-apply-page {

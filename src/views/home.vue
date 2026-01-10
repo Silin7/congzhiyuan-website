@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import sideTop from '@/components/sideTop.vue'
+import * as api from '@/api/interfaceapi'
+onMounted(() => {
+  getTopInfo()
+})
+
+// 上部导航栏显示查询
+const topInfo = ref<any>([])
+function getTopInfo() {
+  api.topInfoApi({
+    province: '北京',
+  }).then((res: any) => {
+    topInfo.value = res.data.Rs
+  })
+}
+</script>
+
 <template>
   <div class="home-page">
     <main>
@@ -242,25 +261,6 @@
     <sideTop />
   </div>
 </template>
-
-<script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import sideTop from '@/components/sideTop.vue'
-import * as api from '@/api/interfaceapi'
-onMounted(() => {
-  getTopInfo()
-})
-
-// 上部导航栏显示查询
-const topInfo = ref<any>([])
-function getTopInfo() {
-  api.topInfoApi({
-    province: '北京',
-  }).then((res: any) => {
-    topInfo.value = res.data.Rs
-  })
-}
-</script>
 
 <style lang="scss" scoped>
 .home-page {
