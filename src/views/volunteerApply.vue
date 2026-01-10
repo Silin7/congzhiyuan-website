@@ -767,7 +767,7 @@ const goMyAspiration = () => {
           </div>
         </div>
       </section>
-      <section>
+      <section v-if="tableData.length > 0">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold">结果信息</h2>
           <div class="flex items-center gap-3">
@@ -791,9 +791,9 @@ const goMyAspiration = () => {
         </div>
         <div>
           <!-- 专业模式查询结果表格 -->
-          <el-table v-if="queryState === 'zyQuery' && tableData.length > 0" v-loading="false" :data="tableData"
-            @span-method="objectSpanMethod" @selection-change="handleSelectionChange" stripe border size="small"
-            class="custom-table" style="width: 100%">
+          <el-table v-if="queryState === 'zyQuery'" v-loading="false" :data="tableData" @span-method="objectSpanMethod"
+            @selection-change="handleSelectionChange" stripe border size="small" class="custom-table"
+            style="width: 100%">
             <!-- 选择列 -->
             <el-table-column type="selection" width="40" align="center"></el-table-column>
             <!-- 招生院校列 -->
@@ -890,7 +890,7 @@ const goMyAspiration = () => {
             </el-table-column>
           </el-table>
           <!-- 专业组模式查询结果表格 -->
-          <el-table v-if="queryState === 'zyGroupQuery' && tableData.length > 0" v-loading="false" :data="tableData"
+          <el-table v-if="queryState === 'zyGroupQuery'" v-loading="false" :data="tableData"
             @span-method="objectSpanMethod" stripe border size="small" class="custom-table" style="width: 100%">
             <el-table-column type="expand">
               <template #default="props">
@@ -995,7 +995,7 @@ const goMyAspiration = () => {
             </el-table-column>
           </el-table>
           <!-- Element Plus 分页 -->
-          <div v-if="tableData.length > 0" class="bg-gray-50 border-t border-gray-200 px-6 py-4">
+          <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
               <!-- 结果总数显示 -->
               <div class="text-sm text-gray-600">
