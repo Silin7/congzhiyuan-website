@@ -18,12 +18,16 @@ export function authcodeApi(data: any) {
 // b.vfCode: 验证码
 // c.type:验证码类型 1 短信 2 密码
 export function loginOrRegisterApi(data: any) {
-  return api.post('/mod/gen/SignIn.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/gen/SignIn.ajax.php`, params)
 }
 
 // 退出登录
 export function signOutApi() {
-  return api.post('/mod/gen/SignOut.ajax.php')
+  return axios.post(`${baseURL}/mod/gen/SignOut.ajax.php`)
 }
 
 // 手机用户设置密码

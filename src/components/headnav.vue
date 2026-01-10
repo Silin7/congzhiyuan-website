@@ -17,35 +17,26 @@ onMounted(() => {
   api.navQueryApi().then(res => {
     console.log(res)
   })
+  genListQueryList()
 })
 
 // 选择的省份
-const shengfen: any = ref('beijing')
-const options = [
-  {
-    value: 'shandong',
-    label: '山东',
-  },
-  {
-    value: 'henan',
-    label: '河南',
-  },
-  {
-    value: 'sichuan',
-    label: '四川',
-  },
-  {
-    value: 'guangdong',
-    label: '广东',
-  },
-  {
-    value: 'beijing',
-    label: '北京',
-  },
-]
-// 处理省份选择变化
-const handleShengfenChange = (value: string) => {
-  shengfen.value = value
+const shengfen: any = ref('山东')
+const provinceList = ref<any>([])
+const genListQueryList = async () => {
+  try {
+    const res = await api.genListQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      genType: 'prov'
+    })
+    if (res.data.code == 0) {
+      provinceList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取省份列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取省份列表失败')
+  }
 }
 
 // 登录弹窗状态
@@ -107,7 +98,7 @@ const sendCode = async () => {
 }
 
 // 登录提交
-const handleLogin = () => {
+const handleLogin = async () => {
   if (!loginForm.agree) {
     ElMessage.warning('请阅读并同意用户协议')
     return
@@ -125,18 +116,24 @@ const handleLogin = () => {
       ElMessage.warning('请输入验证码')
       return
     }
-    api.loginOrRegisterApi({
-      usercode: loginForm.phone,
-      vfCode: loginForm.code,
-      type: 1
-    }).then(res => {
-      console.log(res)
-      localStorage.setItem('userInfo', JSON.stringify(res.data))
-      localStorage.setItem('token', res.data.token)
-      ElMessage.success('登录成功')
-      closeLoginModal()
-      userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
-    })
+    try {
+      const res: any = await api.loginOrRegisterApi({
+        usercode: loginForm.phone,
+        vfCode: loginForm.code,
+        type: 1
+      })
+      if (res.data.code === 0) {
+        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+        localStorage.setItem('token', res.data.data.token)
+        ElMessage.success('登录成功')
+        closeLoginModal()
+        userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
+      } else {
+        ElMessage.error(res.data.message || '登录失败')
+      }
+    } catch (error) {
+      ElMessage.error('登录失败')
+    }
   }
   else if (loginType.value === 'account') {
     if (!loginForm.account) {
@@ -146,6 +143,24 @@ const handleLogin = () => {
     if (!loginForm.password) {
       ElMessage.warning('请输入密码')
       return
+    }
+    try {
+      const res: any = await api.loginOrRegisterApi({
+        usercode: loginForm.account,
+        vfCode: loginForm.password,
+        type: 2
+      })
+      if (res.data.code === 0) {
+        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+        localStorage.setItem('token', res.data.data.token)
+        ElMessage.success('登录成功')
+        closeLoginModal()
+        userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
+      } else {
+        ElMessage.error(res.data.message || '登录失败')
+      }
+    } catch (error) {
+      ElMessage.error('登录失败')
     }
   }
   else if (loginType.value === 'card') {
@@ -160,19 +175,23 @@ const handleLogin = () => {
   }
 }
 
+// 下拉菜单
 const buttonRef = ref()
 const popoverRef = ref()
 function onClickOutside() {
   unref(popoverRef).popperRef?.delayHide?.()
 }
+
 // 跳转个人信息
 function goUserCenter() {
   window.location.href = '/personalInfo'
 }
+
 // 退出登录
-function logoutFunction() {
-  api.signOutApi().then((res: any) => {
-    if (res) {
+const logoutFunction = async () => {
+  try {
+    const res: any = await api.signOutApi()
+    if (res.data.code === 0) {
       ElMessage({
         type: 'success',
         message: '退出成功',
@@ -180,8 +199,13 @@ function logoutFunction() {
       window.localStorage.removeItem('token')
       window.localStorage.removeItem('userInfo')
       userInfo.value = {}
+      window.location.href = '/'
+    } else {
+      ElMessage.error(res.data.message || '退出登录失败')
     }
-  })
+  } catch (error) {
+    ElMessage.error('退出登录失败')
+  }
 }
 </script>
 
@@ -195,8 +219,9 @@ function logoutFunction() {
           <span
             class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">聪志愿AI</span>
         </a>
-        <el-select v-model="shengfen" placeholder="Select" class="shengfen-select" @change="handleShengfenChange">
-          <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select v-model="shengfen" placeholder="Select" class="shengfen-select">
+          <el-option v-for="(item, index) in provinceList" :key="index" :label="item.disp" :value="item.disp">
+          </el-option>
         </el-select>
       </div>
       <div class="nav-menu">
@@ -282,10 +307,10 @@ function logoutFunction() {
               </template>
             </el-input>
           </el-form-item>
-          <div class="form-options">
+          <!-- <div class="form-options">
             <el-checkbox v-model="loginForm.remember">记住密码</el-checkbox>
             <a href="#" class="forgot-link">忘记密码？</a>
-          </div>
+          </div> -->
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="志愿卡登录" name="card">
