@@ -42,7 +42,6 @@ export function passModiApi(data: any) {
   return api.post('/mod/gen/VfCodeModi.ajax.php', data)
 }
 
-// Tip: 返回数据无路由path name
 // 上部导航栏显示查询
 export function navQueryApi() {
   return api.post('/mod/homePage/NavigationQuery.ajax.php')
@@ -69,7 +68,6 @@ export function tddwListApi(data: any) {
   return api.post('/mod/zhiYuan/TddwList.ajax.php', data)
 }
 
-// Tip： 返回空数组
 // 通用复选框列表查询
 // a.token:用户token，必选
 // b.genType 查询类型字段（yxxz:院校性质prov:省份 yxts:院校特色zyts:专业特色）
@@ -88,7 +86,6 @@ export function yxqueryBymcApi(data: any) {
   return api.post('/mod/zhiYuan/YxqueryBymc.ajax.php', data)
 }
 
-// Tip:有的专业没有value
 // 名称模糊查询专业列表
 // a.token:用户token，必选
 // c.zymc:专业名称
@@ -117,7 +114,6 @@ export function ejxklistApi(data: any) {
   return api.post('/mod/zhiYuan/Ejxklist.ajax.php', data)
 }
 
-// Tip: 未开发
 // 专业模式志愿查询
 // a.token:用户token，必选
 // b.ccdm：层次 1本科 2专科，单选
@@ -136,7 +132,6 @@ export function lqInfoZyQueryApi(data: any) {
   return api.post('/mod/zhiYuan/LqInfoZyQuery.ajax.php', data)
 }
 
-// Tip: 未开发
 // 专业组模式志愿查询
 // a.token:用户token，必选
 // b.ccdm：层次 1本科 2专科，单选
@@ -155,7 +150,6 @@ export function lqInfoZyGroupQueryApi(data: any) {
   return api.post('/mod/zhiYuan/LqInfoZyGroupQuery.ajax.php', data)
 }
 
-// Tip: 未开发
 // 单个志愿填报
 // a.token:用户token，必选
 // d.zyId 要收藏的志愿id
@@ -165,7 +159,6 @@ export function myChioesAddApi(data: any) {
   return api.post('/mod/zhiYuan/MyChioesAdd.ajax.php', data)
 }
 
-// Tip: 未开发
 // 批量志愿填报
 // a.token:用户token，必选
 // g.jsonStr: json字符串，格式{"Rs":[{"zyid":2926,"lqbl":0.131,"lqdc":4}]}
@@ -180,7 +173,6 @@ export function myChioesGroupQueryApi(data: any) {
   return api.post('/mod/zhiYuan/MyChoicesGroupQuery.ajax.php', data)
 }
 
-// Tip: 未开发
 // 专业模式收藏查询
 // c.token:用户token，必选
 // d.chGroupId 我的收藏组id
@@ -188,7 +180,6 @@ export function zyChoicesQueryApi(data: any) {
   return api.post('/mod/zhiYuan/ZyChoicesQuery.ajax.php', data)
 }
 
-// Tip: 未开发
 // 专业组模式收藏查询
 // a.token:用户token，必选
 // b.chGroupId 我的收藏组id
@@ -203,7 +194,6 @@ export function delChoiceApi(data: any) {
   return api.post('/mod/zhiYuan/DelChoice.ajax.php', data)
 }
 
-// Tip: 未开发
 // 删除收藏专业组
 // a.token:用户token，必选
 // b.chZyGroupId 要删除的分组id
@@ -211,7 +201,6 @@ export function delChoiceGroupApi(data: any) {
   return api.post('/mod/zhiYuan/DelChoiceGroup.ajax.php', data)
 }
 
-// Tip: xuankeStr物理,化学，生物 逗号分割
 // 个人信息查询
 // a.token:用户token，必选
 export function myuserInfoQueryApi(data: any) {
