@@ -31,7 +31,11 @@ export function signOutApi() {
 // a.newPass:新密码
 // d.vfCode: 手机验证码(重置密码)
 export function passResetApi(data: any) {
-  return api.post('/mod/gen/PassReset.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/gen/PassReset.ajax.php`, params)
 }
 
 // 用户修改密码
@@ -39,7 +43,11 @@ export function passResetApi(data: any) {
 // b.oldPass:旧密码
 // c.newPass:新密码
 export function passModiApi(data: any) {
-  return api.post('/mod/gen/VfCodeModi.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/gen/VfCodeModi.ajax.php`, params)
 }
 
 // 上部导航栏显示查询
@@ -204,16 +212,25 @@ export function delChoiceGroupApi(data: any) {
 // 个人信息查询
 // a.token:用户token，必选
 export function myuserInfoQueryApi(data: any) {
-  return api.post('/mod/user/MyuserInfoQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/user/MyuserInfoQuery.ajax.php`, params)
 }
 
 // 考试类别小类查询
 // c.token:用户token，必选
 // d.wctype 考试类别代码为2时才有数据
 export function yklmQueryApi(data: any) {
-  return api.post('/mod/user/YklmQuery.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/user/YklmQuery.ajax.php`, params)
 }
 
+// tips: xuankeStr 保存用字母，查询返回文字
 // 个人信息保存
 // 1.传入参数：
 // a.token:用户token，必选
@@ -227,7 +244,11 @@ export function yklmQueryApi(data: any) {
 // k.wc  位次
 // l.xkkm  逗号分割选科字符传,物理A化学B生物C历史D地理E政治F
 export function myUserInfoSaveApi(data: any) {
-  return api.post('/mod/user/MyUserInfoSave.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/user/MyUserInfoSave.ajax.php`, params)
 }
 
 // 输入分数查询位次查询
@@ -236,5 +257,9 @@ export function myUserInfoSaveApi(data: any) {
 // c.wctype 考试类别
 // d.yklm 用户为艺术类时的小类,可为空
 export function wcQueryBycjApi(data: any) {
-  return api.post('/mod/user/WcQueryBycj.ajax.php', data)
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/user/WcQueryBycj.ajax.php`, params)
 }

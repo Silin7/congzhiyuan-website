@@ -4,20 +4,11 @@ import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
 
 onMounted(() => {
+  genListQueryList()
+  getYklmQuery()
   getMyuserInfoQuery()
 })
 
-const personalInfo = ref<any>({})
-function getMyuserInfoQuery() {
-  api.myuserInfoQueryApi({
-    token: window.localStorage.getItem('token') || ''
-  }).then(res => {
-    personalInfo.value = res.data || {}
-    selectedSubjects.value = personalInfo.value.xuankeStr.split(',') || []
-  })
-}
-
-// 声明响应式变量
 // 选中的导航项 - 可选值：'basic-info', 'seeting-password', 'change-password', 'my-collections'
 const selectedNavItem = ref('basic-info')
 const handleNavItemClick = (navItem: string) => {
@@ -26,10 +17,47 @@ const handleNavItemClick = (navItem: string) => {
   // 这里可以添加页面切换或内容加载逻辑
 }
 
+// 个人信息
+const personalInfo: any = ref<any>({})
+const personalForm: any = ref({})
+const getMyuserInfoQuery = async () => {
+  try {
+    const res = await api.myuserInfoQueryApi({
+      token: window.localStorage.getItem('token') || ''
+    })
+    if (res.data.code == 0) {
+      personalInfo.value = res.data.data || {}
+      personalForm.value = JSON.parse(JSON.stringify(personalInfo.value))
+      selectedSubjects.value = personalForm.value.xuankeStr.split(',') || []
+    } else {
+      ElMessage.error(res.data.message || '获取个人信息失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取个人信息失败')
+  }
+}
+
+// 获取省份列表
+const provinceList = ref<any>([])
+const genListQueryList = async () => {
+  try {
+    const res = await api.genListQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      genType: 'prov'
+    })
+    if (res.data.code == 0) {
+      provinceList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取省份列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取省份列表失败')
+  }
+}
+
 // 选科信息
 const selectedSubjects = ref<string[]>([])
 const handleSubjectClick = (subject: string) => {
-  // 切换科目选中状态
   const index = selectedSubjects.value.indexOf(subject)
   if (index > -1) {
     selectedSubjects.value.splice(index, 1)
@@ -39,6 +67,64 @@ const handleSubjectClick = (subject: string) => {
   console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(', ')}`)
 }
 
+// 选科类型列表
+const wctypeList = [{ value: 1, disp: '普通类' }, { value: 2, disp: '艺术类' }, { value: 4, disp: '体育类' }]
+const wctypeChange = () => {
+  personalForm.value.yklm = ''
+}
+
+// 考试类别小类查询
+const subjectList = ref<any>([])
+const getYklmQuery = async () => {
+  try {
+    const res = await api.yklmQueryApi({
+      token: window.localStorage.getItem('token') || '',
+    })
+    if (res.data.code == 0) {
+      console.log(res);
+      subjectList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取高考科目列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取高考科目列表失败')
+  }
+}
+
+// 输入分数查询位次查询
+const cjInput = async () => {
+  try {
+    const res = await api.wcQueryBycjApi({
+      token: window.localStorage.getItem('token') || '',
+      cj: personalForm.value.cj,
+      wctype: personalForm.value.wctype,
+      yklm: personalForm.value.yklm,
+    })
+    if (res.data.code == 0) {
+      personalForm.value.wc = res.data.data.wc || ''
+    } else {
+      ElMessage.error(res.data.message || '查询失败')
+    }
+  } catch (error) {
+    ElMessage.error('查询失败')
+  }
+}
+
+// 个人信息保存
+const myUserInfoSaveBtn = async () => {
+  personalForm.value.token = window.localStorage.getItem('token') || ''
+  try {
+    const res = await api.myUserInfoSaveApi(personalForm.value)
+    if (res.data.code == 0) {
+      ElMessage.success('保存成功')
+    } else {
+      ElMessage.error(res.data.message || '保存失败')
+    }
+  } catch (error) {
+    ElMessage.error('保存失败')
+  }
+}
+
 // 设置密码
 const seetingpwdForm = ref({
   phone: '',
@@ -46,7 +132,7 @@ const seetingpwdForm = ref({
   newPass: '',
   confirmPass: '',
 })
-function handlePasswordSubmit() {
+const handlePasswordSubmit = async () => {
   if (!seetingpwdForm.value.code) {
     ElMessage.warning('请输入验证码')
     return
@@ -64,19 +150,25 @@ function handlePasswordSubmit() {
     return
   }
 
-  api.passResetApi({
-    token: window.localStorage.getItem('token') || '',
-    newPass: seetingpwdForm.value.newPass,
-    vfCode: seetingpwdForm.value.code,
-  }).then(res => {
-    console.log(res);
-    ElMessage.success('密码设置成功')
-    // 清空密码输入框
-    seetingpwdForm.value.phone = ''
-    seetingpwdForm.value.code = ''
-    seetingpwdForm.value.newPass = ''
-    seetingpwdForm.value.confirmPass = ''
-  })
+  try {
+    const res = await api.passResetApi({
+      token: window.localStorage.getItem('token') || '',
+      newPass: seetingpwdForm.value.newPass,
+      vfCode: seetingpwdForm.value.code,
+    })
+    if (res.data.code == 0) {
+      ElMessage.success('密码设置成功')
+      // 清空密码输入框
+      seetingpwdForm.value.phone = ''
+      seetingpwdForm.value.code = ''
+      seetingpwdForm.value.newPass = ''
+      seetingpwdForm.value.confirmPass = ''
+    } else {
+      ElMessage.error(res.data.message || '密码设置失败')
+    }
+  } catch (error) {
+    ElMessage.error('密码设置失败')
+  }
 }
 
 // 发送验证码
@@ -104,12 +196,13 @@ const sendCode = async () => {
   }
 }
 
+// 修改密码
 const changePasswordForm = ref({
   oldPass: '',
   newPass: '',
   confirmPass: '',
 })
-function handleChangePasswordSubmit() {
+const handleChangePasswordSubmit = async () => {
   if (!changePasswordForm.value.oldPass) {
     ElMessage.warning('请输入旧密码')
     return
@@ -126,18 +219,24 @@ function handleChangePasswordSubmit() {
     ElMessage.warning('两次输入的密码不一致')
     return
   }
-  api.passModiApi({
-    token: window.localStorage.getItem('token') || '',
-    oldPass: changePasswordForm.value.oldPass,
-    newPass: changePasswordForm.value.newPass,
-  }).then(res => {
-    console.log(res);
-    ElMessage.success('密码修改成功')
-    // 清空密码输入框
-    changePasswordForm.value.oldPass = ''
-    changePasswordForm.value.newPass = ''
-    changePasswordForm.value.confirmPass = ''
-  })
+  try {
+    const res: any = await api.passModiApi({
+      token: window.localStorage.getItem('token') || '',
+      oldPass: changePasswordForm.value.oldPass,
+      newPass: changePasswordForm.value.newPass,
+    })
+    if (res.data.code === 0) {
+      ElMessage.success('密码修改成功')
+      // 清空密码输入框
+      changePasswordForm.value.oldPass = ''
+      changePasswordForm.value.newPass = ''
+      changePasswordForm.value.confirmPass = ''
+    } else {
+      ElMessage.error(res.data.message || '密码修改失败')
+    }
+  } catch (error) {
+    ElMessage.error('密码修改失败')
+  }
 }
 </script>
 
@@ -161,7 +260,7 @@ function handleChangePasswordSubmit() {
             </div>
             <div class="ml-4">
               <h3 class="text-lg font-bold text-neutral">{{ personalInfo.userName || '' }}</h3>
-              <p class="text-sm text-neutral-400">山东(zw)</p>
+              <p class="text-sm text-neutral-400">{{ personalInfo.province || '' }}</p>
             </div>
           </div>
           <nav class="mt-6 space-y-2">
@@ -249,92 +348,45 @@ function handleChangePasswordSubmit() {
                   <!-- 手机号码 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">手机号码</label>
-                    <div class="relative">
-                      <input
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                        name="mobile" pattern="1[0-9]{10}" :required="true" type="tel" value="13800138000(zw)" />
-                      <div class="absolute top-1/2 transform -translate-y-1/2 right-4">
-                        <span class="text-accent">已验证</span>
-                      </div>
-                    </div>
+                    <el-input type="tel" v-model="personalForm.phone" placeholder="请输入手机号码"
+                      :disabled="personalForm.ifEditPhone === 0" class="input-tall44px">
+                      <template #suffix>
+                        已验证
+                      </template>
+                    </el-input>
                     <p class="mt-2 text-sm text-neutral-400">用于接收志愿填报提醒和系统通知</p>
                   </div>
                   <!-- 昵称 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">昵称</label>
-                    <div class="flex">
-                      <input
-                        class="flex-grow px-4 py-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                        maxlength="16" name="nickname" :required="true" type="text"
-                        :value="personalInfo.userName || ''" />
-                      <button
-                        class="px-4 bg-gray-100 border-y border-r border-gray-300 rounded-r-lg text-neutral-600 hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-                          viewBox="0 0 32 32" data-icon="carbon:edit" class="iconify iconify--carbon">
-                          <path fill="currentColor"
-                            d="M2 26h28v2H2zM25.4 9c.8-.8.8-2 0-2.8l-3.6-3.6c-.8-.8-2-.8-2.8 0l-15 15V24h6.4zm-5-5L24 7.6l-3 3L17.4 7zM6 22v-3.6l10-10l3.6 3.6l-10 10z">
-                          </path>
-                        </svg>
-                      </button>
-                    </div>
+                    <el-input v-model="personalForm.userName" placeholder="请输入昵称" class="input-tall44px">
+                      <template #suffix>
+                        <el-icon class="el-input__icon">
+                          <Edit />
+                        </el-icon>
+                      </template>
+                    </el-input>
                     <p class="mt-2 text-sm text-neutral-400">系统中显示的名称</p>
                   </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- 性别 -->
                   <div>
-                    <label class="block text-sm font-medium text-neutral mb-2">性别(zw)</label>
-                    <div class="flex space-x-6">
-                      <label class="flex items-center">
-                        <input class="h-4 w-4 text-primary border-gray-300 focus:ring-primary" name="gender"
-                          type="radio" value="male" />
-                        <span class="ml-2 text-neutral">男</span>
-                      </label>
-                      <label class="flex items-center">
-                        <input class="h-4 w-4 text-primary border-gray-300 focus:ring-primary" name="gender"
-                          type="radio" value="female" />
-                        <span class="ml-2 text-neutral">女</span>
-                      </label>
-                    </div>
+                    <label class="block text-sm font-medium text-neutral mb-2">性别</label>
+                    <el-radio-group v-model="personalForm.sex">
+                      <el-radio :value="1" size="large">男</el-radio>
+                      <el-radio :value="2" size="large">女</el-radio>
+                    </el-radio-group>
                   </div>
                   <!-- 省份 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">所在省份</label>
-                    <select
-                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                      name="province">
-                      <option value="北京">北京</option>
-                      <option value="天津">天津</option>
-                      <option value="河北">河北</option>
-                      <option value="山西">山西</option>
-                      <option value="内蒙古">内蒙古</option>
-                      <option value="辽宁">辽宁</option>
-                      <option value="吉林">吉林</option>
-                      <option value="黑龙江">黑龙江</option>
-                      <option value="上海">上海</option>
-                      <option value="江苏">江苏</option>
-                      <option value="浙江">浙江</option>
-                      <option value="安徽">安徽</option>
-                      <option value="福建">福建</option>
-                      <option value="江西">江西</option>
-                      <option value="山东">山东</option>
-                      <option value="河南">河南</option>
-                      <option value="湖北">湖北</option>
-                      <option value="湖南">湖南</option>
-                      <option value="广东">广东</option>
-                      <option value="广西">广西</option>
-                      <option value="海南">海南</option>
-                      <option value="重庆">重庆</option>
-                      <option value="四川">四川</option>
-                      <option value="贵州">贵州</option>
-                      <option value="云南">云南</option>
-                      <option value="西藏">西藏</option>
-                      <option value="陕西">陕西</option>
-                      <option value="甘肃">甘肃</option>
-                      <option value="青海">青海</option>
-                      <option value="宁夏">宁夏</option>
-                      <option value="新疆">新疆</option>
-                    </select>
+                    <el-select v-model="personalForm.province" placeholder="请选择省份"
+                      :disabled="personalForm.remainEditNum <= 0" class="select-tall44px">
+                      <el-option v-for="(item, index) in provinceList" :key="index" :label="item.disp"
+                        :value="item.disp">
+                      </el-option>
+                    </el-select>
                   </div>
                 </div>
                 <!-- 选科信息 -->
@@ -390,40 +442,51 @@ function handleChangePasswordSubmit() {
                       <span class="text-neutral font-medium">地理</span>
                     </label>
                   </div>
-                  <p class="mt-2 text-sm text-neutral-400">请选择高考选科科目</p>
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-neutral mb-2">高考选科科目</label>
+                    <el-select v-model="personalForm.wctype" placeholder="请选择高考选科科目"
+                      :disabled="personalForm.remainEditNum <= 0" class="select-tall44px" @change="wctypeChange">
+                      <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.disp"
+                        :value="item.value">
+                      </el-option>
+                    </el-select>
+                  </div>
+                  <div v-if="personalForm.wctype == 2">
+                    <label class="block text-sm font-medium text-neutral mb-2">高考选科科目</label>
+                    <el-select v-model="personalForm.yklm" placeholder="请选择高考选科科目"
+                      :disabled="personalForm.remainEditNum <= 0" class="select-tall44px">
+                      <el-option v-for="(item, index) in subjectList" :key="index" :label="item.yklmStr"
+                        :value="item.yklm">
+                      </el-option>
+                    </el-select>
+                  </div>
+                </div>
+
                 <!-- 分数和位次 -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- 高考分数 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">高考分数</label>
-                    <input
-                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                      max="750" min="0" name="score" placeholder="请输入您的高考总分" type="number"
-                      :value="personalInfo.cj || ''" />
+                    <el-input-number max="750" min="0" name="score" placeholder="请输入您的高考总分" type="number"
+                      v-model="personalForm.cj" :disabled="personalForm.remainEditNum <= 0" @input="cjInput"
+                      class="input-tall44px" />
                     <p class="mt-2 text-sm text-neutral-400">总分范围：0-750分</p>
                   </div>
                   <!-- 位次 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">位次</label>
-                    <input
-                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition"
-                      min="1" name="ranking" placeholder="请输入您的省内位次" type="number" :value="personalInfo.wc || ''" />
+                    <el-input-number min="1" name="ranking" placeholder="请输入您的省内位次" type="number"
+                      v-model="personalForm.wc" :disabled="personalForm.remainEditNum <= 0" class="input-tall44px" />
                     <p class="mt-2 text-sm text-neutral-400">请输入省内排名位次</p>
                   </div>
                 </div>
               </div>
               <!-- 表单操作区 -->
               <div class="border-t mt-8 pt-8 flex justify-end space-x-4">
-                <button class="px-8 py-3 border border-gray-300 rounded-lg text-neutral hover:bg-gray-50 transition"
-                  type="button">
-                  取消
-                </button>
-                <button
-                  class="px-8 py-3 background-gradient bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
-                  type="submit">
-                  保存个人信息
-                </button>
+                <el-button type="primary" class="background-gradient hover:opacity-90 elbutton44px"
+                  @click="myUserInfoSaveBtn">保存个人信息</el-button>
               </div>
             </form>
           </div>
@@ -485,11 +548,8 @@ function handleChangePasswordSubmit() {
             </el-form>
             <!-- 表单操作区 -->
             <div class="border-t mt-8 pt-8 flex justify-end space-x-4">
-              <button
-                class="px-8 py-3 background-gradient bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
-                type="submit" @click="handlePasswordSubmit">
-                保存密码
-              </button>
+              <el-button type="primary" class="background-gradient hover:opacity-90 elbutton44px"
+                @click="handlePasswordSubmit">保存密码</el-button>
             </div>
           </div>
         </div>
@@ -537,11 +597,8 @@ function handleChangePasswordSubmit() {
             </el-form>
             <!-- 表单操作区 -->
             <div class="border-t mt-8 pt-8 flex justify-end space-x-4">
-              <button
-                class="px-8 py-3 background-gradient bg-gradient-to-r from-primary to-secondary rounded-lg text-white font-medium hover:opacity-90 transition"
-                type="submit" @click="handleChangePasswordSubmit">
-                保存密码
-              </button>
+              <el-button type="primary" class="background-gradient hover:opacity-90 elbutton44px"
+                @click="handleChangePasswordSubmit">保存密码</el-button>
             </div>
           </div>
         </div>

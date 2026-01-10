@@ -28,13 +28,20 @@
   }
 }
 
-// 输入框高度 44px
-.input-tall44px {
-  height: 44px;
-  line-height: 44px;
-}
-
 // select 圆角
 .el-select__wrapper {
   border-radius: 0.375rem !important;
+}
+
+// 按钮高度 44px
+.elbutton44px {
+  height: 44px !important;
+  line-height: 44px !important;
+}
+
+// 输入框高度 44px
+.input-tall44px {
+  width: 100% !important;
+  height: 44px;
+  line-height: 44px;
 }
