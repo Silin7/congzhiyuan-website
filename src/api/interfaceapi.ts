@@ -1,4 +1,3 @@
-import api from '@/api/index'
 import axios from 'axios'
 import { baseURL } from '@/api/baseConfig'
 
@@ -25,7 +24,7 @@ export function loginOrRegisterApi(data: any) {
   return axios.post(`${baseURL}/mod/gen/SignIn.ajax.php`, params)
 }
 
-// 退出登录
+// 用户退出
 export function signOutApi() {
   return axios.post(`${baseURL}/mod/gen/SignOut.ajax.php`)
 }
@@ -147,7 +146,6 @@ export function yjxklistApi(data: any) {
   return axios.post(`${baseURL}/mod/zhiYuan/Yjxklist.ajax.php`, params)
 }
 
-// tips: 没有Rs data即为数组
 // 二级学科查询
 // c.token:用户token，必选
 // d.yjxk:一级学科代码
@@ -291,6 +289,30 @@ export function myuserInfoQueryApi(data: any) {
   })
   return axios.post(`${baseURL}/mod/user/MyuserInfoQuery.ajax.php`, params)
 }
+
+// 考生可选省份查询
+// a.token:用户token，必选
+export function userProvQueryApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/user/UserProvQuery.ajax.php`, params)
+}
+
+
+// tips: wctype 用户信息返回int 此接口返回char
+// 考生类别查询
+// b.token: 用户token，必选
+// c.province 省份
+export function WctypeQueryApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/mod/user/WctypeQuery.ajax.php`, params)
+}
+
 
 // 考试类别小类查询
 // c.token:用户token，必选

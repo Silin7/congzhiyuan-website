@@ -15,6 +15,7 @@ onMounted(() => {
     getMyChioesGroupQuery()
   }
   genListQueryList()
+  getwctypeList()
   getYklmQuery()
   getMyuserInfoQuery()
 })
@@ -54,9 +55,8 @@ const getMyuserInfoQuery = async () => {
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
   try {
-    const res = await api.genListQueryApi({
+    const res = await api.userProvQueryApi({
       token: window.localStorage.getItem('token') || '',
-      genType: 'prov'
     })
     if (res.data.code == 0) {
       provinceList.value = res.data.data.Rs || []
@@ -80,8 +80,23 @@ const handleSubjectClick = (subject: string) => {
   console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(', ')}`)
 }
 
-// 选科类型列表
-const wctypeList = [{ value: 1, disp: '普通类' }, { value: 2, disp: '艺术类' }, { value: 4, disp: '体育类' }]
+// 考生类别查询
+const wctypeList: any = ref([])
+const getwctypeList = async () => {
+  try {
+    const res = await api.WctypeQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      province: personalForm.value.province || ''
+    })
+    if (res.data.code == 0) {
+      wctypeList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取考生类别列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取考生类别列表失败')
+  }
+}
 const wctypeChange = () => {
   personalForm.value.yklm = ''
 }
@@ -92,6 +107,7 @@ const getYklmQuery = async () => {
   try {
     const res = await api.yklmQueryApi({
       token: window.localStorage.getItem('token') || '',
+      province: personalForm.value.province || ''
     })
     if (res.data.code == 0) {
       console.log(res);
@@ -505,8 +521,8 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                     <label class="block text-sm font-medium text-neutral mb-2">所在省份</label>
                     <el-select v-model="personalForm.province" placeholder="请选择省份"
                       :disabled="personalForm.remainEditNum <= 0" class="select-tall44px">
-                      <el-option v-for="(item, index) in provinceList" :key="index" :label="item.disp"
-                        :value="item.disp">
+                      <el-option v-for="(item, index) in provinceList" :key="index" :label="item.province"
+                        :value="item.province">
                       </el-option>
                     </el-select>
                   </div>
@@ -570,8 +586,8 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                     <label class="block text-sm font-medium text-neutral mb-2">高考选科科目</label>
                     <el-select v-model="personalForm.wctype" placeholder="请选择高考选科科目"
                       :disabled="personalForm.remainEditNum <= 0" class="select-tall44px" @change="wctypeChange">
-                      <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.disp"
-                        :value="item.value">
+                      <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.wctypeStr"
+                        :value="item.wctype">
                       </el-option>
                     </el-select>
                   </div>
