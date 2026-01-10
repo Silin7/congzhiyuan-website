@@ -18,6 +18,22 @@
   }
 }
 
+// select 高度 44px
+.select-tall44px {
+  border-radius: 0.375rem !important;
+
+  .el-select__wrapper {
+    height: 44px;
+    line-height: 44px;
+  }
+}
+
+// 输入框高度 44px
+.input-tall44px {
+  height: 44px;
+  line-height: 44px;
+}
+
 // select 圆角
 .el-select__wrapper {
   border-radius: 0.375rem !important;
