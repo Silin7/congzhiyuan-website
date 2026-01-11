@@ -13,7 +13,8 @@ onMounted(() => {
   getMajorFeatureList()
 })
 
-const isCollapsed = ref(true)
+// 展开或收起
+const isCollapsed = ref(false)
 
 // 院校层次
 const selectedSchoolLevel = ref('1')
@@ -21,6 +22,8 @@ const handleSchoolLevelClick = (level: string) => {
   selectedSchoolLevel.value = level
   selectedAdmissionBatch.value = ''
   selectedAdmissionType.value = ''
+  getPcList()
+  getDisciplineCategoriesList()
 }
 
 // 录取批次
@@ -130,6 +133,10 @@ const getSchoolNatures = async () => {
 }
 const selectedSchoolNature = ref('')
 const handleSchoolNatureClick = (nature: string) => {
+  if (nature === '0') {
+    selectedAdmissionBatch.value = '0'
+    selectedAdmissionType.value = ''
+  }
   selectedSchoolNature.value = nature
   console.log(`选择了院校性质: ${nature}`)
 }
@@ -153,6 +160,16 @@ const getProvinceList = async () => {
 }
 const selectedProvince = ref<string[]>([])
 const handleProvinceClick = (province: string) => {
+  if (province === '0') {
+    selectedProvince.value = ['0']
+    return
+  } else {
+    const index = selectedProvince.value.indexOf('0')
+    console.log('-------->', index)
+    if (index > -1) {
+      selectedProvince.value.splice(index, 1)
+    }
+  }
   // 切换省份选中状态
   const index = selectedProvince.value.indexOf(province)
   if (index > -1) {
@@ -212,10 +229,16 @@ const getMajorFeatureList = async () => {
     ElMessage.error('获取省份列表失败')
   }
 }
-const selectedMajorFeature = ref('')
+const selectedMajorFeature: any = ref([])
 const handleMajorFeatureClick = (feature: string) => {
-  selectedMajorFeature.value = feature
-  console.log(`选择了院校特色: ${feature}`)
+  // 切换院校特色选中状态
+  const index = selectedMajorFeature.value.indexOf(feature)
+  if (index > -1) {
+    selectedMajorFeature.value.splice(index, 1)
+  } else {
+    selectedMajorFeature.value.push(feature)
+  }
+  console.log(`选择了院校特色: ${selectedMajorFeature.value.join(', ')}`)
 }
 
 // 学科门类
@@ -320,16 +343,15 @@ const lqInfoZyQuery = async () => {
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value,
-    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value, genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
-    // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
+    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     zydm: selectedMajor.value,
     lqdc: selectedRiskLevel.value.join(','),
-    startrow: currentPage.value,
-    pagesize: pageSize.value,
     progressChong: riskThreshold.value,
     progressBao: safeThreshold.value,
+    startrow: currentPage.value,
+    pagesize: pageSize.value,
   }
-  console.log('专业模式 - 志愿查询 -------->', data, data.genList)
+  console.log('专业模式 - 志愿查询 -------->', JSON.stringify(data))
   try {
     const res = await api.lqInfoZyQueryApi(data)
     if (res.data.code == 0) {
@@ -424,16 +446,15 @@ const lqInfoZyGroupQuery = async () => {
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value,
-    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value, genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
-    // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
+    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     zydm: selectedMajor.value,
     lqdc: selectedRiskLevel.value.join(','),
-    startrow: currentPage.value,
-    pagesize: pageSize.value,
     progressChong: riskThreshold.value,
     progressBao: safeThreshold.value,
+    startrow: currentPage.value,
+    pagesize: pageSize.value,
   }
-  console.log('专业组模式 - 志愿查询 -------->', data, data.genList)
+  console.log('专业组模式 - 志愿查询 -------->', JSON.stringify(data))
   try {
     const res = await api.lqInfoZyGroupQueryApi(data)
     if (res.data.code == 0) {
@@ -517,6 +538,10 @@ const goMyAspiration = () => {
           <div v-if="selectedSchoolLevel" class="tagBox">
             <div class="tagTitle">录取批次：</div>
             <div class="tagContent">
+              <div :class="selectedAdmissionBatch === '0' ? 'primaryTag' : 'infoTag'"
+                @click="handleAdmissionBatchClick('0')">
+                不限
+              </div>
               <div v-for="(item, index) in admissionBatch" :key="index"
                 :class="selectedAdmissionBatch === item.pcdm ? 'primaryTag' : 'infoTag'"
                 @click="handleAdmissionBatchClick(item.pcdm)">
@@ -524,7 +549,7 @@ const goMyAspiration = () => {
               </div>
             </div>
           </div>
-          <div v-if="selectedAdmissionBatch" class="tagBox">
+          <div v-if="selectedAdmissionBatch && selectedAdmissionBatch != '0'" class="tagBox">
             <div class="tagTitle">录取类型：</div>
             <div class="tagContent">
               <div v-for="(item, index) in admissionTypes" :key="index"
@@ -545,6 +570,10 @@ const goMyAspiration = () => {
           <div class="tagBox">
             <div class="tagTitle">院校性质：</div>
             <div class="tagContent">
+              <div :class="selectedSchoolNature === '0' ? 'primaryTag' : 'infoTag'"
+                @click="handleSchoolNatureClick('0')">
+                不限
+              </div>
               <div v-for="(item, index) in schoolNatures" :key="index"
                 :class="selectedSchoolNature === item.id ? 'primaryTag' : 'infoTag'"
                 @click="handleSchoolNatureClick(item.id)">
@@ -556,7 +585,7 @@ const goMyAspiration = () => {
             <div class="tagTitle">院校特色：</div>
             <div class="tagContent">
               <div v-for="(item, index) in selectedMajorFeatureList" :key="index"
-                :class="selectedMajorFeature === item.id ? 'primaryTag' : 'infoTag'"
+                :class="selectedMajorFeature.includes(item.id) ? 'primaryTag' : 'infoTag'"
                 @click="handleMajorFeatureClick(item.id)">
                 {{ item.disp }}
               </div>
@@ -568,9 +597,12 @@ const goMyAspiration = () => {
               <p>（可多选）</p>
             </div>
             <div class="tagContent">
+              <div :class="selectedProvince.includes('0') ? 'primaryTag' : 'infoTag'" @click="handleProvinceClick('0')">
+                全选
+              </div>
               <div v-for="(item, index) in provinceList" :key="index"
-                :class="selectedProvince.includes(item.province) ? 'primaryTag' : 'infoTag'"
-                @click="handleProvinceClick(item.province)">
+                :class="selectedProvince.includes(item.id) ? 'primaryTag' : 'infoTag'"
+                @click="handleProvinceClick(item.id)">
                 {{ item.province }}
               </div>
             </div>
@@ -582,8 +614,7 @@ const goMyAspiration = () => {
               <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
                 :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" @change="handleMajorNameChange"
                 class="select-tall38px">
-                <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text"
-                  :value="item.id" />
+                <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text" :value="item.id" />
               </el-select>
             </el-col>
             <el-col :span="6">
