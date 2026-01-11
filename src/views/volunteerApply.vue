@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { Icon } from '@iconify/vue'
-import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage } from 'element-plus'
+import { ElTable, ElTableColumn, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
-import { useRouter } from 'vue-router'
 
 onMounted(() => {
   getPcList()
@@ -11,6 +10,7 @@ onMounted(() => {
   getSchoolNatures()
   getProvinceList()
   getMajorFeatureList()
+  getMyChioesGroupQuery()
 })
 
 // 展开或收起
@@ -27,7 +27,7 @@ const handleSchoolLevelClick = (level: string) => {
 }
 
 // 录取批次
-const admissionBatch: any = ref([{ pcdm: '1', pcmc: '本科提前批' }, { pcdm: '2', pcmc: '本科常规批' }, { pcdm: '3', pcmc: '专科批次' }])
+const admissionBatch: any = ref([])
 const getPcList = async () => {
   try {
     const res = await api.pcListApi({
@@ -384,7 +384,6 @@ const zyHandleApply = async (row: any) => {
   } catch (error) {
     ElMessage.error('填报失败')
   }
-  // zyHandleCollect(row)
 }
 
 // 专业模式 - 批量填报
@@ -428,17 +427,6 @@ const handleBatchAdd = async () => {
   }
 }
 
-// 专业模式 - 收藏
-const zyHandleCollect = async (row: any) => {
-  const res = await api.zyChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    chGroupId: row.chId,
-  })
-  if (res.data.code == 0) {
-    console.log('-------->', '收藏成功')
-  }
-}
-
 // 专业组模式志愿查询
 const lqInfoZyGroupQuery = async () => {
   const data = {
@@ -471,23 +459,6 @@ const lqInfoZyGroupQuery = async () => {
   }
 }
 
-// 专业组模式收藏查询
-const zyGroupHandleCollect = async (row: any) => {
-  try {
-    const res = await api.zyGroupChoicesQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      chGroupId: row.chId,
-    })
-    if (res.data.code == 0) {
-      ElMessage.success('收藏成功')
-    } else {
-      ElMessage.error(res.data.message || '收藏失败')
-    }
-  } catch (error) {
-    ElMessage.error('收藏失败')
-  }
-}
-
 // 合并表格
 const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
   console.log('-------->', row, rowIndex, columnIndex)
@@ -513,11 +484,100 @@ const handleSizeChange = (size: number) => {
   }
 }
 
-// goMyAspiration 跳转我的志愿页面
-const router = useRouter()
+// 我的志愿 跳转我的志愿页面
+const collectionDrawer = ref(false)
 const goMyAspiration = () => {
-  router.push({ path: '/personalInfo', query: { tab: 'my-collections' } })
+  if (!selectedSchoolLevel.value) {
+    ElMessage.warning('请选择院校层次')
+    return
+  }
+  if (!selectedAdmissionBatch.value) {
+    ElMessage.warning('请选择录取批次')
+    return
+  }
+  collectionDrawer.value = true
+  getMyChioesGroupQuery()
 }
+
+// 我的志愿 - 最外层
+const myChioesGroupQueryState = ref('initQuery')
+const myChioesGroupQueryList: any = ref([])
+const getMyChioesGroupQuery = async () => {
+  myChioesGroupQueryState.value = 'initQuery'
+  try {
+    const res: any = await api.myChioesGroupQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      ccdm: selectedSchoolLevel.value,
+      pcdm: selectedAdmissionBatch.value,
+    })
+    if (res.data.code === 0) {
+      myChioesGroupQueryList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '查询失败')
+    }
+  } catch (error) {
+    ElMessage.error('查询失败')
+  }
+}
+
+// 专业模式 - 收藏
+const zyHandleCollectList: any = ref([])
+const zyHandleCollectItem: any = ref({})
+const zyHandleCollect = async (row: any) => {
+  myChioesGroupQueryState.value = 'zyQuery'
+  zyHandleCollectItem.value = row
+  try {
+    const res = await api.zyChoicesQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      chGroupId: row.chGroupId,
+    })
+    if (res.data.code == 0) {
+      zyHandleCollectList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '收藏失败')
+    }
+  } catch (error) {
+    ElMessage.error('收藏失败')
+  }
+}
+
+// 专业模式 - 删除收藏
+const zyHandleDelete = async (row: any) => {
+  try {
+    const res: any = await api.delChoiceApi({
+      token: window.localStorage.getItem('token') || '',
+      chId: row.chId,
+    })
+    if (res.data.code === 0) {
+      ElMessage.success('删除成功')
+      // 刷新收藏分组查询
+      zyHandleCollect(zyHandleCollectItem.value)
+    } else {
+      ElMessage.error(res.data.message || '删除失败')
+    }
+  } catch (error) {
+    ElMessage.error('删除失败')
+  }
+}
+
+// 专业组模式收藏查询
+const zyGroupHandleCollect = async (row: any) => {
+  try {
+    const res = await api.zyGroupChoicesQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      chGroupId: row.chId,
+    })
+    if (res.data.code == 0) {
+      ElMessage.success('收藏成功')
+    } else {
+      ElMessage.error(res.data.message || '收藏失败')
+    }
+  } catch (error) {
+    ElMessage.error('收藏失败')
+  }
+}
+
+
 </script>
 
 <template>
@@ -823,7 +883,8 @@ const goMyAspiration = () => {
                   </div>
                   <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                   <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
-                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1 }}</span></div>
+                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1 }}</span>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -838,7 +899,8 @@ const goMyAspiration = () => {
                   </div>
                   <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                   <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
-                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2 }}</span></div>
+                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2 }}</span>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -853,7 +915,8 @@ const goMyAspiration = () => {
                   </div>
                   <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                   <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
-                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3 }}</span></div>
+                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3 }}</span>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -866,7 +929,8 @@ const goMyAspiration = () => {
             </el-table-column>
             <el-table-column label="操作" width="80" align="center">
               <template #default="scope">
-                <el-button v-if="scope.row.chId == 0" text type="primary" size="small" @click="zyHandleApply(scope.row)">
+                <el-button v-if="scope.row.chId == 0" text type="primary" size="small"
+                  @click="zyHandleApply(scope.row)">
                   填报
                 </el-button>
               </template>
@@ -887,7 +951,7 @@ const goMyAspiration = () => {
                 </el-table>
               </template>
             </el-table-column>
-             <el-table-column prop="schoolName" label="招生院校" min-width="130" align="left">
+            <el-table-column prop="schoolName" label="招生院校" min-width="130" align="left">
               <template #default="scope">
                 <div class="font-medium tableyxmc">
                   <span>{{ scope.row.yxmc }}</span>
@@ -941,7 +1005,8 @@ const goMyAspiration = () => {
                   </div>
                   <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                   <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
-                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1 }}</span></div>
+                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1 }}</span>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -956,7 +1021,8 @@ const goMyAspiration = () => {
                   </div>
                   <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                   <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
-                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2 }}</span></div>
+                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2 }}</span>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -971,7 +1037,8 @@ const goMyAspiration = () => {
                   </div>
                   <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                   <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
-                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3 }}</span></div>
+                  <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3 }}</span>
+                  </div>
                 </div>
               </template>
             </el-table-column>
@@ -1010,6 +1077,69 @@ const goMyAspiration = () => {
           </div>
         </div>
       </section>
+      <!-- header-class="drawer-header" -->
+      <el-drawer v-model="collectionDrawer" direction="rtl" :show-close="false" size="360" style="height: 100vh;">
+        <template #header>
+          <div
+            class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h3 class="text-xl font-bold">我的志愿</h3>
+            <el-icon size="24" @click="collectionDrawer = false" style="cursor: pointer;">
+              <Close />
+            </el-icon>
+          </div>
+        </template>
+        <div v-if="myChioesGroupQueryList[0]?.chGroupId == 0" class="text-center py-12">
+          <el-icon class="text-5xl text-gray-300 mb-4" size="50" color="rgb(107 114 128)">
+            <MessageBox />
+          </el-icon>
+          <p class="text-gray-500 text-sm">还没有添加志愿，请点击表格中的"填报"按钮添加</p>
+        </div>
+        <div
+          v-if="myChioesGroupQueryList?.length > 0 && myChioesGroupQueryList[0]?.chGroupId != 0 && myChioesGroupQueryState === 'initQuery'">
+          <div v-for="(item, index) in myChioesGroupQueryList" :key="index" class="chGroupBox"
+            @click="zyHandleCollect(item)">
+            <div class="chGroupName">{{ item.chGroupName }}</div>
+            <div class="text-xs text-gray-500 chGroupSub">
+              已经收藏数量：<span>{{ item.addNum }}</span>
+            </div>
+            <div class="text-xs text-gray-500 chGroupSub">
+              最大收藏数量：<span>{{ item.maxNum }}</span>
+            </div>
+            <el-icon color="#2563EB" class="chGroupIcon">
+              <ArrowRightBold />
+            </el-icon>
+          </div>
+        </div>
+        <div v-if="myChioesGroupQueryState === 'zyQuery'">
+          <div class="flex items-center" style="margin-bottom: 10px; color: #2563EB; cursor: pointer;"
+            @click="goMyAspiration">
+            <el-icon>
+              <ArrowLeft />
+            </el-icon>
+            <span>返回</span>
+          </div>
+          <div v-for="(item, index) in zyHandleCollectList" :key="index" class="chGroupBox">
+            <div class="chGroupName">
+              <span>{{ item.yxmc }}</span>
+              <span class="lqdcstr bg3">{{ item.yxdm }}</span>
+            </div>
+            <div class="text-xs text-gray-500 chGroupSub">
+              <p style="width: 100%;">专业名称：<span>{{ item.zymc }}</span></p>
+              <p>专业代号：<span>{{ item.zydh }}</span></p>
+              <p>计划人数：<span>{{ item.jhrs }}</span></p>
+            </div>
+            <div class="text-xs text-gray-500 chGroupSub">
+              <p v-if="item.bl">概率：<span>{{ item.bl }}%</span></p>
+              <p v-if="item.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ item.lqdcstr }}</p>
+              <p v-else-if="item.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ item.lqdcstr }}</p>
+              <p v-else class="lqdcstr bg3">{{ item.lqdcstr }}</p>
+            </div>
+            <el-icon class="deleteIcon" color="#F56C6C" @click="zyHandleDelete(item)">
+              <DeleteFilled />
+            </el-icon>
+          </div>
+        </div>
+      </el-drawer>
     </main>
     <sideTop />
   </div>
@@ -1039,27 +1169,6 @@ const goMyAspiration = () => {
     span:first-child {
       margin-right: 4px;
       line-height: 30px;
-    }
-
-    .lqdcstr {
-      height: 20px;
-      line-height: 20px;
-      font-size: 12px;
-      color: #fff;
-      padding: 0 4px;
-      border-radius: 4px;
-    }
-
-    .bg1 {
-      background-color: #FA8E23;
-    }
-
-    .bg2 {
-      background-color: #15C496;
-    }
-
-    .bg3 {
-      background-color: #2563EB;
     }
   }
 
@@ -1104,6 +1213,27 @@ const goMyAspiration = () => {
         }
       }
     }
+  }
+
+  .lqdcstr {
+    height: 20px;
+    line-height: 20px;
+    font-size: 12px;
+    color: #fff;
+    padding: 0 4px;
+    border-radius: 4px;
+  }
+
+  .bg1 {
+    background-color: #FA8E23;
+  }
+
+  .bg2 {
+    background-color: #15C496;
+  }
+
+  .bg3 {
+    background-color: #2563EB;
   }
 
   .tagBox {
@@ -1165,5 +1295,78 @@ const goMyAspiration = () => {
       color: #2563EB;
     }
   }
+
+  .chGroupBox {
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 20px;
+    background-color: #2563EB10;
+    padding: 10px 40px 10px 10px;
+    border-radius: 10px;
+
+    .chGroupName {
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 16px;
+      line-height: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+
+      span {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+      }
+    }
+
+    .chGroupSub {
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 12px;
+      line-height: 20px;
+      color: #646566;
+
+      p {
+        margin-right: 10px;
+        margin-bottom: 6px;
+        line-height: 20px;
+      }
+
+      span {
+        font-size: 14px;
+        line-height: 20px;
+        color: #2563EB;
+      }
+    }
+
+    .chGroupIcon {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+    }
+
+    .deleteIcon {
+      cursor: pointer;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  }
+}
+</style>
+
+<style>
+.drawer-header {
+  border: 1px solid red;
+  display: flex;
+  justify-content: space-between;
+  background-color: red;
+}
+
+.el-drawer__header {
+  padding: 0 !important;
+  margin-bottom: 0 !important;
 }
 </style>
