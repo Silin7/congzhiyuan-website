@@ -1,5 +1,8 @@
 import axios from 'axios'
+import { ref } from 'vue'
+import router from '@/router'
 import { baseURL } from '@/api/baseConfig'
+import { ElMessage } from 'element-plus'
 
 // 登录注册 - 验证码
 // a.phone: 手机号
@@ -94,12 +97,25 @@ export function tddwListApi(data: any) {
 // 通用复选框列表查询
 // a.token:用户token，必选
 // b.genType 查询类型字段（yxxz:院校性质prov:省份 yxts:院校特色zyts:专业特色）
-export function genListQueryApi(data: any) {
+export async function genListQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params)
+  // try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params)
+    return res
+  //   if (res.data.code === 0) {
+  //     return res.data
+  //   } else if (res.data.code === -998) {
+  //     useDebounce(tokenLose)
+  //   } else {
+  //     ElMessage.error(res.data.Message || '请求失败')
+  //   }
+  // } catch (error: any) {
+  //   console.error('error -------->', error)
+  //   ElMessage.error('请求失败')
+  // }
 }
 
 // 名称模糊查询院校列表
@@ -357,4 +373,21 @@ export function wcQueryBycjApi(data: any) {
     params.append(key, data[key])
   })
   return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params)
+}
+
+// token失效处理
+function tokenLose() {
+  router.push({ path: '/' })
+  ElMessage.error('用户信息失效,请重新登录')
+  window.localStorage.removeItem('token')
+  window.localStorage.removeItem('userInfo')
+}
+
+const timeout: any = ref(null)
+
+function useDebounce(fn: any, wait?: number) {
+  if (timeout.value !== null) {
+    clearTimeout(timeout.value)
+  }
+  timeout.value = setTimeout(fn, wait || 1000)
 }

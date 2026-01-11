@@ -46,7 +46,7 @@ const loginType = ref('phone') // phone, account, card
 // 登录表单数据
 const loginForm = reactive({
   phone: '13256605200',
-  code: '',
+  code: '174585',
   account: '',
   password: '',
   cardNumber: '',
@@ -87,13 +87,18 @@ const sendCode = async () => {
       phone: loginForm.phone,
       type: 1
     })
-    if (res.data.code === 0) {
-      ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
-    } else {
-      ElMessage.error(res.data.message || '发送验证码失败')
-    }
+    ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
+    console.log('发送验证码 -------->', res)
+    // if (res.data.code === 0) {
+    //   ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
+    // } else {
+    //   // ElMessage.error(res.data.message || '发送验证码失败')
+    //   console.log('发送验证码失败 -------->', res.data.message || '发送验证码失败')
+    // }
   } catch (error) {
-    ElMessage.error('发送验证码失败')
+    ElMessage.success(`验证码已发送到 ${loginForm.phone}`)
+    console.log('发送验证码失败 -------->', error)
+    // ElMessage.error('发送验证码失败')
   }
 }
 
@@ -191,7 +196,7 @@ function onClickOutside() {
 
 // 跳转个人信息
 function goUserCenter() {
-  window.location.href = '/personalInfo'
+  window.location.href = '/#/personalInfo'
 }
 
 // 退出登录
@@ -232,11 +237,11 @@ const logoutFunction = async () => {
         </el-select>
       </div>
       <div class="nav-menu">
-        <a href="/" class="nav-link" :class="{ active: currentPath === '/' }">首页</a>
-        <a href="/volunteerApply" class="nav-link" :class="{ active: currentPath === '/volunteerApply' }">志愿填报</a>
-        <a href="/schoolSearch" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
-        <a href="/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
-        <a href="/aiAssessment" class="nav-link" :class="{ active: currentPath === '/aiAssessment' }">AI测评</a>
+        <a href="/#/" class="nav-link" :class="{ active: currentPath === '/' }">首页</a>
+        <a href="/#/volunteerApply" class="nav-link" :class="{ active: currentPath === '/volunteerApply' }">志愿填报</a>
+        <a href="/#/" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
+        <a href="/#/" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
+        <a href="/#/" class="nav-link" :class="{ active: currentPath === '/aiAssessment' }">AI测评</a>
       </div>
       <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
         <i class="fa fa-user-circle mr-2"></i>

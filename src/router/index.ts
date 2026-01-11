@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory , type RouteRecordRaw } from 'vue-router'
 import useHeaderStore from '@/store/modules/header'
 import { ElMessage } from 'element-plus'
 
@@ -76,7 +76,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory (),
   routes,
 })
 
