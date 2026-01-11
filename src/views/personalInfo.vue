@@ -355,7 +355,7 @@ const getMyChioesGroupQuery = async () => {
       ccdm: ccdm.value,
     })
     if (res.data.code === 0) {
-      myChioesGroupQueryList.value = res.data.data || []
+      myChioesGroupQueryList.value = res.data.data.Rs || []
     } else {
       ElMessage.error(res.data.message || '查询失败')
     }
