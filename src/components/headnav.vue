@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import * as api from '@/api/interfaceapi'
-import router from '@/router'
 
 // Get current route
 const route = useRoute()
@@ -22,7 +21,7 @@ onMounted(() => {
 })
 
 // 选择的省份
-const shengfen: any = ref('山东')
+const shengfen: any = ref('山东省')
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
   try {
@@ -228,7 +227,7 @@ const logoutFunction = async () => {
             class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">聪志愿AI</span>
         </a>
         <el-select v-model="shengfen" placeholder="Select" class="shengfen-select">
-          <el-option v-for="(item, index) in provinceList" :key="index" :label="item.disp" :value="item.disp">
+          <el-option v-for="(item, index) in provinceList" :key="index" :label="item.province" :value="item.id">
           </el-option>
         </el-select>
       </div>
