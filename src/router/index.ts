@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import useHeaderStore from '@/store/modules/header'
+import { ElMessage } from 'element-plus'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -83,14 +84,22 @@ router.beforeEach((to, from, next) => {
   // 根据路由元信息设置文档标题
   window.document.title = `聪志愿AI${to.meta.title ? '-' + to.meta.title : ''}`
 
-  if (useHeaderStore) {
-    const headerStore = useHeaderStore()
-    headerStore.setSelectedTab(to.meta.stcode as string)
-    window.localStorage.setItem('selectedTab', to.meta.stcode as string)
-    window.localStorage.setItem('selectedName', to.path as string)
-  }
+  // if (useHeaderStore) {
+  //   const headerStore = useHeaderStore()
+  //   headerStore.setSelectedTab(to.meta.stcode as string)
+  //   window.localStorage.setItem('selectedTab', to.meta.stcode as string)
+  //   window.localStorage.setItem('selectedName', to.path as string)
+  // }
+
+
+  // const userInfo = JSON.parse(window.localStorage.getItem('userInfo') || '{}')
+  // if (userInfo.zyType === '0') {
+  //   ElMessage.warning('请先完善个人信息')
+  //   router.push('/personalInfo')
+  // }
 
   next()
+
 })
 
 export default router

@@ -15,8 +15,6 @@ onMounted(() => {
     getMyChioesGroupQuery()
   }
   genListQueryList()
-  getwctypeList()
-  getYklmQuery()
   getMyuserInfoQuery()
 })
 
@@ -42,13 +40,23 @@ const getMyuserInfoQuery = async () => {
     if (res.data.code == 0) {
       personalInfo.value = res.data.data || {}
       personalForm.value = JSON.parse(JSON.stringify(personalInfo.value))
-      selectedSubjects.value = personalForm.value.xuankeStr.split(',') || []
+      selectedSubjects.value = personalForm.value.xuanke.split(',') || []
+      if (personalForm.value.province) {
+        getwctypeList()
+        getYklmQuery()
+      }
     } else {
       ElMessage.error(res.data.message || '获取个人信息失败')
     }
   } catch (error) {
     ElMessage.error('获取个人信息失败')
   }
+}
+
+// 所在省份
+const handleProvinceChange = () => {
+  getwctypeList()
+  getYklmQuery()
 }
 
 // 获取省份列表
@@ -71,13 +79,18 @@ const genListQueryList = async () => {
 // 选科信息
 const selectedSubjects = ref<string[]>([])
 const handleSubjectClick = (subject: string) => {
+
   const index = selectedSubjects.value.indexOf(subject)
   if (index > -1) {
     selectedSubjects.value.splice(index, 1)
   } else {
+    if (selectedSubjects.value.length >= 3) {
+      ElMessage.warning('最多选择3科')
+      return
+    }
     selectedSubjects.value.push(subject)
   }
-  console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(', ')}`)
+  console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(',')}`)
 }
 
 // 考生类别查询
@@ -89,7 +102,7 @@ const getwctypeList = async () => {
       province: personalForm.value.province || ''
     })
     if (res.data.code == 0) {
-      wctypeList.value = res.data.data.Rs || []
+      wctypeList.value = res.data.data || []
     } else {
       ElMessage.error(res.data.message || '获取考生类别列表失败')
     }
@@ -107,6 +120,7 @@ const getYklmQuery = async () => {
   try {
     const res = await api.yklmQueryApi({
       token: window.localStorage.getItem('token') || '',
+      wctype: '2',
       province: personalForm.value.province || ''
     })
     if (res.data.code == 0) {
@@ -141,6 +155,56 @@ const cjInput = async () => {
 
 // 个人信息保存
 const myUserInfoSaveBtn = async () => {
+  if (!personalForm.value.phone) {
+    ElMessage.warning('请输入手机号码')
+    return
+  }
+  if (!/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(personalForm.value.phone)) {
+    ElMessage.warning('请输入正确的手机号码')
+    return
+  }
+  if (!personalForm.value.userName) {
+    ElMessage.warning('请输入昵称')
+    return
+  }
+  if (!personalForm.value.sex) {
+    ElMessage.warning('请选择性别')
+    return
+  }
+  if (!personalForm.value.province) {
+    ElMessage.warning('请选择所在省份')
+    return
+  }
+  if (selectedSubjects.value.length === 0) {
+    ElMessage.warning('请选择高考选科科目')
+    return
+  } else {
+    personalForm.value.xkkm = selectedSubjects.value.join(',')
+  }
+  if (!personalForm.value.wctype) {
+    ElMessage.warning('请选择考生类别')
+    return
+  }
+  if (personalForm.value.wctype == 2) {
+    if (!personalForm.value.yklm) {
+      ElMessage.warning('请选择考试类别')
+      return
+    }
+  }
+  if (!personalForm.value.cj) {
+    ElMessage.warning('请输入高考成绩')
+    return
+  }
+  if (!personalForm.value.wc) {
+    ElMessage.warning('请输入高考位次')
+    return
+  }
+  if (personalForm.value.zyType == '2') {
+    if (!selectedSubjects.value.includes('A') && !selectedSubjects.value.includes('D')) {
+      ElMessage.warning('选科信息中必须包含物理或历史')
+      return
+    }
+  }
   personalForm.value.token = window.localStorage.getItem('token') || ''
   try {
     const res = await api.myUserInfoSaveApi(personalForm.value)
@@ -354,7 +418,6 @@ const handleViewGroup2 = async (row: any) => {
   }
 }
 const zyGroupHandleDelete = async (row: any) => {
-  console.log('-------->', row)
   try {
     const res: any = await api.delChoiceGroupApi({
       token: window.localStorage.getItem('token') || '',
@@ -512,15 +575,16 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">性别</label>
                     <el-radio-group v-model="personalForm.sex">
-                      <el-radio :value="1" size="large">男</el-radio>
-                      <el-radio :value="2" size="large">女</el-radio>
+                      <el-radio value="1" size="large">男</el-radio>
+                      <el-radio value="2" size="large">女</el-radio>
                     </el-radio-group>
                   </div>
                   <!-- 省份 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">所在省份</label>
                     <el-select v-model="personalForm.province" placeholder="请选择省份"
-                      :disabled="personalForm.remainEditNum <= 0" class="select-tall44px">
+                      :disabled="personalForm.remainEditNum <= 0" class="select-tall44px"
+                      @change="handleProvinceChange">
                       <el-option v-for="(item, index) in provinceList" :key="index" :label="item.province"
                         :value="item.province">
                       </el-option>
@@ -531,49 +595,49 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                 <div>
                   <label class="block text-sm font-medium text-neutral mb-3">选科信息</label>
                   <div class="flex flex-wrap gap-3">
-                    <label @click.stop="handleSubjectClick('物理')" :class="[
+                    <label @click.stop="handleSubjectClick('A')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('物理')
+                      selectedSubjects.includes('A')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">物理</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('化学')" :class="[
+                    <label @click.stop="handleSubjectClick('B')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('化学')
+                      selectedSubjects.includes('B')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">化学</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('生物')" :class="[
+                    <label @click.stop="handleSubjectClick('C')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('生物')
+                      selectedSubjects.includes('C')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">生物</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('政治')" :class="[
+                    <label @click.stop="handleSubjectClick('F')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('政治')
+                      selectedSubjects.includes('F')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">政治</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('历史')" :class="[
+                    <label @click.stop="handleSubjectClick('D')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('历史')
+                      selectedSubjects.includes('D')
                         ? 'active'
                         : '',
                     ]">
                       <span class="text-neutral font-medium">历史</span>
                     </label>
-                    <label @click.stop="handleSubjectClick('地理')" :class="[
+                    <label @click.stop="handleSubjectClick('E')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
-                      selectedSubjects.includes('地理')
+                      selectedSubjects.includes('E')
                         ? 'active'
                         : '',
                     ]">
@@ -581,19 +645,19 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                     </label>
                   </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-if="personalForm.province" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">高考选科科目</label>
                     <el-select v-model="personalForm.wctype" placeholder="请选择高考选科科目"
                       :disabled="personalForm.remainEditNum <= 0" class="select-tall44px" @change="wctypeChange">
-                      <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.wctypeStr"
+                      <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.wctypestr"
                         :value="item.wctype">
                       </el-option>
                     </el-select>
                   </div>
                   <div v-if="personalForm.wctype == 2">
-                    <label class="block text-sm font-medium text-neutral mb-2">高考选科科目</label>
-                    <el-select v-model="personalForm.yklm" placeholder="请选择高考选科科目"
+                    <label class="block text-sm font-medium text-neutral mb-2">考试类别</label>
+                    <el-select v-model="personalForm.yklm" placeholder="请选择考试类别"
                       :disabled="personalForm.remainEditNum <= 0" class="select-tall44px">
                       <el-option v-for="(item, index) in subjectList" :key="index" :label="item.yklmStr"
                         :value="item.yklm">
@@ -801,7 +865,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                     {{ scope.row.yxmc }}
                     <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
                     <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
-                      }}</span>
+                    }}</span>
                     <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                   </div>
                   <div class="text-xs text-gray-500">
@@ -907,7 +971,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                     {{ scope.row.yxmc }}
                     <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
                     <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
-                      }}</span>
+                    }}</span>
                     <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                   </div>
                   <div class="text-xs text-gray-500">
