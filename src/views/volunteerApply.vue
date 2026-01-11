@@ -140,6 +140,35 @@ const handleSchoolNatureClick = (nature: string) => {
   console.log(`选择了院校性质: ${nature}`)
 }
 
+// 院校特色
+const selectedMajorFeatureList = ref<any>([])
+const getMajorFeatureList = async () => {
+  try {
+    const res = await api.genListQueryApi({
+      token: window.localStorage.getItem('token') || '',
+      genType: 'yxts'
+    })
+    if (res.data.code == 0) {
+      selectedMajorFeatureList.value = res.data.data.Rs || []
+    } else {
+      ElMessage.error(res.data.message || '获取省份列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取省份列表失败')
+  }
+}
+const selectedMajorFeature: any = ref([])
+const handleMajorFeatureClick = (feature: string) => {
+  // 切换院校特色选中状态
+  const index = selectedMajorFeature.value.indexOf(feature)
+  if (index > -1) {
+    selectedMajorFeature.value.splice(index, 1)
+  } else {
+    selectedMajorFeature.value.push(feature)
+  }
+  console.log(`选择了院校特色: ${selectedMajorFeature.value.join(', ')}`)
+}
+
 // 院校省份
 const provinceList = ref<any>([])
 const getProvinceList = async () => {
@@ -180,6 +209,7 @@ const handleProvinceClick = (province: string) => {
 }
 
 // 专业名称
+const yixuanzhuanye: any = ref([]) // 已选专业
 const majorName = ref('')
 const getMajorNameLoading = ref(false)
 const majorNameOptions: any = ref([])
@@ -206,38 +236,11 @@ const getMajorNameOptions = async (value: any) => {
   }
 }
 const selectedMajor = ref('')
-const handleMajorNameChange = (value: string) => {
+const handleMajorNameChange = async (value: string) => {
+  const obj = majorNameOptions.value.filter((item: any) => item.id === value)[0]
+  yixuanzhuanye.value.push(obj)
   selectedMajor.value = value
   console.log(`选择了专业名称: ${value}`)
-}
-
-// 院校特色
-const selectedMajorFeatureList = ref<any>([])
-const getMajorFeatureList = async () => {
-  try {
-    const res = await api.genListQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      genType: 'yxts'
-    })
-    if (res.data.code == 0) {
-      selectedMajorFeatureList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取省份列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取省份列表失败')
-  }
-}
-const selectedMajorFeature: any = ref([])
-const handleMajorFeatureClick = (feature: string) => {
-  // 切换院校特色选中状态
-  const index = selectedMajorFeature.value.indexOf(feature)
-  if (index > -1) {
-    selectedMajorFeature.value.splice(index, 1)
-  } else {
-    selectedMajorFeature.value.push(feature)
-  }
-  console.log(`选择了院校特色: ${selectedMajorFeature.value.join(', ')}`)
 }
 
 // 学科门类
@@ -259,6 +262,8 @@ const getDisciplineCategoriesList = async () => {
 }
 const disciplineCategories = ref('')
 const disciplineCategoriesChange = (value: string) => {
+  const obj = disciplineCategoriesList.value.filter((item: any) => item.zydm === value)[0]
+  yixuanzhuanye.value.push(obj)
   disciplineCategories.value = value
   firstDiscipline.value = ''
   subDiscipline.value = ''
@@ -284,6 +289,8 @@ const getFirstDisciplineList = async () => {
 }
 const firstDiscipline = ref('')
 const firstDisciplineChange = (value: string) => {
+  const obj = firstDisciplineList.value.filter((item: any) => item.zydm === value)[0]
+  yixuanzhuanye.value.push(obj)
   firstDiscipline.value = value
   subDiscipline.value = ''
   getSubDisciplineList()
@@ -308,8 +315,15 @@ const getSubDisciplineList = async () => {
 }
 const subDiscipline = ref('')
 const subDisciplineChange = (value: string) => {
+  const obj = subDisciplineList.value.filter((item: any) => item.zydm === value)[0]
+  yixuanzhuanye.value.push(obj)
   subDiscipline.value = value
   console.log(`选择了二级学科: ${value}`)
+}
+
+// 已选专业
+const yixuanzhuanyeClick = (index: any) => {
+  yixuanzhuanye.value.splice(index, 1)
 }
 
 // 录取范围 默认选择'稳一稳'
@@ -335,6 +349,10 @@ const tableData: any = ref([])
 
 // 专业模式 - 志愿查询
 const lqInfoZyQuery = async () => {
+  const zydmArray: any = ref([])
+  await yixuanzhuanye.value.forEach((item: any) => {
+    zydmArray.value.push(item.zydm || item.id)
+  })
   const data = {
     token: window.localStorage.getItem('token') || '',
     ccdm: selectedSchoolLevel.value,
@@ -343,7 +361,7 @@ const lqInfoZyQuery = async () => {
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value || '',
     genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
-    zydm: selectedMajor.value,
+    zydm: zydmArray.value.join(','),
     lqdc: selectedRiskLevel.value.join(','),
     progressChong: riskThreshold.value,
     progressBao: safeThreshold.value,
@@ -428,6 +446,10 @@ const handleBatchAdd = async () => {
 
 // 专业组模式志愿查询
 const lqInfoZyGroupQuery = async () => {
+  const zydmArray: any = ref([])
+  await yixuanzhuanye.value.forEach((item: any) => {
+    zydmArray.value.push(item.zydm || item.id)
+  })
   const data = {
     token: window.localStorage.getItem('token') || '',
     ccdm: selectedSchoolLevel.value,
@@ -436,7 +458,7 @@ const lqInfoZyGroupQuery = async () => {
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value || '',
     genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
-    zydm: selectedMajor.value,
+    zydm: zydmArray.value.join(','),
     lqdc: selectedRiskLevel.value.join(','),
     progressChong: riskThreshold.value,
     progressBao: safeThreshold.value,
@@ -611,7 +633,7 @@ const zyGroupHandleCollect = async (row: any) => {
           <div v-if="selectedAdmissionBatch && selectedAdmissionBatch != '0'" class="tagBox">
             <div class="tagTitle">录取类型：</div>
             <div class="tagContent">
-               <div :class="selectedAdmissionType === '' ? 'primaryTag' : 'infoTag'"
+              <div :class="selectedAdmissionType === '' ? 'primaryTag' : 'infoTag'"
                 @click="handleAdmissionTypeChange('')">
                 不限
               </div>
@@ -633,8 +655,7 @@ const zyGroupHandleCollect = async (row: any) => {
           <div class="tagBox">
             <div class="tagTitle">院校性质：</div>
             <div class="tagContent">
-              <div :class="selectedSchoolNature === '' ? 'primaryTag' : 'infoTag'"
-                @click="handleSchoolNatureClick('')">
+              <div :class="selectedSchoolNature === '' ? 'primaryTag' : 'infoTag'" @click="handleSchoolNatureClick('')">
                 不限
               </div>
               <div v-for="(item, index) in schoolNatures" :key="index"
@@ -705,6 +726,17 @@ const zyGroupHandleCollect = async (row: any) => {
               </el-select>
             </el-col>
           </el-row>
+          <div v-if="yixuanzhuanye.length > 0" style="margin-top: 20px;">
+            <div class="tagBox">
+              <div class="tagTitle" style="margin-bottom: 0;">所选专业：</div>
+              <div class="tagContent">
+                <el-tag v-for="(item, index) in yixuanzhuanye" :key="index" type="primary" closable
+                  style="margin-right: 10px; cursor: pointer;" @close="yixuanzhuanyeClick(index)">
+                  {{ item.zymc || item.text }}
+                </el-tag>
+              </div>
+            </div>
+          </div>
           <!-- 录取范围 -->
           <div v-if="!isCollapsed">
             <div class="flex items-center" style="margin: 20px 0;">
@@ -851,14 +883,16 @@ const zyGroupHandleCollect = async (row: any) => {
             <el-table-column label="招生专业" min-width="200" align="left">
               <template #default="scope">
                 <div class="tablezy" style="padding-top: 10px;">
-                   <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{ scope.row.zymc }}</span>
+                  <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{
+                    scope.row.zymc }}</span>
                   </div>
-                  <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{ scope.row.zydh }}</span>
+                  <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{
+                    scope.row.zydh }}</span>
                   </div>
                   <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
                   </div>
-                  <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark" :content="scope.row.JHBZ"
-                    placement="top">
+                  <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark"
+                    :content="scope.row.JHBZ" placement="top">
                     <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ }}</span></div>
                   </el-tooltip>
                   <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span></div>
@@ -974,10 +1008,10 @@ const zyGroupHandleCollect = async (row: any) => {
               <template #default="scope">
                 <div class="tablezy" style="padding-top: 10px;">
                   <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{
-                      scope.row.zymc }}</span>
+                    scope.row.zymc }}</span>
                   </div>
                   <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{
-                      scope.row.zydh }}</span>
+                    scope.row.zydh }}</span>
                   </div>
                   <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
                   </div>
@@ -1086,7 +1120,9 @@ const zyGroupHandleCollect = async (row: any) => {
           <div
             class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10">
             <h4 class="text-l font-bold">
-              {{myChioesGroupQueryInfo.chGroupName}}（{{myChioesGroupQueryInfo.addNum }}/{{myChioesGroupQueryInfo.maxNum }}）
+              {{ myChioesGroupQueryInfo.chGroupName }}（{{ myChioesGroupQueryInfo.addNum }}/{{
+                myChioesGroupQueryInfo.maxNum
+              }}）
             </h4>
             <el-icon size="24" @click="collectionDrawer = false" style="cursor: pointer;">
               <Close />
