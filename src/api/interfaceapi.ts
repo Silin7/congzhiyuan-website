@@ -9,7 +9,7 @@ export function authcodeApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/gen/SmsSend.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SmsSend`, params)
 }
 
 // 登录或注册二合一
@@ -21,12 +21,12 @@ export function loginOrRegisterApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/gen/SignIn.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignIn`, params)
 }
 
 // 用户退出
 export function signOutApi() {
-  return axios.post(`${baseURL}/mod/gen/SignOut.ajax.php`)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignOut`)
 }
 
 // 手机用户设置密码
@@ -38,7 +38,7 @@ export function passResetApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/gen/PassReset.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=PassReset`, params)
 }
 
 // 用户修改密码
@@ -50,12 +50,12 @@ export function passModiApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/gen/VfCodeModi.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=VfCodeModi`, params)
 }
 
 // 上部导航栏显示查询
 export function navQueryApi() {
-  return axios.post(`${baseURL}/mod/homePage/NavigationQuery.ajax.php`)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=NavigationQuery`)
 }
 
 // 首页上部显示查询
@@ -65,7 +65,7 @@ export function topInfoApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/homePage/TopInfo.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=TopInfo`, params)
 }
 
 // 志愿填报页批次查询
@@ -76,7 +76,7 @@ export function pcListApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/PcList.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=PcList`, params)
 }
 
 // 志愿填报页投档单位查询
@@ -88,7 +88,7 @@ export function tddwListApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/TddwList.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=TddwList`, params)
 }
 
 // 通用复选框列表查询
@@ -99,7 +99,7 @@ export function genListQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/GenListQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params)
 }
 
 // 名称模糊查询院校列表
@@ -110,7 +110,7 @@ export function yxqueryBymcApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/YxqueryBymc.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=YxqueryBymc`, params)
 }
 
 // 名称模糊查询专业列表
@@ -121,7 +121,7 @@ export function zyqueryBymcApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/ZyqueryBymc.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyqueryBymc`, params)
 }
 
 // 学科门类查询
@@ -132,7 +132,7 @@ export function xkmllistApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/Xkmllist.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Xkmllist`, params)
 }
 
 // 一级学科查询
@@ -143,7 +143,7 @@ export function yjxklistApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/Yjxklist.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Yjxklist`, params)
 }
 
 // 二级学科查询
@@ -154,7 +154,7 @@ export function ejxklistApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/Ejxklist.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Ejxklist`, params)
 }
 
 // 专业模式志愿查询
@@ -176,7 +176,7 @@ export function lqInfoZyQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/LqInfoZyQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyQuery`, params)
 }
 
 // 专业组模式志愿查询
@@ -198,7 +198,7 @@ export function lqInfoZyGroupQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/LqInfoZyGroupQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyGroupQuery`, params)
 }
 
 // 单个志愿填报
@@ -211,7 +211,7 @@ export function myChioesAddApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/MyChioesAdd.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesAdd`, params)
 }
 
 // 批量志愿填报
@@ -222,7 +222,7 @@ export function myChioesBatchAddApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/MyChioesBatchAdd.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesBatchAdd`, params)
 }
 
 // 志愿分组查询
@@ -233,7 +233,7 @@ export function myChioesGroupQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/MyChoicesGroupQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChoicesGroupQuery`, params)
 }
 
 // 专业模式收藏查询
@@ -244,7 +244,7 @@ export function zyChoicesQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/ZyChoicesQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoicesQuery`, params)
 }
 
 // 专业组模式收藏查询
@@ -255,7 +255,7 @@ export function zyGroupChoicesQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/ZyGroupChoicesQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyGroupChoicesQuery`, params)
 }
 
 // 删除收藏专业
@@ -266,7 +266,7 @@ export function delChoiceApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/DelChoice.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoice`, params)
 }
 
 // 删除收藏专业组
@@ -277,7 +277,7 @@ export function delChoiceGroupApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/zhiYuan/DelChoiceGroup.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoiceGroup`, params)
 }
 
 // 个人信息查询
@@ -287,7 +287,7 @@ export function myuserInfoQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/user/MyuserInfoQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params)
 }
 
 // 考生可选省份查询
@@ -297,7 +297,7 @@ export function userProvQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/user/UserProvQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params)
 }
 
 
@@ -310,7 +310,7 @@ export function WctypeQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/user/WctypeQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params)
 }
 
 
@@ -322,7 +322,7 @@ export function yklmQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/user/YklmQuery.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=YklmQuery`, params)
 }
 
 // tips: xuankeStr 保存用字母，查询返回文字
@@ -343,7 +343,7 @@ export function myUserInfoSaveApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/user/MyUserInfoSave.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserInfoSave`, params)
 }
 
 // 输入分数查询位次查询
@@ -356,5 +356,5 @@ export function wcQueryBycjApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/mod/user/WcQueryBycj.ajax.php`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params)
 }
