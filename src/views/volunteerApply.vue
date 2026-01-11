@@ -10,7 +10,6 @@ onMounted(() => {
   getSchoolNatures()
   getProvinceList()
   getMajorFeatureList()
-  getMyChioesGroupQuery()
 })
 
 // 展开或收起
@@ -160,11 +159,11 @@ const getProvinceList = async () => {
 }
 const selectedProvince = ref<string[]>([])
 const handleProvinceClick = (province: string) => {
-  if (province === '0') {
-    selectedProvince.value = ['0']
+  if (province === '') {
+    selectedProvince.value = ['']
     return
   } else {
-    const index = selectedProvince.value.indexOf('0')
+    const index = selectedProvince.value.indexOf('')
     console.log('-------->', index)
     if (index > -1) {
       selectedProvince.value.splice(index, 1)
@@ -323,9 +322,9 @@ const handleRiskLevelClick = (level: string) => {
   }
 }
 // “冲” 风险阈值响应式变量
-const riskThreshold = ref(15)
+const riskThreshold = ref(50)
 // “保” 安全阈值响应式变量
-const safeThreshold = ref(85)
+const safeThreshold = ref(50)
 
 // 声明表格数据响应式变量
 const queryState = ref('')
@@ -342,7 +341,7 @@ const lqInfoZyQuery = async () => {
     pcdm: selectedAdmissionBatch.value,
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
-    yxid: selectedSchool.value,
+    yxid: selectedSchool.value || '',
     genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     zydm: selectedMajor.value,
     lqdc: selectedRiskLevel.value.join(','),
@@ -435,7 +434,7 @@ const lqInfoZyGroupQuery = async () => {
     pcdm: selectedAdmissionBatch.value,
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
-    yxid: selectedSchool.value,
+    yxid: selectedSchool.value || '',
     genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     zydm: selectedMajor.value,
     lqdc: selectedRiskLevel.value.join(','),
@@ -500,10 +499,8 @@ const goMyAspiration = () => {
 }
 
 // 我的志愿 - 最外层
-const myChioesGroupQueryState = ref('initQuery')
-const myChioesGroupQueryList: any = ref([])
+const myChioesGroupQueryInfo: any = ref({})
 const getMyChioesGroupQuery = async () => {
-  myChioesGroupQueryState.value = 'initQuery'
   try {
     const res: any = await api.myChioesGroupQueryApi({
       token: window.localStorage.getItem('token') || '',
@@ -511,7 +508,10 @@ const getMyChioesGroupQuery = async () => {
       pcdm: selectedAdmissionBatch.value,
     })
     if (res.data.code === 0) {
-      myChioesGroupQueryList.value = res.data.data.Rs || []
+      myChioesGroupQueryInfo.value = res.data?.data?.Rs[0] || {}
+      if (myChioesGroupQueryInfo.value?.chGroupId) {
+        zyHandleCollect()
+      }
     } else {
       ElMessage.error(res.data.message || '查询失败')
     }
@@ -522,14 +522,11 @@ const getMyChioesGroupQuery = async () => {
 
 // 专业模式 - 收藏
 const zyHandleCollectList: any = ref([])
-const zyHandleCollectItem: any = ref({})
-const zyHandleCollect = async (row: any) => {
-  myChioesGroupQueryState.value = 'zyQuery'
-  zyHandleCollectItem.value = row
+const zyHandleCollect = async () => {
   try {
     const res = await api.zyChoicesQueryApi({
       token: window.localStorage.getItem('token') || '',
-      chGroupId: row.chGroupId,
+      chGroupId: myChioesGroupQueryInfo.value.chGroupId,
     })
     if (res.data.code == 0) {
       zyHandleCollectList.value = res.data.data.Rs || []
@@ -551,7 +548,7 @@ const zyHandleDelete = async (row: any) => {
     if (res.data.code === 0) {
       ElMessage.success('删除成功')
       // 刷新收藏分组查询
-      zyHandleCollect(zyHandleCollectItem.value)
+      zyHandleCollect()
     } else {
       ElMessage.error(res.data.message || '删除失败')
     }
@@ -600,8 +597,8 @@ const zyGroupHandleCollect = async (row: any) => {
           <div v-if="selectedSchoolLevel" class="tagBox">
             <div class="tagTitle">录取批次：</div>
             <div class="tagContent">
-              <div :class="selectedAdmissionBatch === '0' ? 'primaryTag' : 'infoTag'"
-                @click="handleAdmissionBatchClick('0')">
+              <div :class="selectedAdmissionBatch === '' ? 'primaryTag' : 'infoTag'"
+                @click="handleAdmissionBatchClick('')">
                 不限
               </div>
               <div v-for="(item, index) in admissionBatch" :key="index"
@@ -614,6 +611,10 @@ const zyGroupHandleCollect = async (row: any) => {
           <div v-if="selectedAdmissionBatch && selectedAdmissionBatch != '0'" class="tagBox">
             <div class="tagTitle">录取类型：</div>
             <div class="tagContent">
+               <div :class="selectedAdmissionType === '' ? 'primaryTag' : 'infoTag'"
+                @click="handleAdmissionTypeChange('')">
+                不限
+              </div>
               <div v-for="(item, index) in admissionTypes" :key="index"
                 :class="selectedAdmissionType === item.tddw ? 'primaryTag' : 'infoTag'"
                 @click="handleAdmissionTypeChange(item.tddw)">
@@ -632,13 +633,13 @@ const zyGroupHandleCollect = async (row: any) => {
           <div class="tagBox">
             <div class="tagTitle">院校性质：</div>
             <div class="tagContent">
-              <div :class="selectedSchoolNature === '0' ? 'primaryTag' : 'infoTag'"
-                @click="handleSchoolNatureClick('0')">
+              <div :class="selectedSchoolNature === '' ? 'primaryTag' : 'infoTag'"
+                @click="handleSchoolNatureClick('')">
                 不限
               </div>
               <div v-for="(item, index) in schoolNatures" :key="index"
-                :class="selectedSchoolNature === item.id ? 'primaryTag' : 'infoTag'"
-                @click="handleSchoolNatureClick(item.id)">
+                :class="selectedSchoolNature === item.disp ? 'primaryTag' : 'infoTag'"
+                @click="handleSchoolNatureClick(item.disp)">
                 {{ item.disp }}
               </div>
             </div>
@@ -659,7 +660,7 @@ const zyGroupHandleCollect = async (row: any) => {
               <p>（可多选）</p>
             </div>
             <div class="tagContent">
-              <div :class="selectedProvince.includes('0') ? 'primaryTag' : 'infoTag'" @click="handleProvinceClick('0')">
+              <div :class="selectedProvince.includes('') ? 'primaryTag' : 'infoTag'" @click="handleProvinceClick('')">
                 全选
               </div>
               <div v-for="(item, index) in provinceList" :key="index"
@@ -723,7 +724,7 @@ const zyGroupHandleCollect = async (row: any) => {
                   <label class="text-sm font-semibold text-slate-700">“冲” 风险阈值</label>
                   <span class="text-red-500 font-bold" id="val-chong">{{ riskThreshold }}%</span>
                 </div>
-                <input class="w-full" max="30" min="0" type="range" v-model="riskThreshold">
+                <input class="w-full" max="100" min="0" type="range" v-model="riskThreshold">
                 <p class="text-xs text-slate-400 text-center">风险越高，录取可能性越低，建议作为前置志愿</p>
               </div>
               <div class="space-y-4">
@@ -731,7 +732,7 @@ const zyGroupHandleCollect = async (row: any) => {
                   <label class="text-sm font-semibold text-slate-700">“保” 安全阈值</label>
                   <span class="text-green-600 font-bold" id="val-bao">{{ safeThreshold }}%</span>
                 </div>
-                <input class="w-full" max="100" min="70" type="range" v-model="safeThreshold">
+                <input class="w-full" max="100" min="0" type="range" v-model="safeThreshold">
                 <p class="text-xs text-slate-400 text-center">安全越高，录取稳定性越强，建议作为保底志愿</p>
               </div>
             </div>
@@ -850,15 +851,15 @@ const zyGroupHandleCollect = async (row: any) => {
             <el-table-column label="招生专业" min-width="200" align="left">
               <template #default="scope">
                 <div class="tablezy">
+                   <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{ scope.row.zymc }}</span>
+                  </div>
+                  <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{ scope.row.zydh }}</span>
+                  </div>
                   <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
                   </div>
-                  <div class="text-xs text-gray-500">专业代号：<span>{{ scope.row.zydh }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">专业名称：<span>{{ scope.row.zymc }}</span>
-                  </div>
-                  <el-tooltip v-if="scope.row.jhb" popper-class="custom-tooltip" effect="dark" :content="scope.row.jhb"
+                  <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark" :content="scope.row.JHBZ"
                     placement="top">
-                    <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.jhb }}</span></div>
+                    <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ }}</span></div>
                   </el-tooltip>
                   <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span></div>
                   <div class="text-xs text-gray-500">学制：<span>{{ scope.row.xzdm }}</span>
@@ -947,7 +948,7 @@ const zyGroupHandleCollect = async (row: any) => {
                   <el-table-column label="学费" prop="sfbz" />
                   <el-table-column label="选考科目" prop="xkkm" />
                   <el-table-column label="计划招生人数" prop="jhrs" />
-                  <el-table-column label="备注" prop="jhbz" />
+                  <el-table-column label="备注" prop="JHBZ" />
                 </el-table>
               </template>
             </el-table-column>
@@ -972,15 +973,17 @@ const zyGroupHandleCollect = async (row: any) => {
             <el-table-column label="招生专业" min-width="200" align="left">
               <template #default="scope">
                 <div class="tablezy">
+                  <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{
+                      scope.row.zymc }}</span>
+                  </div>
+                  <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{
+                      scope.row.zydh }}</span>
+                  </div>
                   <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
                   </div>
-                  <div class="text-xs text-gray-500">专业代号：<span>{{ scope.row.zydh }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">专业名称：<span>{{ scope.row.zymc }}</span>
-                  </div>
-                  <el-tooltip v-if="scope.row.jhb" popper-class="custom-tooltip" effect="dark" :content="scope.row.jhb"
-                    placement="top">
-                    <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.jhb }}</span></div>
+                  <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark"
+                    :content="scope.row.JHBZ" placement="top">
+                    <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ }}</span></div>
                   </el-tooltip>
                   <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span></div>
                   <div class="text-xs text-gray-500">学制：<span>{{ scope.row.xzdm }}</span>
@@ -1082,42 +1085,21 @@ const zyGroupHandleCollect = async (row: any) => {
         <template #header>
           <div
             class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10">
-            <h3 class="text-xl font-bold">我的志愿</h3>
+            <h4 class="text-l font-bold">
+              {{myChioesGroupQueryInfo.chGroupName}}（{{myChioesGroupQueryInfo.addNum }}/{{myChioesGroupQueryInfo.maxNum }}）
+            </h4>
             <el-icon size="24" @click="collectionDrawer = false" style="cursor: pointer;">
               <Close />
             </el-icon>
           </div>
         </template>
-        <div v-if="myChioesGroupQueryList[0]?.chGroupId == 0" class="text-center py-12">
+        <div v-if="myChioesGroupQueryInfo?.chGroupId == 0" class="text-center py-12">
           <el-icon class="text-5xl text-gray-300 mb-4" size="50" color="rgb(107 114 128)">
             <MessageBox />
           </el-icon>
           <p class="text-gray-500 text-sm">还没有添加志愿，请点击表格中的"填报"按钮添加</p>
         </div>
-        <div
-          v-if="myChioesGroupQueryList?.length > 0 && myChioesGroupQueryList[0]?.chGroupId != 0 && myChioesGroupQueryState === 'initQuery'">
-          <div v-for="(item, index) in myChioesGroupQueryList" :key="index" class="chGroupBox"
-            @click="zyHandleCollect(item)">
-            <div class="chGroupName">{{ item.chGroupName }}</div>
-            <div class="text-xs text-gray-500 chGroupSub">
-              已经收藏数量：<span>{{ item.addNum }}</span>
-            </div>
-            <div class="text-xs text-gray-500 chGroupSub">
-              最大收藏数量：<span>{{ item.maxNum }}</span>
-            </div>
-            <el-icon color="#2563EB" class="chGroupIcon">
-              <ArrowRightBold />
-            </el-icon>
-          </div>
-        </div>
-        <div v-if="myChioesGroupQueryState === 'zyQuery'">
-          <div class="flex items-center" style="margin-bottom: 10px; color: #2563EB; cursor: pointer;"
-            @click="goMyAspiration">
-            <el-icon>
-              <ArrowLeft />
-            </el-icon>
-            <span>返回</span>
-          </div>
+        <div v-if="zyHandleCollectList?.length > 0">
           <div v-for="(item, index) in zyHandleCollectList" :key="index" class="chGroupBox">
             <div class="chGroupName">
               <span>{{ item.yxmc }}</span>
@@ -1198,7 +1180,7 @@ const zyGroupHandleCollect = async (row: any) => {
       .beizhu {
         display: inline-block;
         padding: 0 10px;
-        width: 100px;
+        width: 200px;
         font-size: 12px;
         height: 16px;
         line-height: 16px;
