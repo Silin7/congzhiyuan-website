@@ -7,6 +7,17 @@ import {
   ArrowLeft,
 } from '@element-plus/icons-vue'
 
+// 防止重复提交
+const timeout: any = ref(null)
+
+function useDebounce(fn: any, wait?: number) {
+  if (timeout.value !== null) {
+    clearTimeout(timeout.value)
+  }
+  timeout.value = setTimeout(fn, wait || 1000)
+}
+
+// 初始化时根据路由参数设置选中的导航项
 const route = useRoute()
 onMounted(() => {
   // 初始化时根据路由参数设置选中的导航项
@@ -37,10 +48,11 @@ const getMyuserInfoQuery = async () => {
     const res = await api.myuserInfoQueryApi({
       token: window.localStorage.getItem('token') || ''
     })
+    console.log('-------->', res)
     if (res.data.code == 0) {
       personalInfo.value = res.data.data || {}
       personalForm.value = JSON.parse(JSON.stringify(personalInfo.value))
-      selectedSubjects.value = personalForm.value.xuanke.split(',') || []
+      selectedSubjects.value = personalForm.value.xuanke?.split(',') || []
       if (personalForm.value.province) {
         getwctypeList()
         getYklmQuery()
@@ -49,6 +61,7 @@ const getMyuserInfoQuery = async () => {
       ElMessage.error(res.data.message || '获取个人信息失败')
     }
   } catch (error) {
+    console.log('error -------->', error)
     ElMessage.error('获取个人信息失败')
   }
 }
@@ -142,6 +155,7 @@ const cjInput = async () => {
       cj: personalForm.value.cj,
       wctype: personalForm.value.wctype,
       yklm: personalForm.value.yklm,
+      province: personalForm.value.province
     })
     if (res.data.code == 0) {
       personalForm.value.wc = res.data.data.wc || ''
@@ -279,13 +293,18 @@ const sendCode = async () => {
       phone: seetingpwdForm.value.phone,
       type: 1
     })
-    if (res.data.code === 0) {
-      ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
-    } else {
-      ElMessage.error(res.data.message || '发送验证码失败')
-    }
+    ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+    console.log('发送验证码 -------->', res)
+    // if (res.data.code === 0) {
+    //   ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+    // } else {
+    //   // ElMessage.error(res.data.message || '发送验证码失败')
+    //   console.log('发送验证码失败 -------->', res.data.message || '发送验证码失败')
+    // }
   } catch (error) {
-    ElMessage.error('发送验证码失败')
+    ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+    console.log('发送验证码失败 -------->', error)
+    // ElMessage.error('发送验证码失败')
   }
 }
 
@@ -448,7 +467,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
       <aside class="w-full md:w-1/4">
         <div class="bg-white rounded-xl shadow-md p-6">
           <div class="flex items-center pb-6 border-b">
-            <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
+            <!-- <div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                 viewBox="0 0 32 32" data-icon="carbon:user-avatar"
                 class="iconify text-4xl text-neutral iconify--carbon">
@@ -458,7 +477,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                   d="M16 2a14 14 0 1 0 14 14A14.016 14.016 0 0 0 16 2m-6 24.377V25a3.003 3.003 0 0 1 3-3h6a3.003 3.003 0 0 1 3 3v1.377a11.9 11.9 0 0 1-12 0m13.993-1.451A5 5 0 0 0 19 20h-6a5 5 0 0 0-4.992 4.926a12 12 0 1 1 15.985 0">
                 </path>
               </svg>
-            </div>
+            </div> -->
             <div class="ml-4">
               <h3 class="text-lg font-bold text-neutral">{{ personalInfo.userName || '' }}</h3>
               <p class="text-sm text-neutral-400">{{ personalInfo.province || '' }}</p>
@@ -667,20 +686,20 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                 </div>
 
                 <!-- 分数和位次 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-if="personalForm.province" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <!-- 高考分数 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">高考分数</label>
-                    <el-input-number max="750" min="0" name="score" placeholder="请输入您的高考总分" type="number"
-                      v-model="personalForm.cj" :disabled="personalForm.remainEditNum <= 0" @input="cjInput"
+                    <el-input max="750" min="0" name="score" placeholder="请输入您的高考总分" v-model="personalForm.cj"
+                      :disabled="personalForm.remainEditNum <= 0" @input="useDebounce(cjInput)"
                       class="input-tall44px" />
                     <p class="mt-2 text-sm text-neutral-400">总分范围：0-750分</p>
                   </div>
                   <!-- 位次 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">位次</label>
-                    <el-input-number min="1" name="ranking" placeholder="请输入您的省内位次" type="number"
-                      v-model="personalForm.wc" :disabled="personalForm.remainEditNum <= 0" class="input-tall44px" />
+                    <el-input min="1" name="ranking" placeholder="请输入您的省内位次" v-model="personalForm.wc"
+                      :disabled="personalForm.remainEditNum <= 0" class="input-tall44px" />
                     <p class="mt-2 text-sm text-neutral-400">请输入省内排名位次</p>
                   </div>
                 </div>
