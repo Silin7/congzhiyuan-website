@@ -850,7 +850,7 @@ const zyGroupHandleCollect = async (row: any) => {
             </el-table-column>
             <el-table-column label="招生专业" min-width="200" align="left">
               <template #default="scope">
-                <div class="tablezy">
+                <div class="tablezy" style="padding-top: 10px;">
                    <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{ scope.row.zymc }}</span>
                   </div>
                   <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{ scope.row.zydh }}</span>
@@ -972,7 +972,7 @@ const zyGroupHandleCollect = async (row: any) => {
             </el-table-column>
             <el-table-column label="招生专业" min-width="200" align="left">
               <template #default="scope">
-                <div class="tablezy">
+                <div class="tablezy" style="padding-top: 10px;">
                   <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{
                       scope.row.zymc }}</span>
                   </div>
