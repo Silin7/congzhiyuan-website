@@ -55,7 +55,7 @@ const getTopInfo = async () => {
             <div class="p-6">
               <p class="text-gray-600 mb-4">{{ topInfo[0]?.text }}</p>
               <div class="flex items-center">
-                <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 96%</span>
+                <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 92%</span>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@ const getTopInfo = async () => {
             <div class="p-6">
               <p class="text-gray-600 mb-4">{{ topInfo[1]?.text }}</p>
               <div class="flex items-center">
-                <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 92%</span>
+                <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">匹配度 96%</span>
               </div>
             </div>
           </div>
