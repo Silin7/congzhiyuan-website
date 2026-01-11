@@ -5,21 +5,22 @@ import { ElTable, ElTableColumn, ElCheckbox, ElButton, ElPagination, ElMessage }
 import * as api from '@/api/interfaceapi'
 import { useRouter } from 'vue-router'
 
-
 onMounted(() => {
+  getPcList()
+  getDisciplineCategoriesList()
   getSchoolNatures()
   getProvinceList()
   getMajorFeatureList()
 })
 
+const isCollapsed = ref(true)
+
 // 院校层次
-const selectedSchoolLevel = ref('')
+const selectedSchoolLevel = ref('1')
 const handleSchoolLevelClick = (level: string) => {
   selectedSchoolLevel.value = level
   selectedAdmissionBatch.value = ''
   selectedAdmissionType.value = ''
-  getPcList()
-  getDisciplineCategoriesList()
 }
 
 // 录取批次
@@ -51,7 +52,7 @@ const handleAdmissionBatchClick = (batch: string) => {
 }
 
 // 录取类型
-const admissionTypes: any = ref([{ dddw: '1', tdmc: '普通计划' }, { dddw: '2', tdmc: '地方专项' }, { dddw: '3', tdmc: '中外合作' }])
+const admissionTypes: any = ref([])
 const getTddwList = async () => {
   try {
     const res = await api.tddwListApi({
@@ -82,22 +83,26 @@ const handleAdmissionTypeChange = (value: string) => {
 const schoolName = ref('')
 const getSchoolNameLoading = ref(false)
 const schoolNameOptions: any = ref([])
-const getSchoolNameOptions = async () => {
-  getSchoolNameLoading.value = true
-  try {
-    const res = await api.yxqueryBymcApi({
-      token: window.localStorage.getItem('token') || '',
-      yxmc: schoolName.value
-    })
-    if (res.data.code === 0) {
-      schoolNameOptions.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取院校名称列表失败')
+const getSchoolNameOptions = async (value: any) => {
+  if (value.length >= 3) {
+    getSchoolNameLoading.value = true
+    try {
+      const res = await api.yxqueryBymcApi({
+        token: window.localStorage.getItem('token') || '',
+        yxmc: value || ''
+      })
+      if (res.data.code === 0) {
+        schoolNameOptions.value = res.data.data.Rs || []
+      } else {
+        ElMessage.error(res.data.message || '获取院校名称列表失败')
+      }
+    } catch (error) {
+      ElMessage.error('获取院校名称列表失败')
+    } finally {
+      getSchoolNameLoading.value = false
     }
-  } catch (error) {
-    ElMessage.error('获取院校名称列表失败')
-  } finally {
-    getSchoolNameLoading.value = false
+  } else {
+    schoolNameOptions.value = []
   }
 }
 const selectedSchool = ref('')
@@ -162,22 +167,26 @@ const handleProvinceClick = (province: string) => {
 const majorName = ref('')
 const getMajorNameLoading = ref(false)
 const majorNameOptions: any = ref([])
-const getMajorNameOptions = async () => {
-  getMajorNameLoading.value = true
-  try {
-    const res = await api.zyqueryBymcApi({
-      token: window.localStorage.getItem('token') || '',
-      zymc: majorName.value
-    })
-    if (res.data.code === 0) {
-      majorNameOptions.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取专业名称列表失败')
+const getMajorNameOptions = async (value: any) => {
+  if (value.length >= 2) {
+    getMajorNameLoading.value = true
+    try {
+      const res = await api.zyqueryBymcApi({
+        token: window.localStorage.getItem('token') || '',
+        zymc: value || ''
+      })
+      if (res.data.code === 0) {
+        majorNameOptions.value = res.data.data.Rs || []
+      } else {
+        ElMessage.error(res.data.message || '获取专业名称列表失败')
+      }
+    } catch (error) {
+      ElMessage.error('获取专业名称列表失败')
+    } finally {
+      getMajorNameLoading.value = false
     }
-  } catch (error) {
-    ElMessage.error('获取专业名称列表失败')
-  } finally {
-    getMajorNameLoading.value = false
+  } else {
+    majorNameOptions.value = []
   }
 }
 const selectedMajor = ref('')
@@ -267,7 +276,7 @@ const getSubDisciplineList = async () => {
       yjxk: firstDiscipline.value
     })
     if (res.data.code == 0) {
-      subDisciplineList.value = res.data.data || []
+      subDisciplineList.value = res.data.data.Rs || []
     } else {
       ElMessage.error(res.data.message || '获取二级学科列表失败')
     }
@@ -281,23 +290,13 @@ const subDisciplineChange = (value: string) => {
   console.log(`选择了二级学科: ${value}`)
 }
 
-// 录取概率范围预警 默认选择'稳一稳'
-const selectedRiskLevel = ref<'high' | 'medium' | 'low'>('medium')
-// 监听风险等级变化，根据不同等级设置默认阈值
-const handleRiskLevelChange = () => {
-  switch (selectedRiskLevel.value) {
-    case 'high':
-      riskThreshold.value = 25 // 较高风险阈值
-      safeThreshold.value = 75 // 保持较高安全阈值
-      break
-    case 'medium':
-      riskThreshold.value = 15 // 中等风险阈值
-      safeThreshold.value = 85 // 中等安全阈值
-      break
-    case 'low':
-      riskThreshold.value = 10 // 较低风险阈值
-      safeThreshold.value = 90 // 较高安全阈值
-      break
+// 录取范围 默认选择'稳一稳'
+const selectedRiskLevel: any = ref(['4', '3', '2'])
+const handleRiskLevelClick = (level: string) => {
+  if (selectedRiskLevel.value.includes(level)) {
+    selectedRiskLevel.value = selectedRiskLevel.value.filter((item: string) => item !== level)
+  } else {
+    selectedRiskLevel.value.push(level)
   }
 }
 // “冲” 风险阈值响应式变量
@@ -324,7 +323,7 @@ const lqInfoZyQuery = async () => {
     genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value, genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
     zydm: selectedMajor.value,
-    lqdc: selectedRiskLevel.value === 'high' ? '4' : selectedRiskLevel.value === 'medium' ? '3' : '2',
+    lqdc: selectedRiskLevel.value.join(','),
     startrow: currentPage.value,
     pagesize: pageSize.value,
     progressChong: riskThreshold.value,
@@ -428,7 +427,7 @@ const lqInfoZyGroupQuery = async () => {
     genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value, genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
     // g.genList通用列表项查询字段拼接字符串,格式{"Rs":[{"id":11,"genType":"yxxz"},{"id":23,"genType":"yxxz"}]}
     zydm: selectedMajor.value,
-    lqdc: selectedRiskLevel.value === 'high' ? '4' : selectedRiskLevel.value === 'medium' ? '3' : '2',
+    lqdc: selectedRiskLevel.value.join(','),
     startrow: currentPage.value,
     pagesize: pageSize.value,
     progressChong: riskThreshold.value,
@@ -504,266 +503,208 @@ const goMyAspiration = () => {
       <section class="mb-10">
         <h2 class="text-2xl font-bold text-center mb-6">志愿填报查询</h2>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
-          <!-- 院校层次  录取批次 录取类型 -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-              <label class="block text-sm font-medium mb-2 text-gray-800">院校层次</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button @click="handleSchoolLevelClick('1')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedSchoolLevel === '1'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  本科
-                </button>
-                <button @click="handleSchoolLevelClick('2')" :class="[
-                  'text-sm py-2 px-3 rounded-md border transition',
-                  selectedSchoolLevel === '2'
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                ]">
-                  专科
-                </button>
+          <div class="tagBox">
+            <div class="tagTitle">院校层次：</div>
+            <div class="tagContent">
+              <div :class="selectedSchoolLevel === '1' ? 'primaryTag' : 'infoTag'" @click="handleSchoolLevelClick('1')">
+                本科
               </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-2 text-gray-800">录取批次</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button v-for="(item, index) in admissionBatch" :key="index"
-                  @click="handleAdmissionBatchClick(item.pcdm)" :class="[
-                    'text-sm py-2 px-3 rounded-md border transition',
-                    selectedAdmissionBatch === item.pcdm
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                  ]">
-                  {{ item.pcmc }}
-                </button>
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-2 text-gray-800">录取类型</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button v-for="(item, index) in admissionTypes" :key="index"
-                  @click="handleAdmissionTypeChange(item.tddw)" :class="[
-                    'text-sm py-2 px-3 rounded-md border transition',
-                    selectedAdmissionType === item.tddw
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                  ]">
-                  {{ item.tdmc }}
-                </button>
+              <div :class="selectedSchoolLevel === '2' ? 'primaryTag' : 'infoTag'" @click="handleSchoolLevelClick('2')">
+                专科
               </div>
             </div>
           </div>
-          <!-- 院校名称 院校性质 -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div>
-              <label class="block text-sm font-medium mb-2 text-gray-800">院校名称</label>
-              <el-select v-model="schoolName" filterable remote reserve-keyword placeholder="输入院校名称"
-                :remote-method="getSchoolNameOptions" :loading="getSchoolNameLoading" @change="handleSchoolNameChange"
+          <div v-if="selectedSchoolLevel" class="tagBox">
+            <div class="tagTitle">录取批次：</div>
+            <div class="tagContent">
+              <div v-for="(item, index) in admissionBatch" :key="index"
+                :class="selectedAdmissionBatch === item.pcdm ? 'primaryTag' : 'infoTag'"
+                @click="handleAdmissionBatchClick(item.pcdm)">
+                {{ item.pcmc }}
+              </div>
+            </div>
+          </div>
+          <div v-if="selectedAdmissionBatch" class="tagBox">
+            <div class="tagTitle">录取类型：</div>
+            <div class="tagContent">
+              <div v-for="(item, index) in admissionTypes" :key="index"
+                :class="selectedAdmissionType === item.tddw ? 'primaryTag' : 'infoTag'"
+                @click="handleAdmissionTypeChange(item.tddw)">
+                {{ item.tddwmc }}
+              </div>
+            </div>
+          </div>
+          <div class="tagBox">
+            <div class="tagTitle">院校名称：</div>
+            <el-select v-model="schoolName" filterable remote reserve-keyword placeholder="输入院校名称"
+              :remote-method="getSchoolNameOptions" :loading="getSchoolNameLoading" @change="handleSchoolNameChange"
+              class="select-tall38px" clearable style="margin-bottom: 10px; width: calc(50% - 90px);">
+              <el-option v-for="(item, index) in schoolNameOptions" :key="index" :label="item.text" :value="item.id" />
+            </el-select>
+          </div>
+          <div class="tagBox">
+            <div class="tagTitle">院校性质：</div>
+            <div class="tagContent">
+              <div v-for="(item, index) in schoolNatures" :key="index"
+                :class="selectedSchoolNature === item.id ? 'primaryTag' : 'infoTag'"
+                @click="handleSchoolNatureClick(item.id)">
+                {{ item.disp }}
+              </div>
+            </div>
+          </div>
+          <div v-if="!isCollapsed" class="tagBox">
+            <div class="tagTitle">院校特色：</div>
+            <div class="tagContent">
+              <div v-for="(item, index) in selectedMajorFeatureList" :key="index"
+                :class="selectedMajorFeature === item.id ? 'primaryTag' : 'infoTag'"
+                @click="handleMajorFeatureClick(item.id)">
+                {{ item.disp }}
+              </div>
+            </div>
+          </div>
+          <div v-if="!isCollapsed" class="tagBox">
+            <div class="tagTitle">
+              <p>院校省份：</p>
+              <p>（可多选）</p>
+            </div>
+            <div class="tagContent">
+              <div v-for="(item, index) in provinceList" :key="index"
+                :class="selectedProvince.includes(item.province) ? 'primaryTag' : 'infoTag'"
+                @click="handleProvinceClick(item.province)">
+                {{ item.province }}
+              </div>
+            </div>
+          </div>
+          <!-- 专业名称 学科门类 一级学科 二级学科 -->
+          <el-row v-if="!isCollapsed" :gutter="20">
+            <el-col :span="6">
+              <div class="tagTitle">专业名称：</div>
+              <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
+                :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" @change="handleMajorNameChange"
                 class="select-tall38px">
-                <el-option v-for="(item, index) in schoolNameOptions" :key="index" :label="item.yxmc"
+                <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text"
                   :value="item.id" />
               </el-select>
+            </el-col>
+            <el-col :span="6">
+              <div class="tagTitle">学科门类：</div>
+              <el-select v-model="disciplineCategories" placeholder="请选择学科门类" class="select-tall38px"
+                @change="disciplineCategoriesChange">
+                <el-option v-for="(item, index) in disciplineCategoriesList" :key="index" :value="item.zydm"
+                  :label="item.zymc" />
+              </el-select>
+            </el-col>
+            <el-col :span="6">
+              <div class="tagTitle">一级学科：</div>
+              <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px"
+                @change="firstDisciplineChange">
+                <el-option v-for="(item, index) in firstDisciplineList" :key="index" :value="item.zydm"
+                  :label="item.zymc" />
+              </el-select>
+            </el-col>
+            <el-col :span="6">
+              <div class="tagTitle">二级学科：</div>
+              <el-select v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px"
+                @change="subDisciplineChange">
+                <el-option v-for="(item, index) in subDisciplineList" :key="index" :value="item.zydm"
+                  :label="item.zymc" />
+              </el-select>
+            </el-col>
+          </el-row>
+          <!-- 录取范围 -->
+          <div v-if="!isCollapsed">
+            <div class="flex items-center" style="margin: 20px 0;">
+              <div class="tagTitle" style="margin-bottom: 0;">录取范围：</div>
+              <el-tag :type="selectedRiskLevel.includes('4') ? 'danger' : 'info'"
+                style="margin-right: 10px; cursor: pointer;" @click="handleRiskLevelClick('4')">冲一冲</el-tag>
+              <el-tag :type="selectedRiskLevel.includes('3') ? 'warning' : 'info'"
+                style="margin-right: 10px; cursor: pointer;" @click="handleRiskLevelClick('3')">稳一稳</el-tag>
+              <el-tag :type="selectedRiskLevel.includes('2') ? 'success' : 'info'"
+                style="margin-right: 10px; cursor: pointer;" @click="handleRiskLevelClick('2')">保一保</el-tag>
+              <el-tag :type="selectedRiskLevel.includes('-2') ? 'primary' : 'info'"
+                style="margin-right: 10px; cursor: pointer;" @click="handleRiskLevelClick('-2')">新增</el-tag>
             </div>
-            <div>
-              <label class="block text-sm font-medium mb-2 text-gray-800">院校性质</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button v-for="(item, index) in schoolNatures" :key="index" @click="handleSchoolNatureClick(item.id)"
-                  :class="[
-                    'text-sm py-2 px-3 rounded-md border transition',
-                    selectedSchoolNature === item.id
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                  ]">
-                  {{ item.disp }}
-                </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <label class="text-sm font-semibold text-slate-700">“冲” 风险阈值</label>
+                  <span class="text-red-500 font-bold" id="val-chong">{{ riskThreshold }}%</span>
+                </div>
+                <input class="w-full" max="30" min="0" type="range" v-model="riskThreshold">
+                <p class="text-xs text-slate-400 text-center">风险越高，录取可能性越低，建议作为前置志愿</p>
+              </div>
+              <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                  <label class="text-sm font-semibold text-slate-700">“保” 安全阈值</label>
+                  <span class="text-green-600 font-bold" id="val-bao">{{ safeThreshold }}%</span>
+                </div>
+                <input class="w-full" max="100" min="70" type="range" v-model="safeThreshold">
+                <p class="text-xs text-slate-400 text-center">安全越高，录取稳定性越强，建议作为保底志愿</p>
               </div>
             </div>
           </div>
-          <!-- 院校省份（可多选）-->
-          <div class="mt-6">
-            <label class="block text-sm font-medium mb-2 text-gray-800">院校省份（可多选）</label>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-              <button v-for="(item, index) in provinceList" :key="index" @click="handleProvinceClick(item.disp)" :class="[
-                'text-sm py-2 px-3 rounded-md border transition',
-                selectedProvince.includes(item.disp)
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-              ]">
-                {{ item.disp }}
-              </button>
-            </div>
+          <div class="zksqBox" @click="isCollapsed = !isCollapsed">
+            <span v-if="isCollapsed">展开</span>
+            <el-icon v-if="isCollapsed" color="#2563EB">
+              <ArrowDownBold />
+            </el-icon>
+            <span v-if="!isCollapsed">收起</span>
+            <el-icon v-if="!isCollapsed" color="#2563EB">
+              <ArrowUpBold />
+            </el-icon>
           </div>
-          <div class="grid grid-cols-1 gap-6 mt-6">
-            <!-- 专业名称 院校特色 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-medium mb-2 text-gray-800">专业名称</label>
-                <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
-                  :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" @change="handleMajorNameChange"
-                  class="select-tall38px">
-                  <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.zymc"
-                    :value="item.zydm" />
-                </el-select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2 text-gray-800">院校特色</label>
-                <div class="grid grid-cols-3 gap-2">
-                  <button v-for="(item, index) in selectedMajorFeatureList" :key="index"
-                    @click="handleMajorFeatureClick(item.id)" :class="[
-                      'text-sm py-2 px-3 rounded-md border transition',
-                      selectedMajorFeature === item.id
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'bg-white text-gray-700 border-gray-300 hover:border-blue-500',
-                    ]">
-                    {{ item.disp }}
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- 学科门类 一级学科 二级学科 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <div>
-                  <label class="block text-sm font-medium mb-2 text-gray-800">学科门类</label>
-                  <el-select v-model="disciplineCategories" placeholder="请选择学科门类" class="select-tall38px"
-                    @change="disciplineCategoriesChange">
-                    <el-option v-for="(item, index) in disciplineCategoriesList" :key="index" :value="item.zydm"
-                      :label="item.zymc" />
-                  </el-select>
-                </div>
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2 text-gray-800">一级学科</label>
-                <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px"
-                  @change="firstDisciplineChange">
-                  <el-option v-for="(item, index) in firstDisciplineList" :key="index" :value="item.zydm"
-                    :label="item.zymc" />
-                </el-select>
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2 text-gray-800">二级学科</label>
-                <el-select v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px"
-                  @change="subDisciplineChange">
-                  <el-option v-for="(item, index) in subDisciplineList" :key="index" :value="item.zydm"
-                    :label="item.zymc" />
-                </el-select>
-              </div>
-            </div>
-            <!-- 录取概率范围预警 -->
-            <section class="bg-blue-50/50 p-6 rounded-2xl space-y-8">
-              <div>
-                <div class="flex items-center space-x-2 text-slate-700 font-semibold mb-3 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-                    viewBox="0 0 24 24" data-icon="solar:chart-square-bold-duotone"
-                    class="iconify text-blue-600 iconify--solar">
-                    <path fill="currentColor"
-                      d="M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22"
-                      opacity=".5"></path>
-                    <path fill="currentColor"
-                      d="M12 5.25a.75.75 0 0 1 .75.75v12a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75m-5 3a.75.75 0 0 1 .75.75v9a.75.75 0 0 1-1.5 0V9A.75.75 0 0 1 7 8.25m10 4a.75.75 0 0 1 .75.75v5a.75.75 0 0 1-1.5 0v-5a.75.75 0 0 1 .75-.75">
-                    </path>
-                  </svg>
-                  <span>录取概率范围预警</span>
-                </div>
-                <div class="flex gap-4">
-                  <!-- 冲一冲选项 - 高风险 -->
-                  <label class="cursor-pointer">
-                    <input class="peer sr-only" name="range" type="radio" v-model="selectedRiskLevel" value="high"
-                      @change="handleRiskLevelChange">
-                    <span
-                      class="block px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm font-medium peer-checked:border-red-500 peer-checked:text-red-600 transition-all">冲一冲</span>
-                  </label>
-                  <!-- 稳一稳选项 - 中等风险 -->
-                  <label class="cursor-pointer">
-                    <input class="peer sr-only" name="range" type="radio" v-model="selectedRiskLevel" value="medium"
-                      @change="handleRiskLevelChange">
-                    <span
-                      class="block px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm font-medium peer-checked:border-orange-500 peer-checked:text-orange-600 transition-all">稳一稳</span>
-                  </label>
-                  <!-- 保一保选项 - 低风险 -->
-                  <label class="cursor-pointer">
-                    <input class="peer sr-only" name="range" type="radio" v-model="selectedRiskLevel" value="low"
-                      @change="handleRiskLevelChange">
-                    <span
-                      class="block px-4 py-2 rounded-lg bg-white border border-slate-200 text-slate-600 text-sm font-medium peer-checked:border-green-600 peer-checked:text-green-600 transition-all">保一保</span>
-                  </label>
-                </div>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="space-y-4">
-                  <div class="flex justify-between items-center">
-                    <label class="text-sm font-semibold text-slate-700">“冲” 风险阈值</label>
-                    <span class="text-red-500 font-bold" id="val-chong">{{ riskThreshold }}%</span>
-                  </div>
-                  <input class="w-full" max="30" min="0" type="range" v-model="riskThreshold">
-                  <p class="text-xs text-slate-400 text-center">风险越高，录取可能性越低，建议作为前置志愿</p>
-                </div>
-                <div class="space-y-4">
-                  <div class="flex justify-between items-center">
-                    <label class="text-sm font-semibold text-slate-700">“保” 安全阈值</label>
-                    <span class="text-green-600 font-bold" id="val-bao">{{ safeThreshold }}%</span>
-                  </div>
-                  <input class="w-full" max="100" min="70" type="range" v-model="safeThreshold">
-                  <p class="text-xs text-slate-400 text-center">安全越高，录取稳定性越强，建议作为保底志愿</p>
-                </div>
-              </div>
-            </section>
-            <!-- 立即开始智能检索 -->
-            <div class="mt-8 flex justify-center">
-              <button
-                class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
-                @click="lqInfoZyQuery" style="margin-right: 100px;">
-                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-                  viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
-                  class="iconify text-2xl iconify--solar">
-                  <defs>
-                    <mask id="IconifyId19b962244b31ed2cc0">
-                      <g fill="none">
-                        <path fill="#fff" d="M20.313 11.157a9.157 9.157 0 1 1-18.313 0a9.157 9.157 0 0 1 18.313 0">
-                        </path>
-                        <path fill="#000" fill-rule="evenodd"
-                          d="M11.157 8.024c.399 0 .723.324.723.723v1.687h1.686a.723.723 0 0 1 0 1.446H11.88v1.686a.723.723 0 1 1-1.445 0V11.88H8.747a.723.723 0 1 1 0-1.445h1.687V8.747c0-.4.323-.723.723-.723"
-                          clip-rule="evenodd"></path>
-                        <path fill="#fff" fill-rule="evenodd"
-                          d="M18.838 18.838a.723.723 0 0 1 1.023 0l1.927 1.928a.723.723 0 0 1-1.022 1.022l-1.928-1.927a.723.723 0 0 1 0-1.023"
-                          clip-rule="evenodd"></path>
-                      </g>
-                    </mask>
-                  </defs>
-                  <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
-                </svg>
-                <!-- <span>立即开始智能检索</span> -->
-                <span>专业模式查询</span>
-              </button>
-              <button
-                class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
-                @click="lqInfoZyGroupQuery">
-                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-                  viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
-                  class="iconify text-2xl iconify--solar">
-                  <defs>
-                    <mask id="IconifyId19b962244b31ed2cc0">
-                      <g fill="none">
-                        <path fill="#fff" d="M20.313 11.157a9.157 9.157 0 1 1-18.313 0a9.157 9.157 0 0 1 18.313 0">
-                        </path>
-                        <path fill="#000" fill-rule="evenodd"
-                          d="M11.157 8.024c.399 0 .723.324.723.723v1.687h1.686a.723.723 0 0 1 0 1.446H11.88v1.686a.723.723 0 1 1-1.445 0V11.88H8.747a.723.723 0 1 1 0-1.445h1.687V8.747c0-.4.323-.723.723-.723"
-                          clip-rule="evenodd"></path>
-                        <path fill="#fff" fill-rule="evenodd"
-                          d="M18.838 18.838a.723.723 0 0 1 1.023 0l1.927 1.928a.723.723 0 0 1-1.022 1.022l-1.928-1.927a.723.723 0 0 1 0-1.023"
-                          clip-rule="evenodd"></path>
-                      </g>
-                    </mask>
-                  </defs>
-                  <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
-                </svg>
-                <!-- <span>立即开始智能检索</span> -->
-                <span>专业组模式查询</span>
-              </button>
-            </div>
+          <!-- 立即开始智能检索 -->
+          <div class="mt-8 flex justify-center">
+            <button
+              class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
+              @click="lqInfoZyQuery" style="margin-right: 100px;">
+              <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
+                viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
+                class="iconify text-2xl iconify--solar">
+                <defs>
+                  <mask id="IconifyId19b962244b31ed2cc0">
+                    <g fill="none">
+                      <path fill="#fff" d="M20.313 11.157a9.157 9.157 0 1 1-18.313 0a9.157 9.157 0 0 1 18.313 0">
+                      </path>
+                      <path fill="#000" fill-rule="evenodd"
+                        d="M11.157 8.024c.399 0 .723.324.723.723v1.687h1.686a.723.723 0 0 1 0 1.446H11.88v1.686a.723.723 0 1 1-1.445 0V11.88H8.747a.723.723 0 1 1 0-1.445h1.687V8.747c0-.4.323-.723.723-.723"
+                        clip-rule="evenodd"></path>
+                      <path fill="#fff" fill-rule="evenodd"
+                        d="M18.838 18.838a.723.723 0 0 1 1.023 0l1.927 1.928a.723.723 0 0 1-1.022 1.022l-1.928-1.927a.723.723 0 0 1 0-1.023"
+                        clip-rule="evenodd"></path>
+                    </g>
+                  </mask>
+                </defs>
+                <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
+              </svg>
+              <!-- <span>立即开始智能检索</span> -->
+              <span>专业模式查询</span>
+            </button>
+            <button
+              class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
+              @click="lqInfoZyGroupQuery">
+              <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
+                viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
+                class="iconify text-2xl iconify--solar">
+                <defs>
+                  <mask id="IconifyId19b962244b31ed2cc0">
+                    <g fill="none">
+                      <path fill="#fff" d="M20.313 11.157a9.157 9.157 0 1 1-18.313 0a9.157 9.157 0 0 1 18.313 0">
+                      </path>
+                      <path fill="#000" fill-rule="evenodd"
+                        d="M11.157 8.024c.399 0 .723.324.723.723v1.687h1.686a.723.723 0 0 1 0 1.446H11.88v1.686a.723.723 0 1 1-1.445 0V11.88H8.747a.723.723 0 1 1 0-1.445h1.687V8.747c0-.4.323-.723.723-.723"
+                        clip-rule="evenodd"></path>
+                      <path fill="#fff" fill-rule="evenodd"
+                        d="M18.838 18.838a.723.723 0 0 1 1.023 0l1.927 1.928a.723.723 0 0 1-1.022 1.022l-1.928-1.927a.723.723 0 0 1 0-1.023"
+                        clip-rule="evenodd"></path>
+                    </g>
+                  </mask>
+                </defs>
+                <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
+              </svg>
+              <!-- <span>立即开始智能检索</span> -->
+              <span>专业组模式查询</span>
+            </button>
           </div>
         </div>
       </section>
@@ -811,19 +752,20 @@ const goMyAspiration = () => {
                   {{ scope.row.sylxk === 1 ? '一流学科建设高校 | ' : '' }}
                   {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
                   {{ scope.row.sf985 === 1 ? '985高校' : '' }}
-                  <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}% |</span>
-                  <span v-if="scope.row.xkkm">对应选考科目：{{ scope.row.xkkm }}</span>
+                  <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
                 </div>
               </template>
             </el-table-column>
             <el-table-column label="招生专业" min-width="120" align="left">
               <template #default="scope">
-                <div class="text-xs text-gray-500">当年计划人数：{{ scope.row.jhrs }}</div>
-                <div class="text-xs text-gray-500">是否新增专业：{{ scope.row.isNew === 1 ? '是' : '否' }}</div>
+                <div class="text-xs text-gray-500">计划人数：{{ scope.row.jhrs }}</div>
+                <!-- <div class="text-xs text-gray-500">是否新增专业：{{ scope.row.isNew === 1 ? '是' : '否' }}</div> -->
                 <div class="text-xs text-gray-500">专业代号：{{ scope.row.zydh }}</div>
                 <div class="text-xs text-gray-500">专业名称：{{ scope.row.zymc }}</div>
-                <div class="text-xs text-gray-500">学制：{{ scope.row.zymc }}</div>
-                <div class="text-xs text-gray-500">学费：{{ scope.row.xzdm }}</div>
+                <div class="text-xs text-gray-500">备注：{{ scope.row.jhbz }}</div>
+                <span v-if="scope.row.xkkm">选科：{{ scope.row.xkkm }}</span>
+                <div class="text-xs text-gray-500">学制：{{ scope.row.xzdm }}</div>
+                <div class="text-xs text-gray-500">学费：{{ scope.row.sfbz }}</div>
                 <div class="text-xs text-gray-500">批次：{{ scope.row.pcmc }}</div>
                 <div class="text-xs text-gray-500">投档单位：{{ scope.row.tddwmc }}</div>
               </template>
@@ -867,11 +809,11 @@ const goMyAspiration = () => {
                 <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs3 }}</div>
               </template>
             </el-table-column>
-            <el-table-column prop="remark" label="备注" min-width="120" align="left">
+            <!-- <el-table-column prop="remark" label="备注" min-width="120" align="left">
               <template #default="scope">
                 <div class="text-xs text-gray-500">{{ scope.row.jhbz }}</div>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column prop="bl" label="录取比例" min-width="80" sortable align="center">
               <template #default="scope">
                 <div class="text-center text-xs mt-1">{{ scope.row.bl }}%</div>
@@ -1056,7 +998,67 @@ const goMyAspiration = () => {
     }
 
     .bg3 {
-      background-color: #007AFF;
+      background-color: #2563EB;
+    }
+  }
+
+  .tagBox {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  .tagTitle {
+    margin-bottom: 10px;
+    margin-right: 20px;
+    font-size: 14px;
+    color: #646566;
+  }
+
+  .tagContent {
+    width: calc(100% - 100px);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .primaryTag {
+      cursor: pointer;
+      margin-bottom: 10px;
+      margin-right: 8px;
+      font-size: 14px;
+      line-height: 30px;
+      padding: 0 20px;
+      color: #fff;
+      background-color: #2563EB;
+      border: 1px solid #2563EB;
+      border-radius: 4px;
+    }
+
+    .infoTag {
+      cursor: pointer;
+      margin-bottom: 10px;
+      margin-right: 8px;
+      font-size: 14px;
+      line-height: 30px;
+      color: rgb(55 65 81);
+      padding: 0 20px;
+      background-color: #fff;
+      border: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
+      border-radius: 4px;
+    }
+  }
+
+  .zksqBox {
+    cursor: pointer;
+    margin: 20px auto;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    span {
+      margin-right: 6px;
+      color: #2563EB;
     }
   }
 }
