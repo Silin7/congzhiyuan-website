@@ -44,25 +44,17 @@ const handleNavItemClick = (navItem: string) => {
 const personalInfo: any = ref<any>({})
 const personalForm: any = ref({})
 const getMyuserInfoQuery = async () => {
-  try {
-    const res = await api.myuserInfoQueryApi({
-      token: window.localStorage.getItem('token') || ''
-    })
-    console.log('-------->', res)
-    if (res.data.code == 0) {
-      personalInfo.value = res.data.data || {}
-      personalForm.value = JSON.parse(JSON.stringify(personalInfo.value))
-      selectedSubjects.value = personalForm.value.xuanke?.split(',') || []
-      if (personalForm.value.province) {
-        getwctypeList()
-        getYklmQuery()
-      }
-    } else {
-      ElMessage.error(res.data.message || '获取个人信息失败')
+  const res: any = await api.myuserInfoQueryApi({
+    token: window.localStorage.getItem('token') || ''
+  })
+  if (res) {
+    personalInfo.value = res.data || {}
+    personalForm.value = JSON.parse(JSON.stringify(personalInfo.value))
+    selectedSubjects.value = personalForm.value.xuanke?.split(',') || []
+    if (personalForm.value.province) {
+      getwctypeList()
+      getYklmQuery()
     }
-  } catch (error) {
-    console.log('error -------->', error)
-    ElMessage.error('获取个人信息失败')
   }
 }
 
@@ -75,17 +67,11 @@ const handleProvinceChange = () => {
 // 获取省份列表
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
-  try {
-    const res = await api.userProvQueryApi({
-      token: window.localStorage.getItem('token') || '',
-    })
-    if (res.data.code == 0) {
-      provinceList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取省份列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取省份列表失败')
+  const res: any = await api.userProvQueryApi({
+    token: window.localStorage.getItem('token') || '',
+  })
+  if (res) {
+    provinceList.value = res.data.Rs || []
   }
 }
 
@@ -109,18 +95,12 @@ const handleSubjectClick = (subject: string) => {
 // 考生类别查询
 const wctypeList: any = ref([])
 const getwctypeList = async () => {
-  try {
-    const res = await api.WctypeQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      province: personalForm.value.province || ''
-    })
-    if (res.data.code == 0) {
-      wctypeList.value = res.data.data || []
-    } else {
-      ElMessage.error(res.data.message || '获取考生类别列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取考生类别列表失败')
+  const res: any = await api.WctypeQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    province: personalForm.value.province || ''
+  })
+  if (res) {
+    wctypeList.value = res.data || []
   }
 }
 const wctypeChange = () => {
@@ -130,40 +110,27 @@ const wctypeChange = () => {
 // 考试类别小类查询
 const subjectList = ref<any>([])
 const getYklmQuery = async () => {
-  try {
-    const res = await api.yklmQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      wctype: '2',
-      province: personalForm.value.province || ''
-    })
-    if (res.data.code == 0) {
-      console.log(res);
-      subjectList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取高考科目列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取高考科目列表失败')
+  const res: any = await api.yklmQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    wctype: '2',
+    province: personalForm.value.province || ''
+  })
+  if (res) {
+    subjectList.value = res.data.Rs || []
   }
 }
 
 // 输入分数查询位次查询
 const cjInput = async () => {
-  try {
-    const res = await api.wcQueryBycjApi({
-      token: window.localStorage.getItem('token') || '',
-      cj: personalForm.value.cj,
-      wctype: personalForm.value.wctype,
-      yklm: personalForm.value.yklm,
-      province: personalForm.value.province
-    })
-    if (res.data.code == 0) {
-      personalForm.value.wc = res.data.data.wc || ''
-    } else {
-      ElMessage.error(res.data.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('查询失败')
+  const res: any = await api.wcQueryBycjApi({
+    token: window.localStorage.getItem('token') || '',
+    cj: personalForm.value.cj,
+    wctype: personalForm.value.wctype,
+    yklm: personalForm.value.yklm,
+    province: personalForm.value.province
+  })
+  if (res) {
+    personalForm.value.wc = res.data.wc || ''
   }
 }
 
@@ -220,15 +187,9 @@ const myUserInfoSaveBtn = async () => {
     }
   }
   personalForm.value.token = window.localStorage.getItem('token') || ''
-  try {
-    const res = await api.myUserInfoSaveApi(personalForm.value)
-    if (res.data.code == 0) {
-      ElMessage.success('保存成功')
-    } else {
-      ElMessage.error(res.data.message || '保存失败')
-    }
-  } catch (error) {
-    ElMessage.error('保存失败')
+  const res: any = await api.myUserInfoSaveApi(personalForm.value)
+  if (res) {
+    ElMessage.success('保存成功')
   }
 }
 
@@ -256,25 +217,18 @@ const handlePasswordSubmit = async () => {
     ElMessage.warning('两次输入的密码不一致')
     return
   }
-
-  try {
-    const res = await api.passResetApi({
-      token: window.localStorage.getItem('token') || '',
-      newPass: seetingpwdForm.value.newPass,
-      vfCode: seetingpwdForm.value.code,
-    })
-    if (res.data.code == 0) {
-      ElMessage.success('密码设置成功')
-      // 清空密码输入框
-      seetingpwdForm.value.phone = ''
-      seetingpwdForm.value.code = ''
-      seetingpwdForm.value.newPass = ''
-      seetingpwdForm.value.confirmPass = ''
-    } else {
-      ElMessage.error(res.data.message || '密码设置失败')
-    }
-  } catch (error) {
-    ElMessage.error('密码设置失败')
+  const res: any = await api.passResetApi({
+    token: window.localStorage.getItem('token') || '',
+    newPass: seetingpwdForm.value.newPass,
+    vfCode: seetingpwdForm.value.code,
+  })
+  if (res) {
+    ElMessage.success('密码设置成功')
+    // 清空密码输入框
+    seetingpwdForm.value.phone = ''
+    seetingpwdForm.value.code = ''
+    seetingpwdForm.value.newPass = ''
+    seetingpwdForm.value.confirmPass = ''
   }
 }
 
@@ -331,126 +285,76 @@ const handleChangePasswordSubmit = async () => {
     ElMessage.warning('两次输入的密码不一致')
     return
   }
-  try {
-    const res: any = await api.passModiApi({
-      token: window.localStorage.getItem('token') || '',
-      oldPass: changePasswordForm.value.oldPass,
-      newPass: changePasswordForm.value.newPass,
-    })
-    if (res.data.code === 0) {
-      ElMessage.success('密码修改成功')
-      // 清空密码输入框
-      changePasswordForm.value.oldPass = ''
-      changePasswordForm.value.newPass = ''
-      changePasswordForm.value.confirmPass = ''
-    } else {
-      ElMessage.error(res.data.message || '密码修改失败')
-    }
-  } catch (error) {
-    ElMessage.error('密码修改失败')
+  const res: any = await api.passModiApi({
+    token: window.localStorage.getItem('token') || '',
+    oldPass: changePasswordForm.value.oldPass,
+    newPass: changePasswordForm.value.newPass,
+  })
+  if (res) {
+    ElMessage.success('密码修改成功')
+    // 清空密码输入框
+    changePasswordForm.value.oldPass = ''
+    changePasswordForm.value.newPass = ''
+    changePasswordForm.value.confirmPass = ''
   }
 }
 
-// // 志愿分组查询
-// // a.token:用户token，必选
-// // b.ccdm  1 本科 2 专科 99全部
-// export function myChioesGroupQueryApi(data: any) {
-//   const params = new FormData()
-//   Object.keys(data).forEach(key => {
-//     params.append(key, data[key])
-//   })
-//   return axios.post(`${baseURL}/mod/zhiYuan/MyChoicesGroupQuery.ajax.php`, params)
-// }
 // 我的收藏 - 志愿分组查询
 const myChioesGroupQueryState = ref('initQuery')
 const ccdm = ref(99)
 const myChioesGroupQueryList = ref([])
-const myChioesGroupQueryLoading = ref(false)
 const getMyChioesGroupQuery = async () => {
-  try {
-    myChioesGroupQueryLoading.value = true
-    const res: any = await api.myChioesGroupQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      ccdm: ccdm.value,
-    })
-    if (res.data.code === 0) {
-      myChioesGroupQueryList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('查询失败')
-  } finally {
-    myChioesGroupQueryLoading.value = false
+  const res: any = await api.myChioesGroupQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: ccdm.value,
+  })
+  if (res) {
+    myChioesGroupQueryList.value = res.data.Rs || []
   }
 }
 const zyHandleDelete = async (row: any) => {
-  try {
-    const res: any = await api.delChoiceApi({
-      token: window.localStorage.getItem('token') || '',
-      chId: row.chId,
-    })
-    if (res.data.code === 0) {
-      ElMessage.success('删除成功')
-      // 刷新收藏分组查询
-      getMyChioesGroupQuery()
-    } else {
-      ElMessage.error(res.data.message || '删除失败')
-    }
-  } catch (error) {
-    ElMessage.error('删除失败')
+  const res: any = await api.delChoiceApi({
+    token: window.localStorage.getItem('token') || '',
+    chId: row.chId,
+  })
+  if (res) {
+    ElMessage.success('删除成功')
+    // 刷新收藏分组查询
+    getMyChioesGroupQuery()
   }
 }
 // 专业模式收藏查询
 const tableData: any = ref([])
 const handleViewGroup1 = async (row: any) => {
   myChioesGroupQueryState.value = 'zyQuery'
-  try {
-    const res: any = await api.zyChoicesQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      chGroupId: row.chGroupId,
-    })
-    if (res.data.code === 0) {
-      tableData.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('查询失败')
+  const res: any = await api.zyChoicesQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    chGroupId: row.chGroupId,
+  })
+  if (res) {
+    tableData.value = res.data.Rs || []
   }
 }
 // 专业组模式收藏查询
 const handleViewGroup2 = async (row: any) => {
   myChioesGroupQueryState.value = 'zyGroupQuery'
-  try {
-    const res: any = await api.zyGroupChoicesQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      chGroupId: row.chGroupId,
-    })
-    if (res.data.code === 0) {
-      tableData.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('查询失败')
+  const res: any = await api.zyGroupChoicesQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    chGroupId: row.chGroupId,
+  })
+  if (res) {
+    tableData.value = res.data.Rs || []
   }
 }
 const zyGroupHandleDelete = async (row: any) => {
-  try {
-    const res: any = await api.delChoiceGroupApi({
-      token: window.localStorage.getItem('token') || '',
-      chZyGroupId: row.chZyGroupId,
-    })
-    if (res.data.code === 0) {
-      ElMessage.success('删除成功')
-      // 刷新收藏分组查询
-      getMyChioesGroupQuery()
-    } else {
-      ElMessage.error(res.data.message || '删除失败')
-    }
-  } catch (error) {
-    ElMessage.error('删除失败')
+  const res: any = await api.delChoiceGroupApi({
+    token: window.localStorage.getItem('token') || '',
+    chZyGroupId: row.chZyGroupId,
+  })
+  if (res) {
+    ElMessage.success('删除成功')
+    // 刷新收藏分组查询
+    getMyChioesGroupQuery()
   }
 }
 
@@ -513,7 +417,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
               </svg>
               <span class="font-medium">设置密码</span>
             </a>
-            <a @click="handleNavItemClick('change-password')" :class="[
+            <!-- <a @click="handleNavItemClick('change-password')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'change-password'
                 ? 'bg-primary bg-opacity-10 text-primary'
@@ -529,7 +433,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                 </path>
               </svg>
               <span class="font-medium">修改密码</span>
-            </a>
+            </a> -->
             <a @click="handleNavItemClick('my-collections')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'my-collections'
@@ -858,8 +762,8 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
               @click="myChioesGroupQueryState = 'initQuery'">
               返回
             </el-button>
-            <el-table v-if="myChioesGroupQueryState === 'initQuery'" :loading="myChioesGroupQueryLoading"
-              :data="myChioesGroupQueryList" border style="width: 100%; margin-top: 20px;">
+            <el-table v-if="myChioesGroupQueryState === 'initQuery'" :data="myChioesGroupQueryList" border
+              style="width: 100%; margin-top: 20px;">
               <el-table-column prop="chGroupName" label="我的收藏组名称" />
               <el-table-column prop="addNum" label="已经收藏数量" width="120" />
               <el-table-column prop="maxNum" label="最大收藏数量" width="120" />

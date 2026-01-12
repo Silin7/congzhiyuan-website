@@ -1,6 +1,5 @@
-import axios from 'axios'
 import { ref } from 'vue'
-import router from '@/router'
+import axios from 'axios'
 import { baseURL } from '@/api/baseConfig'
 import { ElMessage } from 'element-plus'
 
@@ -36,29 +35,57 @@ export function signOutApi() {
 // a.token:用户token，必选
 // a.newPass:新密码
 // d.vfCode: 手机验证码(重置密码)
-export function passResetApi(data: any) {
+export async function passResetApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=PassReset`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=PassReset`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 用户修改密码
 // a.token:用户token，必选
 // b.oldPass:旧密码
 // c.newPass:新密码
-export function passModiApi(data: any) {
+export async function passModiApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=VfCodeModi`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=VfCodeModi`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 上部导航栏显示查询
 export function navQueryApi() {
-  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=NavigationQuery`)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=NavigationQuery`, {
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+  })
 }
 
 // 首页上部显示查询
@@ -74,24 +101,48 @@ export function topInfoApi(data: any) {
 // 志愿填报页批次查询
 // a.token:用户token，必选
 // b.ccdm:  1 本科 2 专科
-export function pcListApi(data: any) {
+export async function pcListApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=PcList`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=PcList`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 志愿填报页投档单位查询
 // a.token:用户token，必选
 // b.ccdm:  1 本科 2 专科
 // c.pcdm: 批次代码
-export function tddwListApi(data: any) {
+export async function tddwListApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=TddwList`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=TddwList`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 通用复选框列表查询
@@ -102,75 +153,134 @@ export async function genListQueryApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  // try {
+  try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params)
-    return res
-  //   if (res.data.code === 0) {
-  //     return res.data
-  //   } else if (res.data.code === -998) {
-  //     useDebounce(tokenLose)
-  //   } else {
-  //     ElMessage.error(res.data.Message || '请求失败')
-  //   }
-  // } catch (error: any) {
-  //   console.error('error -------->', error)
-  //   ElMessage.error('请求失败')
-  // }
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 名称模糊查询院校列表
 // a.token: 用户token，必选
 // b.yxmc：院校名称文字
-export function yxqueryBymcApi(data: any) {
+export async function yxqueryBymcApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=YxqueryBymc`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=YxqueryBymc`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 名称模糊查询专业列表
 // a.token:用户token，必选
 // c.zymc:专业名称
-export function zyqueryBymcApi(data: any) {
+export async function zyqueryBymcApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyqueryBymc`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyqueryBymc`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 学科门类查询
 // a.token: 用户token，必选
 // c.ccdm 层次 1 本科 2 专科
-export function xkmllistApi(data: any) {
+export async function xkmllistApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Xkmllist`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Xkmllist`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 一级学科查询
 // a.token:用户token，必选
 // b.xkml:学科门类代码
-export function yjxklistApi(data: any) {
+export async function yjxklistApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Yjxklist`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Yjxklist`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 二级学科查询
 // c.token:用户token，必选
 // d.yjxk:一级学科代码
-export function ejxklistApi(data: any) {
+export async function ejxklistApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Ejxklist`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Ejxklist`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 专业模式志愿查询
@@ -187,12 +297,24 @@ export function ejxklistApi(data: any) {
 // k.pagesize: 每页行数
 // l.progressBao 比例（0-100）
 // m.progressChong 比例（0-100）
-export function lqInfoZyQueryApi(data: any) {
+export async function lqInfoZyQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 专业组模式志愿查询
@@ -209,12 +331,24 @@ export function lqInfoZyQueryApi(data: any) {
 // k.pagesize: 每页行数
 // l.progressBao 比例（0-100）
 // m.progressChong 比例（0-100）
-export function lqInfoZyGroupQueryApi(data: any) {
+export async function lqInfoZyGroupQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyGroupQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyGroupQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 单个志愿填报
@@ -222,98 +356,206 @@ export function lqInfoZyGroupQueryApi(data: any) {
 // d.zyId 要收藏的志愿id
 // e.lqdc 录取档次
 // f.lqbl 录取比例
-export function myChioesAddApi(data: any) {
+export async function myChioesAddApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesAdd`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesAdd`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 批量志愿填报
 // a.token:用户token，必选
 // g.jsonStr: json字符串，格式{"Rs":[{"zyid":2926,"lqbl":0.131,"lqdc":4}]}
-export function myChioesBatchAddApi(data: any) {
+export async function myChioesBatchAddApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesBatchAdd`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesBatchAdd`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 志愿分组查询
 // a.token:用户token，必选
 // b.ccdm  1 本科 2 专科 99全部
-export function myChioesGroupQueryApi(data: any) {
+export async function myChioesGroupQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChoicesGroupQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChoicesGroupQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 专业模式收藏查询
 // c.token:用户token，必选
 // d.chGroupId 我的收藏组id
-export function zyChoicesQueryApi(data: any) {
+export async function zyChoicesQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoicesQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoicesQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 专业组模式收藏查询
 // a.token:用户token，必选
 // b.chGroupId 我的收藏组id
-export function zyGroupChoicesQueryApi(data: any) {
+export async function zyGroupChoicesQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyGroupChoicesQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyGroupChoicesQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 删除收藏专业
 // a.token:用户token，必选
 // b.chId 要删除的专业id
-export function delChoiceApi(data: any) {
+export async function delChoiceApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoice`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoice`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 删除收藏专业组
 // a.token:用户token，必选
 // b.chZyGroupId 要删除的分组id
-export function delChoiceGroupApi(data: any) {
+export async function delChoiceGroupApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoiceGroup`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoiceGroup`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 个人信息查询
 // a.token:用户token，必选
-export function myuserInfoQueryApi(data: any) {
+export async function myuserInfoQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params)
+    if (res.data.code === 0) {
+      return res.data || {}
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 考生可选省份查询
 // a.token:用户token，必选
-export function userProvQueryApi(data: any) {
+export async function userProvQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 
@@ -321,24 +563,48 @@ export function userProvQueryApi(data: any) {
 // 考生类别查询
 // b.token: 用户token，必选
 // c.province 省份
-export function WctypeQueryApi(data: any) {
+export async function WctypeQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params)
+    if (res.data.code === 0) {
+      return res
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 
 // 考试类别小类查询
 // c.token:用户token，必选
 // d.wctype 考试类别代码为2时才有数据
-export function yklmQueryApi(data: any) {
+export async function yklmQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=YklmQuery`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=YklmQuery`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // tips: xuankeStr 保存用字母，查询返回文字
@@ -354,12 +620,24 @@ export function yklmQueryApi(data: any) {
 // j.cj  分数
 // k.wc  位次
 // l.xkkm  逗号分割选科字符传,物理A化学B生物C历史D地理E政治F
-export function myUserInfoSaveApi(data: any) {
+export async function myUserInfoSaveApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserInfoSave`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserInfoSave`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 输入分数查询位次查询
@@ -367,27 +645,41 @@ export function myUserInfoSaveApi(data: any) {
 // b.cj 分数
 // c.wctype 考试类别
 // d.yklm 用户为艺术类时的小类,可为空
-export function wcQueryBycjApi(data: any) {
+export async function wcQueryBycjApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params)
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.Message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // token失效处理
 function tokenLose() {
-  router.push({ path: '/' })
   ElMessage.error('用户信息失效,请重新登录')
-  window.localStorage.removeItem('token')
-  window.localStorage.removeItem('userInfo')
+  setTimeout(() => {
+    window.location.href = '/'
+  }, 1000)
+  // window.localStorage.removeItem('token')
+  // window.localStorage.removeItem('userInfo')
 }
 
+// 防抖函数
 const timeout: any = ref(null)
-
 function useDebounce(fn: any, wait?: number) {
   if (timeout.value !== null) {
     clearTimeout(timeout.value)
   }
-  timeout.value = setTimeout(fn, wait || 1000)
+  timeout.value = setTimeout(fn, wait || 200)
 }

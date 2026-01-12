@@ -24,18 +24,12 @@ onMounted(() => {
 const shengfen: any = ref('山东省')
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
-  try {
-    const res = await api.genListQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      genType: 'prov'
-    })
-    if (res.data.code == 0) {
-      provinceList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取省份列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取省份列表失败')
+  const res: any = await api.genListQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    genType: 'prov'
+  })
+  if (res) {
+    provinceList.value = res.data.Rs || []
   }
 }
 

@@ -32,18 +32,12 @@ const handleSchoolLevelClick = (level: string) => {
 // 录取批次
 const admissionBatch: any = ref([])
 const getPcList = async () => {
-  try {
-    const res = await api.pcListApi({
-      token: window.localStorage.getItem('token') || '',
-      ccdm: selectedSchoolLevel.value
-    })
-    if (res.data.code === 0) {
-      admissionBatch.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取批次列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取批次列表失败')
+  const res: any = await api.pcListApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value
+  })
+  if (res) {
+    admissionBatch.value = res.data.Rs || []
   }
 }
 const selectedAdmissionBatch = ref(localStorage.getItem('selectedAdmissionBatch') || '')
@@ -61,19 +55,13 @@ const handleAdmissionBatchClick = (batch: string) => {
 // 录取类型
 const admissionTypes: any = ref([])
 const getTddwList = async () => {
-  try {
-    const res = await api.tddwListApi({
-      token: window.localStorage.getItem('token') || '',
-      ccdm: selectedSchoolLevel.value,
-      pcdm: selectedAdmissionBatch.value
-    })
-    if (res.data.code === 0) {
-      admissionTypes.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取录取类型列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取录取类型列表失败')
+  const res: any = await api.tddwListApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value,
+    pcdm: selectedAdmissionBatch.value
+  })
+  if (res) {
+    admissionTypes.value = res.data.Rs || []
   }
 }
 const selectedAdmissionType = ref(localStorage.getItem('selectedAdmissionType') || '')
@@ -88,25 +76,15 @@ const handleAdmissionTypeChange = (value: string) => {
 
 // 院校名称
 const schoolName = ref('')
-const getSchoolNameLoading = ref(false)
 const schoolNameOptions: any = ref([])
 const getSchoolNameOptions = async (value: any) => {
   if (value.length >= 3) {
-    getSchoolNameLoading.value = true
-    try {
-      const res = await api.yxqueryBymcApi({
-        token: window.localStorage.getItem('token') || '',
-        yxmc: value || ''
-      })
-      if (res.data.code === 0) {
-        schoolNameOptions.value = res.data.data.Rs || []
-      } else {
-        ElMessage.error(res.data.message || '获取院校名称列表失败')
-      }
-    } catch (error) {
-      ElMessage.error('获取院校名称列表失败')
-    } finally {
-      getSchoolNameLoading.value = false
+    const res: any = await api.yxqueryBymcApi({
+      token: window.localStorage.getItem('token') || '',
+      yxmc: value || ''
+    })
+    if (res) {
+      schoolNameOptions.value = res.data.Rs || []
     }
   } else {
     schoolNameOptions.value = []
@@ -120,18 +98,12 @@ const handleSchoolNameChange = (value: string) => {
 // 院校性质
 const schoolNatures: any = ref([])
 const getSchoolNatures = async () => {
-  try {
-    const res = await api.genListQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      genType: 'yxxz'
-    })
-    if (res.data.code === 0) {
-      schoolNatures.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取院校性质列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取院校性质列表失败')
+  const res: any = await api.genListQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    genType: 'yxxz'
+  })
+  if (res) {
+    schoolNatures.value = res.data.Rs || []
   }
 }
 const selectedSchoolNature = ref(localStorage.getItem('selectedSchoolNature') || '')
@@ -147,18 +119,12 @@ const handleSchoolNatureClick = (nature: string) => {
 // 院校特色
 const selectedMajorFeatureList = ref<any>([])
 const getMajorFeatureList = async () => {
-  try {
-    const res = await api.genListQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      genType: 'yxts'
-    })
-    if (res.data.code == 0) {
-      selectedMajorFeatureList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取省份列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取省份列表失败')
+  const res: any = await api.genListQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    genType: 'yxts'
+  })
+  if (res) {
+    selectedMajorFeatureList.value = res.data.Rs || []
   }
 }
 const selectedMajorFeature: any = ref(localStorage.getItem('selectedMajorFeature')?.split(',') || [])
@@ -176,18 +142,12 @@ const handleMajorFeatureClick = (feature: string) => {
 // 院校省份
 const provinceList = ref<any>([])
 const getProvinceList = async () => {
-  try {
-    const res = await api.genListQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      genType: 'prov'
-    })
-    if (res.data.code == 0) {
-      provinceList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取省份列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取省份列表失败')
+  const res: any = await api.genListQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    genType: 'prov'
+  })
+  if (res) {
+    provinceList.value = res.data.Rs || []
   }
 }
 const selectedProvince: any = ref(localStorage.getItem('selectedProvince')?.split(',') || [])
@@ -214,25 +174,15 @@ const handleProvinceClick = (province: string) => {
 // 专业名称
 const yixuanzhuanye: any = ref([]) // 已选专业
 const majorName = ref('')
-const getMajorNameLoading = ref(false)
 const majorNameOptions: any = ref([])
 const getMajorNameOptions = async (value: any) => {
   if (value.length >= 2) {
-    getMajorNameLoading.value = true
-    try {
-      const res = await api.zyqueryBymcApi({
-        token: window.localStorage.getItem('token') || '',
-        zymc: value || ''
-      })
-      if (res.data.code === 0) {
-        majorNameOptions.value = res.data.data.Rs || []
-      } else {
-        ElMessage.error(res.data.message || '获取专业名称列表失败')
-      }
-    } catch (error) {
-      ElMessage.error('获取专业名称列表失败')
-    } finally {
-      getMajorNameLoading.value = false
+    const res: any = await api.zyqueryBymcApi({
+      token: window.localStorage.getItem('token') || '',
+      zymc: value || ''
+    })
+    if (res) {
+      majorNameOptions.value = res.data.Rs || []
     }
   } else {
     majorNameOptions.value = []
@@ -249,18 +199,12 @@ const handleMajorNameChange = async (value: string) => {
 // 学科门类
 const disciplineCategoriesList: any = ref([])
 const getDisciplineCategoriesList = async () => {
-  try {
-    const res = await api.xkmllistApi({
-      token: window.localStorage.getItem('token') || '',
-      ccdm: selectedSchoolLevel.value
-    })
-    if (res.data.code == 0) {
-      disciplineCategoriesList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取学科门类列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取学科门类列表失败')
+  const res: any = await api.xkmllistApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value
+  })
+  if (res) {
+    disciplineCategoriesList.value = res.data.Rs || []
   }
 }
 const disciplineCategories = ref('')
@@ -276,18 +220,12 @@ const disciplineCategoriesChange = (value: string) => {
 // 一级学科
 const firstDisciplineList: any = ref([])
 const getFirstDisciplineList = async () => {
-  try {
-    const res = await api.yjxklistApi({
-      token: window.localStorage.getItem('token') || '',
-      xkml: disciplineCategories.value
-    })
-    if (res.data.code == 0) {
-      firstDisciplineList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取一级学科列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取一级学科列表失败')
+  const res: any = await api.yjxklistApi({
+    token: window.localStorage.getItem('token') || '',
+    xkml: disciplineCategories.value
+  })
+  if (res) {
+    firstDisciplineList.value = res.data.Rs || []
   }
 }
 const firstDiscipline = ref('')
@@ -302,18 +240,12 @@ const firstDisciplineChange = (value: string) => {
 // 二级学科
 const subDisciplineList: any = ref([])
 const getSubDisciplineList = async () => {
-  try {
-    const res = await api.ejxklistApi({
-      token: window.localStorage.getItem('token') || '',
-      yjxk: firstDiscipline.value
-    })
-    if (res.data.code == 0) {
-      subDisciplineList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '获取二级学科列表失败')
-    }
-  } catch (error) {
-    ElMessage.error('获取二级学科列表失败')
+  const res: any = await api.ejxklistApi({
+    token: window.localStorage.getItem('token') || '',
+    yjxk: firstDiscipline.value
+  })
+  if (res) {
+    subDisciplineList.value = res.data.Rs || []
   }
 }
 const subDiscipline = ref('')
@@ -372,37 +304,25 @@ const lqInfoZyQuery = async () => {
     pagesize: pageSize.value,
   }
   console.log('专业模式 - 志愿查询 -------->', JSON.stringify(data))
-  try {
-    const res = await api.lqInfoZyQueryApi(data)
-    if (res.data.code == 0) {
-      queryState.value = 'zyQuery'
-      tableData.value = res.data.data.Rs || []
-      total.value = res.data.recordsTotal || 0
-    } else {
-      ElMessage.error(res.data.message || '志愿查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('志愿查询失败')
+  const res: any = await api.lqInfoZyQueryApi(data)
+  if (res) {
+    queryState.value = 'zyQuery'
+    tableData.value = res.data.Rs || []
+    total.value = res.recordsTotal || 0
   }
 }
 
 // 专业模式 - 填报
 const zyHandleApply = async (row: any) => {
-  try {
-    const res = await api.myChioesAddApi({
-      token: window.localStorage.getItem('token') || '',
-      zyId: row.zyid,
-      lqdc: row.lqdc,
-      lqbl: (row.bl / 100).toFixed(3),
-    })
-    if (res.data.code == 0) {
-      ElMessage.success('填报成功')
-      lqInfoZyQuery()
-    } else {
-      ElMessage.error(res.data.message || '填报失败')
-    }
-  } catch (error) {
-    ElMessage.error('填报失败')
+  const res: any = await api.myChioesAddApi({
+    token: window.localStorage.getItem('token') || '',
+    zyId: row.zyid,
+    lqdc: row.lqdc,
+    lqbl: (row.bl / 100).toFixed(3),
+  })
+  if (res) {
+    ElMessage.success('填报成功')
+    lqInfoZyQuery()
   }
 }
 
@@ -421,29 +341,22 @@ const handleBatchAdd = async () => {
     ElMessage.warning('已经填报的专业，不能批量填报')
     return
   }
-  try {
-    const datas: any = ref([])
-    await selectedRows.value.forEach((item: any) => {
-      datas.value.push({
-        zyid: item.zyid,
-        lqdc: item.lqdc,
-        lqbl: (item.bl / 100).toFixed(3),
-      })
+  const datas: any = ref([])
+  await selectedRows.value.forEach((item: any) => {
+    datas.value.push({
+      zyid: item.zyid,
+      lqdc: item.lqdc,
+      lqbl: (item.bl / 100).toFixed(3),
     })
-    const data = {
-      token: window.localStorage.getItem('token') || '',
-      jsonStr: JSON.stringify({ Rs: datas.value }),
-    }
-    const res = await api.myChioesBatchAddApi(data)
-    if (res.data.code == 0) {
-      ElMessage.success('批量填报成功')
-      lqInfoZyQuery()
-    } else {
-      ElMessage.error(res.data.message || '批量填报失败')
-    }
-  } catch (error) {
-    console.log(error)
-    ElMessage.error('批量填报失败')
+  })
+  const data = {
+    token: window.localStorage.getItem('token') || '',
+    jsonStr: JSON.stringify({ Rs: datas.value }),
+  }
+  const res: any = await api.myChioesBatchAddApi(data)
+  if (res) {
+    ElMessage.success('批量填报成功')
+    lqInfoZyQuery()
   }
 }
 
@@ -469,17 +382,11 @@ const lqInfoZyGroupQuery = async () => {
     pagesize: pageSize.value,
   }
   console.log('专业组模式 - 志愿查询 -------->', JSON.stringify(data))
-  try {
-    const res = await api.lqInfoZyGroupQueryApi(data)
-    if (res.data.code == 0) {
-      queryState.value = 'zyGroupQuery'
-      tableData.value = res.data.data.Rs || []
-      total.value = res.data.recordsTotal || 0
-    } else {
-      ElMessage.error(res.data.message || '志愿查询失败')
-    }
-  } catch (error) {
-    ElMessage.error('志愿查询失败')
+  const res: any = await api.lqInfoZyGroupQueryApi(data)
+  if (res) {
+    queryState.value = 'zyGroupQuery'
+    tableData.value = res.data.Rs || []
+    total.value = res.recordsTotal || 0
   }
 }
 
@@ -526,76 +433,53 @@ const goMyAspiration = () => {
 // 我的志愿 - 最外层
 const myChioesGroupQueryInfo: any = ref({})
 const getMyChioesGroupQuery = async () => {
-  try {
-    const res: any = await api.myChioesGroupQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      ccdm: selectedSchoolLevel.value,
-      pcdm: selectedAdmissionBatch.value,
-    })
-    if (res.data.code === 0) {
-      myChioesGroupQueryInfo.value = res.data?.data?.Rs[0] || {}
-      if (myChioesGroupQueryInfo.value?.chGroupId) {
-        zyHandleCollect()
-      }
-    } else {
-      ElMessage.error(res.data.message || '查询失败')
+  const res: any = await api.myChioesGroupQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    ccdm: selectedSchoolLevel.value,
+    pcdm: selectedAdmissionBatch.value,
+  })
+  if (res) {
+    myChioesGroupQueryInfo.value = res.data?.Rs[0] || {}
+    if (myChioesGroupQueryInfo.value?.chGroupId) {
+      zyHandleCollect()
     }
-  } catch (error) {
-    ElMessage.error('查询失败')
   }
 }
 
 // 专业模式 - 收藏
 const zyHandleCollectList: any = ref([])
 const zyHandleCollect = async () => {
-  try {
-    const res = await api.zyChoicesQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      chGroupId: myChioesGroupQueryInfo.value.chGroupId,
-    })
-    if (res.data.code == 0) {
-      zyHandleCollectList.value = res.data.data.Rs || []
-    } else {
-      ElMessage.error(res.data.message || '收藏失败')
-    }
-  } catch (error) {
-    ElMessage.error('收藏失败')
+  const res: any = await api.zyChoicesQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    chGroupId: myChioesGroupQueryInfo.value.chGroupId,
+  })
+  if (res) {
+    zyHandleCollectList.value = res.data.Rs || []
   }
 }
 
 // 专业模式 - 删除收藏
 const zyHandleDelete = async (row: any) => {
-  try {
-    const res: any = await api.delChoiceApi({
-      token: window.localStorage.getItem('token') || '',
-      chId: row.chId,
-    })
-    if (res.data.code === 0) {
-      ElMessage.success('删除成功')
-      // 刷新收藏分组查询
-      zyHandleCollect()
-    } else {
-      ElMessage.error(res.data.message || '删除失败')
-    }
-  } catch (error) {
-    ElMessage.error('删除失败')
+  const res: any = await api.delChoiceApi({
+    token: window.localStorage.getItem('token') || '',
+    chId: row.chId,
+  })
+  if (res) {
+    ElMessage.success('删除成功')
+    // 刷新收藏分组查询
+    zyHandleCollect()
   }
+
 }
 
 // 专业组模式收藏查询
 const zyGroupHandleCollect = async (row: any) => {
-  try {
-    const res = await api.zyGroupChoicesQueryApi({
-      token: window.localStorage.getItem('token') || '',
-      chGroupId: row.chId,
-    })
-    if (res.data.code == 0) {
-      ElMessage.success('收藏成功')
-    } else {
-      ElMessage.error(res.data.message || '收藏失败')
-    }
-  } catch (error) {
-    ElMessage.error('收藏失败')
+  const res: any = await api.zyGroupChoicesQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    chGroupId: row.chId,
+  })
+  if (res) {
+    ElMessage.success('收藏成功')
   }
 }
 
@@ -650,8 +534,8 @@ const zyGroupHandleCollect = async (row: any) => {
           <div class="tagBox">
             <div class="tagTitle">院校名称：</div>
             <el-select v-model="schoolName" filterable remote reserve-keyword placeholder="输入院校名称"
-              :remote-method="getSchoolNameOptions" :loading="getSchoolNameLoading" @change="handleSchoolNameChange"
-              class="select-tall38px" clearable style="margin-bottom: 10px; width: calc(50% - 90px);">
+              :remote-method="getSchoolNameOptions" @change="handleSchoolNameChange" class="select-tall38px" clearable
+              style="margin-bottom: 10px; width: calc(50% - 90px);">
               <el-option v-for="(item, index) in schoolNameOptions" :key="index" :label="item.text" :value="item.id" />
             </el-select>
           </div>
@@ -699,8 +583,7 @@ const zyGroupHandleCollect = async (row: any) => {
             <el-col :span="6">
               <div class="tagTitle">专业名称：</div>
               <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
-                :remote-method="getMajorNameOptions" :loading="getMajorNameLoading" @change="handleMajorNameChange"
-                class="select-tall38px">
+                :remote-method="getMajorNameOptions" @change="handleMajorNameChange" class="select-tall38px">
                 <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text" :value="item.id" />
               </el-select>
             </el-col>
@@ -786,7 +669,7 @@ const zyGroupHandleCollect = async (row: any) => {
           <div class="mt-8 flex justify-center">
             <button
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
-              @click="lqInfoZyQuery" style="margin-right: 100px;">
+              @click="lqInfoZyQuery">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                 viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
                 class="iconify text-2xl iconify--solar">
@@ -806,10 +689,10 @@ const zyGroupHandleCollect = async (row: any) => {
                 </defs>
                 <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
               </svg>
-              <!-- <span>立即开始智能检索</span> -->
-              <span>专业模式查询</span>
+              <span>立即开始智能检索</span>
+              <!-- <span>专业模式查询</span> -->
             </button>
-            <button
+            <!-- <button
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
               @click="lqInfoZyGroupQuery">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
@@ -831,9 +714,8 @@ const zyGroupHandleCollect = async (row: any) => {
                 </defs>
                 <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
               </svg>
-              <!-- <span>立即开始智能检索</span> -->
               <span>专业组模式查询</span>
-            </button>
+            </button> -->
           </div>
         </div>
       </section>
