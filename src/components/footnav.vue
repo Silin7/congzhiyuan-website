@@ -28,7 +28,7 @@ import { Message, Phone, Location } from '@element-plus/icons-vue'
       </div>
       <div class="footer-column">
         <h3 class="footer-title">联系方式</h3>
-        <ul class="footer-list">
+        <!-- <ul class="footer-list">
           <li><el-icon class="footer-icon">
               <Message />
             </el-icon> contact@qingxueai.com</li>
@@ -41,7 +41,7 @@ import { Message, Phone, Location } from '@element-plus/icons-vue'
             </el-icon>
             <span>北京市海淀区中关村大街1号</span>
           </li>
-        </ul>
+        </ul> -->
       </div>
     </div>
     <div class="footer-bottom">

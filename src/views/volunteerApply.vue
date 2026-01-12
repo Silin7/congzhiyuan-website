@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
@@ -211,8 +211,6 @@ const getDisciplineCategoriesList = async () => {
 }
 const disciplineCategories = ref('')
 const disciplineCategoriesChange = (value: string) => {
-  const obj = disciplineCategoriesList.value.filter((item: any) => item.zydm === value)[0]
-  yixuanzhuanye.value.push(obj)
   disciplineCategories.value = value
   firstDiscipline.value = ''
   subDiscipline.value = ''
@@ -232,8 +230,6 @@ const getFirstDisciplineList = async () => {
 }
 const firstDiscipline = ref('')
 const firstDisciplineChange = (value: string) => {
-  const obj = firstDisciplineList.value.filter((item: any) => item.zydm === value)[0]
-  yixuanzhuanye.value.push(obj)
   firstDiscipline.value = value
   subDiscipline.value = ''
   getSubDisciplineList()
@@ -264,18 +260,25 @@ const yixuanzhuanyeClick = (index: any) => {
 }
 
 // 录取范围 默认选择'稳一稳'
-const selectedRiskLevel: any = ref(['4', '3', '2'])
+const selectedRiskLevel: any = ref(localStorage.getItem('selectedRiskLevel')?.split(',') || ['4', '3', '2'])
 const handleRiskLevelClick = (level: string) => {
   if (selectedRiskLevel.value.includes(level)) {
     selectedRiskLevel.value = selectedRiskLevel.value.filter((item: string) => item !== level)
   } else {
     selectedRiskLevel.value.push(level)
   }
+  localStorage.setItem('selectedRiskLevel', selectedRiskLevel.value.join(','))
 }
 // “冲” 风险阈值响应式变量
-const riskThreshold = ref(50)
+const riskThreshold = ref(Number(localStorage.getItem('riskThreshold') || '50'))
+watch(riskThreshold, (newValue) => {
+  localStorage.setItem('riskThreshold', newValue.toString())
+})
 // “保” 安全阈值响应式变量
-const safeThreshold = ref(50)
+const safeThreshold = ref(Number(localStorage.getItem('safeThreshold') || '50'))
+watch(safeThreshold, (newValue) => {
+  localStorage.setItem('safeThreshold', newValue.toString())
+})
 
 // 1:所在省份专业模式 2:所在省份专业组模式
 const zyType = JSON.parse(localStorage.getItem('userInfo') || '{}')?.zyType || '1'
@@ -852,6 +855,9 @@ const zyHandleDelete = async (row: any) => {
                 <el-button v-if="scope.row.chId == 0" text type="primary" size="small"
                   @click="zyHandleApply(scope.row)">
                   填报
+                </el-button>
+                <el-button v-else text type="danger" size="small">
+                  已填报
                 </el-button>
               </template>
             </el-table-column>

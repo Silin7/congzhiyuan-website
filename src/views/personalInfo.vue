@@ -197,7 +197,6 @@ const myUserInfoSaveBtn = async () => {
 
 // 设置密码
 const seetingpwdForm = ref({
-  phone: '',
   code: '',
   newPass: '',
   confirmPass: '',
@@ -227,7 +226,6 @@ const handlePasswordSubmit = async () => {
   if (res) {
     ElMessage.success('密码设置成功')
     // 清空密码输入框
-    seetingpwdForm.value.phone = ''
     seetingpwdForm.value.code = ''
     seetingpwdForm.value.newPass = ''
     seetingpwdForm.value.confirmPass = ''
@@ -236,29 +234,21 @@ const handlePasswordSubmit = async () => {
 
 // 发送验证码
 const sendCode = async () => {
-  if (!seetingpwdForm.value.phone) {
-    ElMessage.warning('请输入手机号码')
-    return
-  }
-  if (!/^(?:(?:\+|00)86)?1[3-9]\d{9}$/.test(seetingpwdForm.value.phone)) {
-    ElMessage.warning('请输入正确的手机号码')
-    return
-  }
   try {
     const res: any = await api.authcodeApi({
-      phone: seetingpwdForm.value.phone,
+      phone: personalForm.value.phone,
       type: 1
     })
-    ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+    ElMessage.success(`验证码已发送到 ${personalForm.value.phone}`)
     console.log('发送验证码 -------->', res)
     // if (res.data.code === 0) {
-    //   ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+    //   ElMessage.success(`验证码已发送到 ${personalForm.value.phone}`)
     // } else {
     //   // ElMessage.error(res.data.message || '发送验证码失败')
     //   console.log('发送验证码失败 -------->', res.data.message || '发送验证码失败')
     // }
   } catch (error) {
-    ElMessage.success(`验证码已发送到 ${seetingpwdForm.value.phone}`)
+    ElMessage.success(`验证码已发送到 ${personalForm.value.phone}`)
     console.log('发送验证码失败 -------->', error)
     // ElMessage.error('发送验证码失败')
   }
@@ -298,6 +288,29 @@ const handleChangePasswordSubmit = async () => {
     changePasswordForm.value.oldPass = ''
     changePasswordForm.value.newPass = ''
     changePasswordForm.value.confirmPass = ''
+    setTimeout(() => {
+      logoutFunction()
+    }, 1000)
+  }
+}
+
+// 退出登录
+const logoutFunction = async () => {
+  try {
+    const res: any = await api.signOutApi()
+    if (res.data.code === 0) {
+      ElMessage({
+        type: 'success',
+        message: '退出成功',
+      })
+      window.localStorage.removeItem('token')
+      window.localStorage.removeItem('userInfo')
+      window.location.href = '/'
+    } else {
+      ElMessage.error(res.data.message || '退出登录失败')
+    }
+  } catch (error) {
+    ElMessage.error('退出登录失败')
   }
 }
 
@@ -404,7 +417,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
               </svg>
               <span class="font-medium">基本信息</span>
             </a>
-            <a @click="handleNavItemClick('seeting-password')" :class="[
+            <a v-if="personalInfo.userType == 1" @click="handleNavItemClick('seeting-password')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'seeting-password'
                 ? 'bg-primary bg-opacity-10 text-primary'
@@ -419,7 +432,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
               </svg>
               <span class="font-medium">设置密码</span>
             </a>
-            <!-- <a @click="handleNavItemClick('change-password')" :class="[
+            <a v-if="personalInfo.userType == 2" @click="handleNavItemClick('change-password')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'change-password'
                 ? 'bg-primary bg-opacity-10 text-primary'
@@ -435,7 +448,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                 </path>
               </svg>
               <span class="font-medium">修改密码</span>
-            </a> -->
+            </a>
             <a @click="handleNavItemClick('my-collections')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'my-collections'
@@ -635,8 +648,8 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
           <div class="p-6">
             <el-form label-position="top">
               <el-form-item label="手机号码">
-                <el-input v-model="seetingpwdForm.phone" type="tel" placeholder="请输入手机号码"
-                  style="height: 48px; line-height: 48px;">
+                <el-input v-model="personalForm.phone" type="tel" placeholder="请输入手机号码"
+                  style="height: 48px; line-height: 48px;" disabled>
                   <template #prefix>
                     <el-icon class="el-input__icon">
                       <PhoneFilled />

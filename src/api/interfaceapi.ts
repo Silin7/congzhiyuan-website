@@ -47,7 +47,7 @@ export async function passResetApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -71,7 +71,7 @@ export async function passModiApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -113,7 +113,7 @@ export async function pcListApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -137,7 +137,7 @@ export async function tddwListApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -160,7 +160,7 @@ export async function genListQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -183,7 +183,7 @@ export async function yxqueryBymcApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -206,7 +206,7 @@ export async function zyqueryBymcApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -229,7 +229,7 @@ export async function xkmllistApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -252,7 +252,7 @@ export async function yjxklistApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -275,7 +275,7 @@ export async function ejxklistApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -309,7 +309,7 @@ export async function lqInfoZyQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -343,7 +343,7 @@ export async function lqInfoZyGroupQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -368,7 +368,7 @@ export async function myChioesAddApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -391,7 +391,7 @@ export async function myChioesBatchAddApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -414,7 +414,7 @@ export async function myChioesGroupQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -437,7 +437,7 @@ export async function zyChoicesQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -460,7 +460,7 @@ export async function zyGroupChoicesQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -483,7 +483,7 @@ export async function delChoiceApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -506,7 +506,7 @@ export async function delChoiceGroupApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -528,7 +528,7 @@ export async function myuserInfoQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -550,7 +550,7 @@ export async function userProvQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -575,7 +575,7 @@ export async function WctypeQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -599,7 +599,7 @@ export async function yklmQueryApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -632,7 +632,7 @@ export async function myUserInfoSaveApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -657,7 +657,7 @@ export async function wcQueryBycjApi(data: any) {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.Message || '请求失败')
+      ElMessage.error(res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)

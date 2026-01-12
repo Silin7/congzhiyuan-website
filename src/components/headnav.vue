@@ -178,6 +178,24 @@ const handleLogin = async () => {
       ElMessage.warning('请输入密码')
       return
     }
+    try {
+      const res: any = await api.loginOrRegisterApi({
+        usercode: loginForm.cardNumber,
+        vfCode: loginForm.cardPassword,
+        type: 2
+      })
+      if (res.data.code === 0) {
+        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
+        localStorage.setItem('token', res.data.data.token)
+        ElMessage.success('登录成功')
+        closeLoginModal()
+        userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
+      } else {
+        ElMessage.error(res.data.message || '登录失败')
+      }
+    } catch (error) {
+      ElMessage.error('登录失败')
+    }
   }
 }
 
