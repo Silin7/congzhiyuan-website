@@ -469,7 +469,7 @@ const zyHandleDelete = async (row: any) => {
   if (res) {
     ElMessage.success('删除成功')
     // 刷新收藏分组查询
-    zyHandleCollect()
+    getMyChioesGroupQuery()
   }
 
 }
