@@ -278,7 +278,7 @@ const riskThreshold = ref(50)
 const safeThreshold = ref(50)
 
 // 1:所在省份专业模式 2:所在省份专业组模式
-const zyType = JSON.parse(localStorage.getItem('userInfo') || '{}')?.zyType || '0'
+const zyType = JSON.parse(localStorage.getItem('userInfo') || '{}')?.zyType || '1'
 // 声明表格数据响应式变量
 const queryState = ref('')
 const currentPage = ref(1)
@@ -665,8 +665,8 @@ const zyHandleDelete = async (row: any) => {
             </el-icon>
           </div>
           <!-- 立即开始智能检索 -->
-          <div v-if="zyType == '1'" class="mt-8 flex justify-center">
-            <button
+          <div class="mt-8 flex justify-center">
+            <button v-if="zyType == '1'"
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
               @click="lqInfoZyQuery">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
