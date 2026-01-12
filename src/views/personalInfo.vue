@@ -473,7 +473,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">手机号码</label>
                     <el-input type="tel" v-model="personalForm.phone" placeholder="请输入手机号码"
-                      :disabled="personalForm.ifEditPhone === 0" class="input-tall44px">
+                      :disabled="personalForm.ifEditPhone == 0" class="input-tall44px">
                       <template #suffix>
                         已验证
                       </template>
