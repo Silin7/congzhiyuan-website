@@ -571,7 +571,7 @@ export async function WctypeQueryApi(data: any) {
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params)
     if (res.data.code === 0) {
-      return res
+      return res.data
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
