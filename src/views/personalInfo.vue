@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import Sortable from "sortablejs"
+import axios from 'axios'
+import { baseURL } from '@/api/baseConfig'
 import { onMounted, ref } from 'vue'
 import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
 import { useRoute } from 'vue-router'
-import {
-  ArrowLeft,
-} from '@element-plus/icons-vue'
+
 
 // 防止重复提交
 const timeout: any = ref(null)
@@ -288,45 +289,44 @@ const handleChangePasswordSubmit = async () => {
     changePasswordForm.value.oldPass = ''
     changePasswordForm.value.newPass = ''
     changePasswordForm.value.confirmPass = ''
-    // setTimeout(() => {
-    //   logoutFunction()
-    // }, 1000)
   }
 }
 
-// 退出登录
-const logoutFunction = async () => {
-  try {
-    const res: any = await api.signOutApi()
-    if (res.data.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '退出成功',
-      })
-      window.localStorage.removeItem('token')
-      window.localStorage.removeItem('userInfo')
-      window.location.href = '/'
-    } else {
-      ElMessage.error(res.data.message || '退出登录失败')
-    }
-  } catch (error) {
-    ElMessage.error('退出登录失败')
-  }
-}
-
-// 我的收藏 - 志愿分组查询
-const myChioesGroupQueryState = ref('initQuery')
-const ccdm = ref(99)
-const myChioesGroupQueryList = ref([])
+// 我的志愿单 - 志愿分组查询
+const myChGroupSListId: any = ref('')
+const myChioesGroupQueryList: any = ref([])
 const getMyChioesGroupQuery = async () => {
-  const res: any = await api.myChioesGroupQueryApi({
+  const res: any = await api.myChGroupSListApi({
     token: window.localStorage.getItem('token') || '',
-    ccdm: ccdm.value,
   })
   if (res) {
     myChioesGroupQueryList.value = res.data.Rs || []
+    if (myChGroupSListId.value == '' && myChioesGroupQueryList.value.length > 0) {
+      myChGroupSListId.value = myChioesGroupQueryList.value[0].chGroupId || ''
+    }
+    handleViewGroup1()
   }
 }
+// 专业模式志愿单查询
+const tableData: any = ref([])
+const tuozhuaiTableData: any = ref([])
+const handleViewGroup1 = async (id?: any) => {
+  if (id) {
+    myChGroupSListId.value = id
+  }
+  const res: any = await api.zyChoicesQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    chGroupId: myChGroupSListId.value,
+  })
+  if (res) {
+    tableData.value = res.data.Rs || []
+    tuozhuaiTableData.value = res.data.Rs || []
+    setTimeout(() => {
+      rowDrop()
+    }, 1000)
+  }
+}
+// 专业模式志愿单行删除
 const zyHandleDelete = async (row: any) => {
   const res: any = await api.delChoiceApi({
     token: window.localStorage.getItem('token') || '',
@@ -334,48 +334,81 @@ const zyHandleDelete = async (row: any) => {
   })
   if (res) {
     ElMessage.success('删除成功')
-    // 刷新收藏分组查询
-    getMyChioesGroupQuery()
-  }
-}
-// 专业模式收藏查询
-const tableData: any = ref([])
-const handleViewGroup1 = async (row: any) => {
-  myChioesGroupQueryState.value = 'zyQuery'
-  const res: any = await api.zyChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    chGroupId: row.chGroupId,
-  })
-  if (res) {
-    tableData.value = res.data.Rs || []
-  }
-}
-// 专业组模式收藏查询
-const handleViewGroup2 = async (row: any) => {
-  myChioesGroupQueryState.value = 'zyGroupQuery'
-  const res: any = await api.zyGroupChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    chGroupId: row.chGroupId,
-  })
-  if (res) {
-    tableData.value = res.data.Rs || []
-  }
-}
-const zyGroupHandleDelete = async (row: any) => {
-  const res: any = await api.delChoiceGroupApi({
-    token: window.localStorage.getItem('token') || '',
-    chZyGroupId: row.chZyGroupId,
-  })
-  if (res) {
-    ElMessage.success('删除成功')
-    // 刷新收藏分组查询
+    // 刷新志愿单分组查询
     getMyChioesGroupQuery()
   }
 }
 
-// 合并表格
-const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
-  console.log('-------->', row, rowIndex, columnIndex)
+// 表格行拖拽
+const rowDrop = () => {
+  let tbody = document.querySelector(".el-table__body-wrapper tbody");
+  Sortable.create(tbody, {
+    group: { // 相同的组之间可以相互拖拽
+      name: "table",
+      pull: true,
+      put: true,
+    },
+    animation: 150, // ms, number 单位：ms，定义排序动画的时间
+    onAdd: function (e: any) {
+      // 拖拽时候添加有新的节点的时候发生该事件
+      console.log("onAdd.foo:", e);
+    },
+    onUpdate: function (e: any) {
+      // 拖拽更新节点位置发生该事件
+      console.log("onUpdate.foo:", e);
+    },
+    onRemove: function (e: any) {
+      // 删除拖拽节点的时候促发该事件
+      console.log("onRemove.foo:", e);
+    },
+    onStart: function (e: any) {
+      // 开始拖拽出发该函数
+      console.log("onStart.foo:", e);
+    },
+    onSort: function (e: any) {
+      // 发生排序发生该事件
+      console.log("onUpdate.foo:", e);
+    },
+    onEnd(e: any) {
+      // 结束拖拽
+      console.log("结束表格拖拽", e.oldIndex, e.newIndex);
+      tuozhuaiTableData.value.splice(e.newIndex, 0, ...tuozhuaiTableData.value.splice(e.oldIndex, 1))
+      handleSaveSort()
+    },
+  });
+}
+
+// 专业模式志愿单保存排序
+const handleSaveSort = async () => {
+  const Rs = await tuozhuaiTableData.value.map((item: any, index: number) => ({
+    id: item.chId,
+    xh: index + 1,
+  }))
+  api.ZyChoiceSortApi({
+    token: window.localStorage.getItem('token') || '',
+    jsonStr: JSON.stringify({ Rs }),
+  })
+}
+
+// 专业模式志愿单导出Excel
+const zyExportExcel = async () => {
+  const params = new FormData()
+  params.append('token', window.localStorage.getItem('token') || '')
+  params.append('chGroupId', myChGroupSListId.value)
+  try {
+    const response = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params)
+    // 触发浏览器下载
+    const a = document.createElement('a')
+    a.href = response.data.file
+    a.download = response.data.filename || '我的志愿单.xlsx'
+    a.style.display = 'none'
+    document.body.appendChild(a)
+    a.click()
+    ElMessage.success('正在导出我的志愿单，请稍后...')
+  } catch (error) {
+    console.log('-------->', error)
+    ElMessage.error('导出Excel失败')
+  }
 }
 </script>
 
@@ -461,7 +494,7 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
                   d="M28.707 19.293L26 16.586V13a10.014 10.014 0 0 0-9-9.95V1h-2v2.05A10.014 10.014 0 0 0 6 13v3.586l-2.707 2.707A1 1 0 0 0 3 20v3a1 1 0 0 0 1 1h7v.777a5.15 5.15 0 0 0 4.5 5.199A5.006 5.006 0 0 0 21 25v-1h7a1 1 0 0 0 1-1v-3a1 1 0 0 0-.293-.707M19 25a3 3 0 0 1-6 0v-1h6Zm8-3H5v-1.586l2.707-2.707A1 1 0 0 0 8 17v-4a8 8 0 0 1 16 0v4a1 1 0 0 0 .293.707L27 20.414Z">
                 </path>
               </svg>
-              <span class="font-medium">我的收藏</span>
+              <span class="font-medium">我的志愿单</span>
             </a>
           </nav>
         </div>
@@ -753,245 +786,149 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
           </div>
         </div>
       </div>
-      <!-- 我的收藏 -->
+      <!-- 我的志愿单 -->
       <div v-if="selectedNavItem === 'my-collections'" class="w-full md:w-3/4">
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <!-- 表单标题区 -->
           <div class="gradient-border background-gradient p-6">
             <div class="flex items-center">
-              <h1 class="text-2xl font-bold text-white">我的收藏</h1>
+              <h1 class="text-2xl font-bold text-white">我的志愿单</h1>
             </div>
             <p class="text-white text-opacity-80 mt-2">
-              查看您的收藏
+              查看您的志愿单
             </p>
           </div>
-          <!-- 密码设置表单 -->
+          <!-- 志愿单列表 -->
           <div class="p-6">
-            <el-radio-group v-if="myChioesGroupQueryState === 'initQuery'" v-model="ccdm"
-              @change="getMyChioesGroupQuery">
-              <el-radio-button label="全部" :value="99" />
-              <el-radio-button label="本科" :value="1" />
-              <el-radio-button label="专科" :value="2" />
-            </el-radio-group>
-            <el-button v-if="myChioesGroupQueryState !== 'initQuery'" :icon="ArrowLeft"
-              @click="myChioesGroupQueryState = 'initQuery'">
-              返回
-            </el-button>
-            <el-table v-if="myChioesGroupQueryState === 'initQuery'" :data="myChioesGroupQueryList" border
-              style="width: 100%; margin-top: 20px;">
-              <el-table-column prop="chGroupName" label="我的收藏组名称" />
-              <el-table-column prop="addNum" label="已经收藏数量" width="120" />
-              <el-table-column prop="maxNum" label="最大收藏数量" width="120" />
-              <el-table-column label="操作" width="130">
-                <template #default="scope">
-                  <el-button text type="primary" size="small" @click="handleViewGroup1(scope.row)">查看1</el-button>
-                  <el-button text type="primary" size="small" @click="handleViewGroup2(scope.row)"
-                    style="margin-left: 0 !important;">查看2</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-            <!-- 专业模式查询结果表格 -->
-            <el-table v-if="myChioesGroupQueryState === 'zyQuery' && tableData.length > 0" v-loading="false"
-              :data="tableData" @span-method="objectSpanMethod" stripe border size="small" class="custom-table"
-              style="width: 100%; margin-top: 20px;">
-              <!-- 选择列 -->
-              <el-table-column type="selection" width="40" align="center"></el-table-column>
-              <!-- 招生院校列 -->
-              <el-table-column prop="schoolName" label="招生院校" min-width="180" align="left">
-                <template #default="scope">
-                  <div class="font-medium yxmc">
-                    {{ scope.row.yxmc }}
-                    <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
-                    <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
-                    }}</span>
-                    <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    {{ scope.row.provice }}/{{ scope.row.city }}
-                    {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
-                    {{ scope.row.sylxk === 1 ? '一流学科建设高校 | ' : '' }}
-                    {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
-                    {{ scope.row.sf985 === 1 ? '985高校' : '' }}
-                    <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}% |</span>
-                    <span v-if="scope.row.xkkm">对应选考科目：{{ scope.row.xkkm }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="招生专业" min-width="120" align="left">
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">当年计划人数：{{ scope.row.jhrs }}</div>
-                  <div class="text-xs text-gray-500">是否新增专业：{{ scope.row.isNew === 1 ? '是' : '否' }}</div>
-                  <div class="text-xs text-gray-500">专业代号：{{ scope.row.zydh }}</div>
-                  <div class="text-xs text-gray-500">专业名称：{{ scope.row.zymc }}</div>
-                  <div class="text-xs text-gray-500">学制：{{ scope.row.zymc }}</div>
-                  <div class="text-xs text-gray-500">学费：{{ scope.row.xzdm }}</div>
-                  <div class="text-xs text-gray-500">批次：{{ scope.row.pcmc }}</div>
-                  <div class="text-xs text-gray-500">投档单位：{{ scope.row.tddwmc }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column min-width="120" align="left">
-                <template #header>
-                  {{ tableData[0].match1Year ?? '历年' }}
-                </template>
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">
-                    成绩类型：{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他' }}
-                  </div>
-                  <div class="text-xs text-gray-500">位次：{{ scope.row.minwc1 }}</div>
-                  <div class="text-xs text-gray-500">分数：{{ scope.row.mincj1 }}</div>
-                  <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs1 }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column min-width="120" align="left">
-                <template #header>
-                  {{ tableData[0].match2Year ?? '历年' }}
-                </template>
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">
-                    成绩类型：{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他' }}
-                  </div>
-                  <div class="text-xs text-gray-500">位次：{{ scope.row.minwc2 }}</div>
-                  <div class="text-xs text-gray-500">分数：{{ scope.row.mincj2 }}</div>
-                  <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs2 }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column min-width="120" align="left">
-                <template #header>
-                  {{ tableData[0].match3Year ?? '历年' }}
-                </template>
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">
-                    成绩类型：{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他' }}
-                  </div>
-                  <div class="text-xs text-gray-500">位次：{{ scope.row.minwc3 }}</div>
-                  <div class="text-xs text-gray-500">分数：{{ scope.row.mincj3 }}</div>
-                  <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs3 }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="remark" label="备注" min-width="120" align="left">
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">{{ scope.row.jhbz }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="bl" label="录取比例" min-width="80" sortable align="center">
-                <template #default="scope">
-                  <div class="text-center text-xs mt-1">{{ scope.row.bl }}%</div>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="80" align="center" fixed="right">
-                <template #default="scope">
-                  <el-button text type="danger" size="small" @click="zyHandleDelete(scope.row)">
-                    删除
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-            <!-- 专业组模式查询结果表格 -->
-            <el-table v-if="myChioesGroupQueryState === 'zyGroupQuery' && tableData.length > 0" v-loading="false"
-              :data="tableData" @span-method="objectSpanMethod" stripe border size="small" class="custom-table"
-              style="width: 100%; margin-top: 20px;">
-              <el-table-column type="expand">
-                <template #default="props">
-                  <el-table :data="props.row.zyRs" border>
-                    <el-table-column label="专业名称" prop="zymc" />
-                    <el-table-column label="学制" prop="xzdm" />
-                    <el-table-column label="学费" prop="sfbz" />
-                    <el-table-column label="选考科目" prop="xkkm" />
-                    <el-table-column label="计划招生人数" prop="jhrs" />
-                    <el-table-column label="备注" prop="jhbz" />
-                  </el-table>
-                </template>
-              </el-table-column>
-              <!-- 招生院校列 -->
-              <el-table-column prop="schoolName" label="招生院校" min-width="180" align="left">
-                <template #default="scope">
-                  <div class="font-medium yxmc">
-                    {{ scope.row.yxmc }}
-                    <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
-                    <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
-                    }}</span>
-                    <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">
-                    {{ scope.row.provice }}/{{ scope.row.city }}
-                    {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
-                    {{ scope.row.sylxk === 1 ? '一流学科建设高校 | ' : '' }}
-                    {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
-                    {{ scope.row.sf985 === 1 ? '985高校' : '' }}
-                    <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}% |</span>
-                    <span v-if="scope.row.xkkm">对应选考科目：{{ scope.row.xkkm }}</span>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="招生专业" min-width="120" align="left">
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">当年计划人数：{{ scope.row.jhrs }}</div>
-                  <div class="text-xs text-gray-500">是否新增专业：{{ scope.row.isNew === 1 ? '是' : '否' }}</div>
-                  <div class="text-xs text-gray-500">专业代号：{{ scope.row.zydh }}</div>
-                  <div class="text-xs text-gray-500">专业名称：{{ scope.row.zymc }}</div>
-                  <div class="text-xs text-gray-500">学制：{{ scope.row.zymc }}</div>
-                  <div class="text-xs text-gray-500">学费：{{ scope.row.xzdm }}</div>
-                  <div class="text-xs text-gray-500">批次：{{ scope.row.pcmc }}</div>
-                  <div class="text-xs text-gray-500">投档单位：{{ scope.row.tddwmc }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column min-width="120" align="left">
-                <template #header>
-                  {{ tableData[0].match1Year ?? '历年' }}
-                </template>
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">
-                    成绩类型：{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他' }}
-                  </div>
-                  <div class="text-xs text-gray-500">位次：{{ scope.row.minwc1 }}</div>
-                  <div class="text-xs text-gray-500">分数：{{ scope.row.mincj1 }}</div>
-                  <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs1 }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column min-width="120" align="left">
-                <template #header>
-                  {{ tableData[0].match2Year ?? '历年' }}
-                </template>
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">
-                    成绩类型：{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他' }}
-                  </div>
-                  <div class="text-xs text-gray-500">位次：{{ scope.row.minwc2 }}</div>
-                  <div class="text-xs text-gray-500">分数：{{ scope.row.mincj2 }}</div>
-                  <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs2 }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column min-width="120" align="left">
-                <template #header>
-                  {{ tableData[0].match3Year ?? '历年' }}
-                </template>
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">
-                    成绩类型：{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他' }}
-                  </div>
-                  <div class="text-xs text-gray-500">位次：{{ scope.row.minwc3 }}</div>
-                  <div class="text-xs text-gray-500">分数：{{ scope.row.mincj3 }}</div>
-                  <div class="text-xs text-gray-500">录取人数：{{ scope.row.lqrs3 }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="remark" label="备注" min-width="120" align="left">
-                <template #default="scope">
-                  <div class="text-xs text-gray-500">{{ scope.row.jhbz }}</div>
-                </template>
-              </el-table-column>
-              <el-table-column prop="bl" label="录取比例" min-width="80" sortable align="center">
-                <template #default="scope">
-                  <div class="text-center text-xs mt-1">{{ scope.row.bl }}%</div>
-                </template>
-              </el-table-column>
-              <el-table-column label="填报操作" width="80" align="center" fixed="right">
-                <template #default="scope">
-                  <el-button text type="danger" size="small" @click="zyGroupHandleDelete(scope.row)">
-                    删除
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
+            <div class="flex align-center flex-wrap gap-4">
+              <el-tag v-for="(item, index) in myChioesGroupQueryList" :key="index"
+                :type="item.chGroupId == myChGroupSListId ? 'primary' : 'info'"
+                @click="handleViewGroup1(item.chGroupId)" style="cursor: pointer; font-size: 14px; height: 32px;">
+                {{ item.chGroupName }}（{{ item.addNum }}/{{ item.maxNum }}）
+              </el-tag>
+              <el-button type="primary" @click="zyExportExcel">导出Excel</el-button>
+            </div>
+            <div v-if="tableData?.length > 0" style="margin-top: 20px; width: 100%;">
+              <el-table v-loading="false" :data="tableData" stripe border size="small" row-key="yxmc"
+                class="custom-table" style="width: 100%">
+                <el-table-column prop="yxmc" label="招生院校" min-width="130" align="left">
+                  <template #default="scope">
+                    <div class="font-medium tableyxmc">
+                      <span style="font-size: 16px; font-weight: bold;">{{ scope.row.yxmc }}</span>
+                      <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
+                      <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{
+                        scope.row.lqdcstr }}</span>
+                      <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                      {{ scope.row.provice }}/{{ scope.row.city }}
+                      {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
+                      {{ scope.row.sylxk === 1 ? '一流学科建设高校 | ' : '' }}
+                      {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
+                      {{ scope.row.sf985 === 1 ? '985高校' : '' }}
+                      <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="招生专业" min-width="200" align="left">
+                  <template #default="scope">
+                    <div class="tablezy" style="padding-top: 10px;">
+                      <div class="text-xs text-gray-500">专业名称：<span style="font-weight: bold;">{{
+                        scope.row.zymc }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">专业代号：<span style="font-weight: bold;">{{
+                        scope.row.zydh }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
+                      </div>
+                      <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark"
+                        :content="scope.row.JHBZ" placement="top">
+                        <div class="flex items-center text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ
+                            }}</span></div>
+                      </el-tooltip>
+                      <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">学制：<span>{{ scope.row.xzdm }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">学费：<span>{{ scope.row.sfbz }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">批次：<span>{{ scope.row.pcmc }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">投档单位：<span>{{ scope.row.tddwmc }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column min-width="100" align="left">
+                  <template #header>
+                    {{ tableData[0].match1Year ?? '历年' }}
+                  </template>
+                  <template #default="scope">
+                    <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
+                      <div class="text-xs text-gray-500">
+                        成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
+                          }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
+                      <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
+                      <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
+                          }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column min-width="100" align="left">
+                  <template #header>
+                    {{ tableData[0].match2Year ?? '历年' }}
+                  </template>
+                  <template #default="scope">
+                    <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
+                      <div class="text-xs text-gray-500">
+                        成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
+                          }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
+                      <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
+                      <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
+                          }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column min-width="100" align="left">
+                  <template #header>
+                    {{ tableData[0].match3Year ?? '历年' }}
+                  </template>
+                  <template #default="scope">
+                    <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
+                      <div class="text-xs text-gray-500">
+                        成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
+                          }}</span>
+                      </div>
+                      <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
+                      <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
+                      <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
+                          }}</span>
+                      </div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="bl" label="录取比例" width="90" sortable align="center">
+                  <template #default="scope">
+                    <div class="text-center text-xs mt-1">
+                      <span style="font-weight: bold; color: #000;">{{ scope.row.bl }}</span>%
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column width="80" align="center" fixed="right" label="操作">
+                  <template #default="scope">
+                    <el-button text type="danger" size="small" @click="zyHandleDelete(scope.row)">
+                      删除
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
           </div>
         </div>
       </div>
@@ -1039,6 +976,222 @@ const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
     background-color: rgba(0, 0, 0, 0);
     border-color: #1890ff !important;
     color: white;
+  }
+}
+
+.tableyxmc {
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  // font-size: 16px;
+  color: #000;
+  font-weight: bold;
+
+  span:first-child {
+    margin-right: 4px;
+    line-height: 30px;
+  }
+}
+
+.tablezy {
+  display: flex;
+  flex-wrap: wrap;
+
+  div {
+    // display: flex;
+    // align-items: center;
+    margin-bottom: 8px;
+    margin-right: 16px;
+    color: #646566;
+    font-size: 12px;
+    line-height: 16px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    span {
+      font-size: 14px;
+      line-height: 14px;
+      color: #333;
+    }
+
+    .beizhu {
+      display: inline-block;
+      padding: 0 10px;
+      width: 120px;
+      font-size: 12px;
+      height: 16px;
+      line-height: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background-color: #00000030;
+      border-radius: 2px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.lqdcstr {
+  height: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  color: #fff;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.bg1 {
+  background-color: #FA8E23;
+}
+
+.bg2 {
+  background-color: #15C496;
+}
+
+.bg3 {
+  background-color: #2563EB;
+}
+
+.tagBox {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.tagTitle {
+  margin-bottom: 10px;
+  margin-right: 20px;
+  font-size: 14px;
+  color: #646566;
+}
+
+.tagContent {
+  width: calc(100% - 100px);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .primaryTag {
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-right: 8px;
+    font-size: 14px;
+    line-height: 30px;
+    padding: 0 20px;
+    color: #fff;
+    background-color: #2563EB;
+    border: 1px solid #2563EB;
+    border-radius: 4px;
+  }
+
+  .infoTag {
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-right: 8px;
+    font-size: 14px;
+    line-height: 30px;
+    color: rgb(55 65 81);
+    padding: 0 20px;
+    background-color: #fff;
+    border: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
+    border-radius: 4px;
+  }
+}
+
+.zksqBox {
+  cursor: pointer;
+  margin: 20px auto;
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    margin-right: 6px;
+    color: #2563EB;
+  }
+}
+
+.chGroupBox {
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 20px;
+  background-color: #2563EB10;
+  padding: 10px 40px 10px 10px;
+  border-radius: 10px;
+
+  .chGroupName {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+
+    span {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  }
+
+  .chGroupSub {
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 12px;
+    line-height: 20px;
+    color: #646566;
+
+    p {
+      margin-right: 10px;
+      margin-bottom: 6px;
+      line-height: 20px;
+    }
+
+    span {
+      font-size: 14px;
+      line-height: 20px;
+      color: #2563EB;
+    }
+  }
+
+  .chGroupIcon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+  }
+
+  .deleteIcon {
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
+</style>
+
+
+<style lang="scss">
+.personal-info-page {
+  .el-tag {
+    border: 0;
+  }
+
+  .el-tag--primary {
+    color: #fff;
+    background-image: linear-gradient(to right, rgb(24, 144, 255), rgb(108, 92, 231));
+  }
+
+  .el-tag--info {
+    color: rgb(55 65 81);
   }
 }
 </style>

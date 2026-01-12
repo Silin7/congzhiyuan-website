@@ -50,6 +50,9 @@ importers:
       sass:
         specifier: ^1.89.2
         version: 1.89.2
+      sortablejs:
+        specifier: ^1.15.6
+        version: 1.15.6
       vue:
         specifier: ^3.5.13
         version: 3.5.16(typescript@5.8.3)
@@ -59,6 +62,9 @@ importers:
       vue3-seamless-scroll:
         specifier: ^3.0.2
         version: 3.0.2(vue@3.5.16(typescript@5.8.3))
+      vuedraggable:
+        specifier: ^2.24.3
+        version: 2.24.3
     devDependencies:
       '@tsconfig/node22':
         specifier: ^22.0.1
@@ -1625,6 +1631,12 @@ packages:
     resolution: {integrity: sha512-ig5qOnCDbugFntKi6c7Xlib8bA6xiJVk8O+WdFrV3wxbMqeHO0hXFQC4nAhPVWfZfi8255lcZkNhtIBINCc4+Q==}
     engines: {node: '>=12.17.0'}
 
+  sortablejs@1.10.2:
+    resolution: {integrity: sha512-YkPGufevysvfwn5rfdlGyrGjt7/CRHwvRPogD/lC+TnvcN29jDpCifKP+rBqf+LRldfXSTh+0CGLcSg0VIxq3A==}
+
+  sortablejs@1.15.6:
+    resolution: {integrity: sha512-aNfiuwMEpfBM/CN6LY0ibyhxPfPbyFeBTYJKCvzkJ2GkUpazIt3H+QIPAMHwqQ7tMKaHz1Qj+rJJCqljnf4p3A==}
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -1799,6 +1811,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  vuedraggable@2.24.3:
+    resolution: {integrity: sha512-6/HDXi92GzB+Hcs9fC6PAAozK1RLt1ewPTLjK0anTYguXLAeySDmcnqE8IC0xa7shvSzRjQXq3/+dsZ7ETGF3g==}
 
   which-module@2.0.1:
     resolution: {integrity: sha512-iBdZ57RDvnOR9AGBhML2vFZf7h8vmBjhoaZqODJBFWHVtKkDmKuHai3cx5PgVMrX5YDNp27AofYbAwctSS+vhQ==}
@@ -3351,6 +3366,10 @@ snapshots:
 
   snabbdom@3.6.2: {}
 
+  sortablejs@1.10.2: {}
+
+  sortablejs@1.15.6: {}
+
   source-map-js@1.2.1: {}
 
   speakingurl@14.0.1: {}
@@ -3509,6 +3528,10 @@ snapshots:
       '@vue/shared': 3.5.16
     optionalDependencies:
       typescript: 5.8.3
+
+  vuedraggable@2.24.3:
+    dependencies:
+      sortablejs: 1.10.2
 
   which-module@2.0.1: {}
 

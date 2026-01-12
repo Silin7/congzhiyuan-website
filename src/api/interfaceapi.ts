@@ -401,7 +401,8 @@ export async function myChioesBatchAddApi(data: any) {
 
 // 志愿分组查询
 // a.token:用户token，必选
-// b.ccdm  1 本科 2 专科 99全部
+// b.ccdm  1 本科 2 专科
+// c. pcdm 批次代码
 export async function myChioesGroupQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
@@ -421,6 +422,29 @@ export async function myChioesGroupQueryApi(data: any) {
     ElMessage.error('请求失败')
   }
 }
+
+// 志愿分组列表查询
+// a.token:用户token，必选
+export async function myChGroupSListApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChGroupSList`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
 
 // 专业模式收藏查询
 // c.token:用户token，必选
@@ -652,6 +676,52 @@ export async function wcQueryBycjApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 专业模式志愿专业排序
+// a.token:用户token，必选
+// b.jsonStr 接收排序参数，格式如{"Rs":[{"id":226,"xh":4}]}
+export async function ZyChoiceSortApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceSort`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 专业模式志愿专业导出Excel
+// a.token:用户token，必选
+// b.chGroupId 要导出的分组id
+export async function ZyChoiceExportExcelApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params)
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
