@@ -277,6 +277,8 @@ const riskThreshold = ref(50)
 // “保” 安全阈值响应式变量
 const safeThreshold = ref(50)
 
+// 1:所在省份专业模式 2:所在省份专业组模式
+const zyType = JSON.parse(localStorage.getItem('userInfo') || '{}')?.zyType || '0'
 // 声明表格数据响应式变量
 const queryState = ref('')
 const currentPage = ref(1)
@@ -392,11 +394,6 @@ const lqInfoZyGroupQuery = async () => {
   }
 }
 
-// 合并表格
-const objectSpanMethod = ({ row, rowIndex, columnIndex }: any) => {
-  console.log('-------->', row, rowIndex, columnIndex)
-}
-
 // 处理分页变化
 const handlePageChange = (page: number) => {
   currentPage.value = page
@@ -417,7 +414,7 @@ const handleSizeChange = (size: number) => {
   }
 }
 
-// 我的志愿 跳转我的志愿页面
+// 我的志愿
 const collectionDrawer = ref(false)
 const goMyAspiration = () => {
   if (!selectedSchoolLevel.value) {
@@ -432,7 +429,7 @@ const goMyAspiration = () => {
   getMyChioesGroupQuery()
 }
 
-// 我的志愿 - 最外层
+// 我的志愿 - 专业组模式查询结果
 const myChioesGroupQueryInfo: any = ref({})
 const getMyChioesGroupQuery = async () => {
   const res: any = await api.myChioesGroupQueryApi({
@@ -474,23 +471,23 @@ const zyHandleDelete = async (row: any) => {
 
 }
 
-// 专业组模式收藏查询
-const zyGroupHandleCollect = async (row: any) => {
-  const res: any = await api.zyGroupChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
-    chGroupId: row.chId,
-  })
-  if (res) {
-    ElMessage.success('收藏成功')
-  }
-}
-
+// // 专业组模式收藏查询
+// const zyGroupHandleCollect = async (row: any) => {
+//   const res: any = await api.zyGroupChoicesQueryApi({
+//     token: window.localStorage.getItem('token') || '',
+//     chGroupId: row.chId,
+//   })
+//   if (res) {
+//     ElMessage.success('收藏成功')
+//   }
+// }
 
 </script>
 
 <template>
   <div class="volunteer-apply-page">
     <main class="max-w-7xl mx-auto px-4 py-8">
+      <!-- 查询条件 -->
       <section class="mb-10">
         <h2 class="text-2xl font-bold text-center mb-6">志愿填报查询</h2>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
@@ -668,7 +665,7 @@ const zyGroupHandleCollect = async (row: any) => {
             </el-icon>
           </div>
           <!-- 立即开始智能检索 -->
-          <div class="mt-8 flex justify-center">
+          <div v-if="zyType == '1'" class="mt-8 flex justify-center">
             <button
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
               @click="lqInfoZyQuery">
@@ -692,9 +689,8 @@ const zyGroupHandleCollect = async (row: any) => {
                 <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
               </svg>
               <span>立即开始智能检索</span>
-              <!-- <span>专业模式查询</span> -->
             </button>
-            <!-- <button
+            <button v-if="zyType == '2'"
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
               @click="lqInfoZyGroupQuery">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
@@ -716,11 +712,13 @@ const zyGroupHandleCollect = async (row: any) => {
                 </defs>
                 <path fill="currentColor" d="M0 0h24v24H0z" mask="url(#IconifyId19b962244b31ed2cc0)"></path>
               </svg>
-              <span>专业组模式查询</span>
-            </button> -->
+              <span>立即开始智能检索</span>
+            </button>
           </div>
         </div>
       </section>
+
+      <!-- 结果信息 -->
       <section v-if="tableData.length > 0">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold">结果信息</h2>
@@ -745,7 +743,7 @@ const zyGroupHandleCollect = async (row: any) => {
         </div>
         <div>
           <!-- 专业模式查询结果表格 -->
-          <el-table v-if="queryState === 'zyQuery'" v-loading="false" :data="tableData" @span-method="objectSpanMethod"
+          <el-table v-if="queryState === 'zyQuery'" v-loading="false" :data="tableData"
             @selection-change="handleSelectionChange" stripe border size="small" class="custom-table"
             style="width: 100%">
             <el-table-column type="selection" width="40" align="center"></el-table-column>
@@ -859,8 +857,8 @@ const zyGroupHandleCollect = async (row: any) => {
             </el-table-column>
           </el-table>
           <!-- 专业组模式查询结果表格 -->
-          <el-table v-if="queryState === 'zyGroupQuery'" v-loading="false" :data="tableData"
-            @span-method="objectSpanMethod" stripe border size="small" class="custom-table" style="width: 100%">
+          <el-table v-if="queryState === 'zyGroupQuery'" v-loading="false" :data="tableData" stripe border size="small"
+            class="custom-table" style="width: 100%">
             <el-table-column type="expand">
               <template #default="props">
                 <el-table :data="props.row.zyRs" border>
@@ -1001,7 +999,8 @@ const zyGroupHandleCollect = async (row: any) => {
           </div>
         </div>
       </section>
-      <!-- header-class="drawer-header" -->
+
+      <!-- 我的志愿 -->
       <el-drawer v-model="collectionDrawer" direction="rtl" :show-close="false" size="360" style="height: 100vh;">
         <template #header>
           <div
