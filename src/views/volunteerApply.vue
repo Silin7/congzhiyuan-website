@@ -6,6 +6,9 @@ import * as api from '@/api/interfaceapi'
 
 onMounted(() => {
   getPcList()
+  if (localStorage.getItem('selectedAdmissionBatch')) {
+    getTddwList()
+  }
   getDisciplineCategoriesList()
   getSchoolNatures()
   getProvinceList()
@@ -13,11 +16,12 @@ onMounted(() => {
 })
 
 // 展开或收起
-const isCollapsed = ref(false)
+const isCollapsed = ref(true)
 
 // 院校层次
-const selectedSchoolLevel = ref('1')
+const selectedSchoolLevel = ref(localStorage.getItem('selectedSchoolLevel') || '1')
 const handleSchoolLevelClick = (level: string) => {
+  localStorage.setItem('selectedSchoolLevel', level)
   selectedSchoolLevel.value = level
   selectedAdmissionBatch.value = ''
   selectedAdmissionType.value = ''
@@ -42,12 +46,13 @@ const getPcList = async () => {
     ElMessage.error('获取批次列表失败')
   }
 }
-const selectedAdmissionBatch = ref('')
+const selectedAdmissionBatch = ref(localStorage.getItem('selectedAdmissionBatch') || '')
 const handleAdmissionBatchClick = (batch: string) => {
   if (selectedSchoolLevel.value === '') {
     ElMessage.error('请先选择院校层次')
     return
   }
+  localStorage.setItem('selectedAdmissionBatch', batch)
   selectedAdmissionBatch.value = batch
   selectedAdmissionType.value = ''
   getTddwList()
@@ -71,14 +76,14 @@ const getTddwList = async () => {
     ElMessage.error('获取录取类型列表失败')
   }
 }
-const selectedAdmissionType = ref('')
+const selectedAdmissionType = ref(localStorage.getItem('selectedAdmissionType') || '')
 const handleAdmissionTypeChange = (value: string) => {
   if (selectedSchoolLevel.value === '' || selectedAdmissionBatch.value === '') {
     ElMessage.error('请先选择院校层次和录取批次')
     return
   }
+  localStorage.setItem('selectedAdmissionType', value)
   selectedAdmissionType.value = value
-  console.log(`选择了录取类型: ${value}`)
 }
 
 // 院校名称
@@ -110,7 +115,6 @@ const getSchoolNameOptions = async (value: any) => {
 const selectedSchool = ref('')
 const handleSchoolNameChange = (value: string) => {
   selectedSchool.value = value
-  console.log(`选择了院校名称: ${value}`)
 }
 
 // 院校性质
@@ -130,14 +134,14 @@ const getSchoolNatures = async () => {
     ElMessage.error('获取院校性质列表失败')
   }
 }
-const selectedSchoolNature = ref('')
+const selectedSchoolNature = ref(localStorage.getItem('selectedSchoolNature') || '')
 const handleSchoolNatureClick = (nature: string) => {
   if (nature === '0') {
     selectedAdmissionBatch.value = '0'
     selectedAdmissionType.value = ''
   }
+  localStorage.setItem('selectedSchoolNature', nature)
   selectedSchoolNature.value = nature
-  console.log(`选择了院校性质: ${nature}`)
 }
 
 // 院校特色
@@ -157,7 +161,7 @@ const getMajorFeatureList = async () => {
     ElMessage.error('获取省份列表失败')
   }
 }
-const selectedMajorFeature: any = ref([])
+const selectedMajorFeature: any = ref(localStorage.getItem('selectedMajorFeature')?.split(',') || [])
 const handleMajorFeatureClick = (feature: string) => {
   // 切换院校特色选中状态
   const index = selectedMajorFeature.value.indexOf(feature)
@@ -166,7 +170,7 @@ const handleMajorFeatureClick = (feature: string) => {
   } else {
     selectedMajorFeature.value.push(feature)
   }
-  console.log(`选择了院校特色: ${selectedMajorFeature.value.join(', ')}`)
+  localStorage.setItem('selectedMajorFeature', selectedMajorFeature.value.join(','))
 }
 
 // 院校省份
@@ -186,14 +190,13 @@ const getProvinceList = async () => {
     ElMessage.error('获取省份列表失败')
   }
 }
-const selectedProvince = ref<string[]>([])
+const selectedProvince: any = ref(localStorage.getItem('selectedProvince')?.split(',') || [])
 const handleProvinceClick = (province: string) => {
   if (province === '') {
     selectedProvince.value = ['']
     return
   } else {
     const index = selectedProvince.value.indexOf('')
-    console.log('-------->', index)
     if (index > -1) {
       selectedProvince.value.splice(index, 1)
     }
@@ -205,7 +208,7 @@ const handleProvinceClick = (province: string) => {
   } else {
     selectedProvince.value.push(province)
   }
-  console.log(`选择了省份: ${province}, 当前选中: ${selectedProvince.value.join(', ')}`)
+  localStorage.setItem('selectedProvince', selectedProvince.value.join(','))
 }
 
 // 专业名称

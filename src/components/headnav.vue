@@ -45,8 +45,8 @@ const loginType = ref('phone') // phone, account, card
 
 // 登录表单数据
 const loginForm = reactive({
-  phone: '13256605200',
-  code: '174585',
+  phone: '',
+  code: '',
   account: '',
   password: '',
   cardNumber: '',
