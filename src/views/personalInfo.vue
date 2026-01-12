@@ -288,9 +288,9 @@ const handleChangePasswordSubmit = async () => {
     changePasswordForm.value.oldPass = ''
     changePasswordForm.value.newPass = ''
     changePasswordForm.value.confirmPass = ''
-    setTimeout(() => {
-      logoutFunction()
-    }, 1000)
+    // setTimeout(() => {
+    //   logoutFunction()
+    // }, 1000)
   }
 }
 
