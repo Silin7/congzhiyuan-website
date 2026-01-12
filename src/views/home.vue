@@ -3,7 +3,9 @@ import { onMounted, ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
 import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
+import zyTypeRule from '@/hooks/zyTypeRule'
 onMounted(() => {
+  zyTypeRule()
   getTopInfo()
 })
 

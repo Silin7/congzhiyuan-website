@@ -3,8 +3,10 @@ import { onMounted, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
+import zyTypeRule from '@/hooks/zyTypeRule'
 
 onMounted(() => {
+  zyTypeRule()
   getPcList()
   if (localStorage.getItem('selectedAdmissionBatch')) {
     getTddwList()

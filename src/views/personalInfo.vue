@@ -189,7 +189,9 @@ const myUserInfoSaveBtn = async () => {
   personalForm.value.token = window.localStorage.getItem('token') || ''
   const res: any = await api.myUserInfoSaveApi(personalForm.value)
   if (res) {
+    localStorage.setItem('userInfo', JSON.stringify(personalForm.value))
     ElMessage.success('保存成功')
+    window.location.reload()
   }
 }
 
