@@ -506,12 +506,24 @@ const zyHandleDelete = async (row: any) => {
   }
 }
 
+// 专业组模式 - 删除收藏
+const zyGroupHandleDelete = async (row: any) => {
+  const res: any = await api.delChoiceGroupApi({
+    token: window.localStorage.getItem('token') || '',
+    chId: row.chId,
+  })
+  if (res) {
+    ElMessage.success('删除成功')
+    // 刷新收藏分组查询
+    getMyChioesGroupQuery()
+  }
+}
+
 // 折叠展开专业组志愿
 function toggleExpand(row: any) {
   console.log('row.expanded -------->', row.expanded)
   row.expanded = !row.expanded;
 }
-
 </script>
 
 <template>
@@ -1157,7 +1169,7 @@ function toggleExpand(row: any) {
               <div class="text-xs text-gray-500 chGroupSub">
                 <p v-if="item2.bl">概率：<span>{{ item2.bl }}%</span></p>
               </div>
-              <el-icon class="deleteIcon2" color="#F56C6C" @click="zyHandleDelete(item2)">
+              <el-icon class="deleteIcon2" color="#F56C6C" @click="zyGroupHandleDelete(item2)">
                 <DeleteFilled />
               </el-icon>
             </div>
