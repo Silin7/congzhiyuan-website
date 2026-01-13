@@ -399,10 +399,10 @@ export async function myChioesBatchAddApi(data: any) {
   }
 }
 
-// 志愿分组查询
+// 志愿分组查询 - 志愿填报页面
 // a.token:用户token，必选
 // b.ccdm  1 本科 2 专科
-// c. pcdm 批次代码
+// c.pcdm 批次代码
 export async function myChioesGroupQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
@@ -423,7 +423,7 @@ export async function myChioesGroupQueryApi(data: any) {
   }
 }
 
-// 志愿分组列表查询
+// 志愿分组列表查询 - 个人中心（我的志愿单）
 // a.token:用户token，必选
 export async function myChGroupSListApi(data: any) {
   const params = new FormData()
@@ -445,8 +445,7 @@ export async function myChGroupSListApi(data: any) {
   }
 }
 
-
-// 专业模式收藏查询
+// 专业模式志愿列表查询
 // c.token:用户token，必选
 // d.chGroupId 我的收藏组id
 export async function zyChoicesQueryApi(data: any) {
@@ -469,7 +468,7 @@ export async function zyChoicesQueryApi(data: any) {
   }
 }
 
-// 专业组模式收藏查询
+// 专业组模式志愿列表查询
 // a.token:用户token，必选
 // b.chGroupId 我的收藏组id
 export async function zyGroupChoicesQueryApi(data: any) {

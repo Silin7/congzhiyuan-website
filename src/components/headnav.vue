@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, unref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import * as api from '@/api/interfaceapi'
 
 // Get current route
 const route = useRoute()
+const router = useRouter()
 // Compute active menu based on current route path
 const currentPath = computed(() => route.path)
 
@@ -126,14 +127,14 @@ const handleLogin = async () => {
         localStorage.setItem('token', res.data.data.token)
         closeLoginModal()
         userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
-        // if (userInfo.value.zyType === '0') {
-        //   ElMessage.warning('请先完善个人信息')
-        //   setTimeout(() => {
-        //     router.push('/personalInfo')
-        //   }, 1000)
-        // } else {
-        //   ElMessage.success('登录成功')
-        // }
+        if (userInfo.value.zyType === '0') {
+          ElMessage.warning('请先完善个人信息')
+          setTimeout(() => {
+            router.push('/personalInfo')
+          }, 1000)
+        } else {
+          ElMessage.success('登录成功')
+        }
       } else {
         ElMessage.error(res.data.message || '登录失败')
       }

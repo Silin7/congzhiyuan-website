@@ -17,6 +17,9 @@ onMounted(() => {
   getMajorFeatureList()
 })
 
+// 1:所在省份专业模式 2:所在省份专业组模式
+const zyType = JSON.parse(localStorage.getItem('userInfo') || '{}')?.zyType || '1'
+
 // 展开或收起
 const isCollapsed = ref(true)
 
@@ -280,10 +283,7 @@ watch(safeThreshold, (newValue) => {
   localStorage.setItem('safeThreshold', newValue.toString())
 })
 
-// 1:所在省份专业模式 2:所在省份专业组模式
-const zyType = JSON.parse(localStorage.getItem('userInfo') || '{}')?.zyType || '1'
 // 声明表格数据响应式变量
-const queryState = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
@@ -313,7 +313,6 @@ const lqInfoZyQuery = async () => {
   console.log('专业模式 - 志愿查询 -------->', JSON.stringify(data))
   const res: any = await api.lqInfoZyQueryApi(data)
   if (res) {
-    queryState.value = 'zyQuery'
     tableData.value = res.data.Rs || []
     total.value = res.recordsTotal || 0
   }
@@ -391,28 +390,46 @@ const lqInfoZyGroupQuery = async () => {
   console.log('专业组模式 - 志愿查询 -------->', JSON.stringify(data))
   const res: any = await api.lqInfoZyGroupQueryApi(data)
   if (res) {
-    queryState.value = 'zyGroupQuery'
+    // if (res.data?.Rs?.length) {
+    //   await res.data.Rs.forEach((item: any) => {
+    //     item.expanded = false
+    //   })
+    // }
     tableData.value = res.data.Rs || []
     total.value = res.recordsTotal || 0
+  }
+}
+
+// 专业组模式 - 填报
+const zyGroupHandleApply = async (zyid: any, row: any) => {
+  const res: any = await api.myChioesAddApi({
+    token: window.localStorage.getItem('token') || '',
+    zyId: zyid,
+    lqdc: row.lqdc,
+    lqbl: (row.bl / 100).toFixed(3),
+  })
+  if (res) {
+    ElMessage.success('填报成功')
+    lqInfoZyGroupQuery()
   }
 }
 
 // 处理分页变化
 const handlePageChange = (page: number) => {
   currentPage.value = page
-  if (queryState.value === 'zyQuery') {
+  if (zyType === '1') {
     lqInfoZyQuery()
   }
-  if (queryState.value === 'zyGroupQuery') {
+  if (zyType === '2') {
     lqInfoZyGroupQuery()
   }
 }
 const handleSizeChange = (size: number) => {
   pageSize.value = size
-  if (queryState.value === 'zyQuery') {
+  if (zyType === '1') {
     lqInfoZyQuery()
   }
-  if (queryState.value === 'zyGroupQuery') {
+  if (zyType === '2') {
     lqInfoZyGroupQuery()
   }
 }
@@ -432,7 +449,7 @@ const goMyAspiration = () => {
   getMyChioesGroupQuery()
 }
 
-// 我的志愿 - 专业组模式查询结果
+// 我的志愿 - 志愿分组查询
 const myChioesGroupQueryInfo: any = ref({})
 const getMyChioesGroupQuery = async () => {
   const res: any = await api.myChioesGroupQueryApi({
@@ -443,7 +460,12 @@ const getMyChioesGroupQuery = async () => {
   if (res) {
     myChioesGroupQueryInfo.value = res.data?.Rs[0] || {}
     if (myChioesGroupQueryInfo.value?.chGroupId) {
-      zyHandleCollect()
+      if (zyType === '1') {
+        zyHandleCollect()
+      }
+      if (zyType === '2') {
+        zyGroupHandleCollect()
+      }
     }
   }
 }
@@ -452,6 +474,17 @@ const getMyChioesGroupQuery = async () => {
 const zyHandleCollectList: any = ref([])
 const zyHandleCollect = async () => {
   const res: any = await api.zyChoicesQueryApi({
+    token: window.localStorage.getItem('token') || '',
+    chGroupId: myChioesGroupQueryInfo.value.chGroupId,
+  })
+  if (res) {
+    zyHandleCollectList.value = res.data.Rs || []
+  }
+}
+
+// 专业组模式 - 收藏
+const zyGroupHandleCollect = async () => {
+  const res: any = await api.zyGroupChoicesQueryApi({
     token: window.localStorage.getItem('token') || '',
     chGroupId: myChioesGroupQueryInfo.value.chGroupId,
   })
@@ -471,19 +504,13 @@ const zyHandleDelete = async (row: any) => {
     // 刷新收藏分组查询
     getMyChioesGroupQuery()
   }
-
 }
 
-// // 专业组模式收藏查询
-// const zyGroupHandleCollect = async (row: any) => {
-//   const res: any = await api.zyGroupChoicesQueryApi({
-//     token: window.localStorage.getItem('token') || '',
-//     chGroupId: row.chId,
-//   })
-//   if (res) {
-//     ElMessage.success('收藏成功')
-//   }
-// }
+// 折叠展开专业组志愿
+function toggleExpand(row: any) {
+  console.log('row.expanded -------->', row.expanded)
+  row.expanded = !row.expanded;
+}
 
 </script>
 
@@ -746,9 +773,8 @@ const zyHandleDelete = async (row: any) => {
         </div>
         <div>
           <!-- 专业模式查询结果表格 -->
-          <el-table v-if="queryState === 'zyQuery'" v-loading="false" :data="tableData"
-            @selection-change="handleSelectionChange" stripe border size="small" class="custom-table"
-            style="width: 100%">
+          <el-table v-if="zyType === '1'" v-loading="false" :data="tableData" @selection-change="handleSelectionChange"
+            stripe border size="small" class="custom-table" style="width: 100%">
             <el-table-column type="selection" width="40" align="center"></el-table-column>
             <el-table-column prop="schoolName" label="招生院校" min-width="130" align="left">
               <template #default="scope">
@@ -863,17 +889,24 @@ const zyHandleDelete = async (row: any) => {
             </el-table-column>
           </el-table>
           <!-- 专业组模式查询结果表格 -->
-          <el-table v-if="queryState === 'zyGroupQuery'" v-loading="false" :data="tableData" stripe border size="small"
+          <el-table v-if="zyType === '2'" v-loading="false" :data="tableData" stripe border size="small"
             class="custom-table" style="width: 100%">
             <el-table-column type="expand">
-              <template #default="props">
-                <el-table :data="props.row.zyRs" border>
-                  <el-table-column label="专业名称" prop="zymc" />
-                  <el-table-column label="学制" prop="xzdm" />
-                  <el-table-column label="学费" prop="sfbz" />
-                  <el-table-column label="选考科目" prop="xkkm" />
-                  <el-table-column label="计划招生人数" prop="jhrs" />
-                  <el-table-column label="备注" prop="JHBZ" />
+              <template #default="{ row }">
+                <el-table :data="row.zyRs" border>
+                  <el-table-column align="center" label="专业" prop="zymc" />
+                  <el-table-column align="center" label="计划人数" prop="jhrs" />
+                  <el-table-column align="center" label="备注" prop="jhbz" />
+                  <el-table-column align="center" label="选考科目" prop="xkkm" />
+                  <el-table-column align="center" label="学制" prop="xzdm" />
+                  <el-table-column align="center" label="学费" prop="sfbz" />
+                  <el-table-column align="center" label="操作" width="80">
+                    <template #default="subScope">
+                      <el-button text type="primary" size="small" @click="zyGroupHandleApply(subScope.row.zyid, row)">
+                        填报
+                      </el-button>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </template>
             </el-table-column>
@@ -977,14 +1010,22 @@ const zyHandleDelete = async (row: any) => {
                 </div>
               </template>
             </el-table-column>
-            <!-- <el-table-column label="填报操作" width="80" align="center">
+            <el-table-column width="120" label="填报">
               <template #default="scope">
-                <el-button text type="warning" size="small" style="margin-left: 0 !important;"
-                  @click="zyGroupHandleCollect(scope.row)">
-                  收藏
-                </el-button>
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;"
+                  @click="toggleExpand(scope.row)">
+                  <el-tag type="primary">
+                    <div style="cursor: pointer; display: flex; justify-content: center;align-items: center;">
+                      <p style="margin-right: 5px;">可选专业：{{ scope.row.zyRs.length }}</p>
+                      <el-icon>
+                        <ArrowDown />
+                      </el-icon>
+                    </div>
+                  </el-tag>
+                  <div style="line-height: 30px;">已填报({{ scope.row.chNum }} / {{ scope.row.totalNum }})</div>
+                </div>
               </template>
-            </el-table-column> -->
+            </el-table-column>
           </el-table>
           <!-- Element Plus 分页 -->
           <div class="bg-gray-50 border-t border-gray-200 px-6 py-4">
@@ -1028,7 +1069,7 @@ const zyHandleDelete = async (row: any) => {
           <p class="text-gray-500 text-sm">还没有添加志愿，请点击表格中的"填报"按钮添加</p>
         </div>
         <div v-if="zyHandleCollectList?.length > 0">
-          <div v-for="(item, index) in zyHandleCollectList" :key="index" class="chGroupBox">
+          <div v-if="zyType === '1'" v-for="(item, index) in zyHandleCollectList" :key="index" class="chGroupBox">
             <div class="chGroupName">
               <span>{{ item.yxmc }}</span>
               <span class="lqdcstr bg3">{{ item.yxdm }}</span>
@@ -1047,6 +1088,25 @@ const zyHandleDelete = async (row: any) => {
             <el-icon class="deleteIcon" color="#F56C6C" @click="zyHandleDelete(item)">
               <DeleteFilled />
             </el-icon>
+          </div>
+          <div v-if="zyType === '2'" v-for="(item, index) in zyHandleCollectList" :key="index" class="chGroupBox">
+            <div class="chGroupName">
+              <span>{{ item.yxmc }}</span>
+              <span class="lqdcstr bg3">{{ item.yxdm }}</span>
+            </div>
+            <div v-for="(item2, index) in item.zyRs" :key="index" style="position: relative;">
+              <div class="text-xs text-gray-500 chGroupSub">
+                <p style="width: 100%;">专业名称：<span>{{ item2.zymc }}</span></p>
+                <p>专业代号：<span>{{ item2.zydh }}</span></p>
+                <p>计划人数：<span>{{ item2.jhrs }}</span></p>
+              </div>
+              <div class="text-xs text-gray-500 chGroupSub">
+                <p v-if="item2.bl">概率：<span>{{ item2.bl }}%</span></p>
+              </div>
+              <el-icon class="deleteIcon2" color="#F56C6C" @click="zyHandleDelete(item2)">
+                <DeleteFilled />
+              </el-icon>
+            </div>
           </div>
         </div>
       </el-drawer>
@@ -1262,6 +1322,13 @@ const zyHandleDelete = async (row: any) => {
       position: absolute;
       top: 10px;
       right: 10px;
+    }
+
+    .deleteIcon2 {
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      right: 0;
     }
   }
 }
