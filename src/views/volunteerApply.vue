@@ -787,9 +787,9 @@ function toggleExpand(row: any) {
                 <div class="text-xs text-gray-500">
                   {{ scope.row.provice }}/{{ scope.row.city }}
                   {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
-                  {{ scope.row.sylxk === 1 ? '一流学科建设高校 | ' : '' }}
-                  {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
-                  {{ scope.row.sf985 === 1 ? '985高校' : '' }}
+                  {{ scope.row.sylxk === 1 ? ' 一流学科建设高校 | ' : '' }}
+                  {{ scope.row.sf211 === 1 ? ' 211高校 |' : '' }}
+                  {{ scope.row.sf985 === 1 ? ' 985高校' : '' }}
                   <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
                 </div>
               </template>
@@ -891,18 +891,88 @@ function toggleExpand(row: any) {
           <!-- 专业组模式查询结果表格 -->
           <el-table v-if="zyType === '2'" v-loading="false" :data="tableData" stripe border size="small"
             class="custom-table" style="width: 100%">
-            <el-table-column type="expand">
+            <el-table-column type="expand" width="40" align="center">
               <template #default="{ row }">
-                <el-table :data="row.zyRs" border>
-                  <el-table-column align="center" label="专业" prop="zymc" />
-                  <el-table-column align="center" label="计划人数" prop="jhrs" />
-                  <el-table-column align="center" label="备注" prop="jhbz" />
-                  <el-table-column align="center" label="选考科目" prop="xkkm" />
-                  <el-table-column align="center" label="学制" prop="xzdm" />
-                  <el-table-column align="center" label="学费" prop="sfbz" />
-                  <el-table-column align="center" label="操作" width="80">
+                <el-table :data="row.zyRs" border :show-header="false">
+                  <el-table-column type="index" width="40" align="center">
+                  </el-table-column>
+                  <el-table-column label="专业" prop="zymc" min-width="200">
+                    <template #default="scope">
+                      <div class="font-medium tableyxmc">
+                        <span>{{ scope.row.zymc }}</span><span v-if="scope.row.zydh">（{{ scope.row.zydh }}）</span>
+                      </div>
+                      <el-tooltip v-if="scope.row.jhbz" popper-class="custom-tooltip" effect="dark"
+                        :content="scope.row.jhbz" placement="top">
+                        <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.jhbz }}</span></div>
+                      </el-tooltip>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="计划人数" min-width="100">
+                    <template #default="scope">
+                      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <div class="text-xs text-gray-500"><span
+                            style="font-size: 20px; font-weight: 600; color: #000;">
+                            {{ scope.row.jhrs }}</span>人
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">{{ scope.row.xkkm }}</div>
+                        <div class="text-xs text-gray-500 mt-1">{{ scope.row.xzdm }}/{{ scope.row.sfbz }}</div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="match1Year" min-width="100">
+                    <template #default="scope">
+                      <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
+                        <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div>
+                        <div class="text-xs text-gray-500">
+                          成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
+                          }}</span>
+                        </div>
+                        <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
+                        <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
+                        <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
+                        }}</span>
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="match2Year" min-width="100">
+                    <template #default="scope">
+                      <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
+                        <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div>
+                        <div class="text-xs text-gray-500">
+                          成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
+                            }}</span>
+                        </div>
+                        <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
+                        <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
+                        <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
+                            }}</span>
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="match3Year" min-width="100">
+                    <template #default="scope">
+                      <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
+                        <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div>
+                        <div class="text-xs text-gray-500">
+                          成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
+                          }}</span>
+                        </div>
+                        <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
+                        <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
+                        <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
+                        }}</span>
+                        </div>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column width="90">
+                  </el-table-column>
+                  <el-table-column label="操作" width="120" align="center">
                     <template #default="subScope">
-                      <el-button text type="primary" size="small" @click="zyGroupHandleApply(subScope.row.zyid, row)">
+                      <el-button v-if="subScope.row.chId == 0" text type="primary" size="small"
+                        @click="zyGroupHandleApply(subScope.row.zyid, row)">
                         填报
                       </el-button>
                     </template>
@@ -910,48 +980,32 @@ function toggleExpand(row: any) {
                 </el-table>
               </template>
             </el-table-column>
-            <el-table-column prop="schoolName" label="招生院校" min-width="130" align="left">
+            <el-table-column prop="schoolName" label="招生院校" min-width="200" align="left">
               <template #default="scope">
                 <div class="font-medium tableyxmc">
-                  <span>{{ scope.row.yxmc }}</span>
+                  <span>{{ scope.row.yxmc }}（{{ scope.row.zyGroupDm }}）专业组</span>
                   <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
                   <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr }}</span>
                   <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                 </div>
                 <div class="text-xs text-gray-500">
-                  {{ scope.row.provice }}/{{ scope.row.city }}
+                  院校代码：<span style="font-weight: bold; color: #000;">{{ scope.row.yxdm }}</span> |
+                  {{ scope.row.provice }}/{{ scope.row.city }} |
                   {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
-                  {{ scope.row.sylxk === 1 ? '一流学科建设高校 | ' : '' }}
-                  {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
-                  {{ scope.row.sf985 === 1 ? '985高校' : '' }}
+                  {{ scope.row.sylxk === 1 ? ' 一流学科建设高校 | ' : '' }}
+                  {{ scope.row.sf211 === 1 ? ' 211高校 | ' : '' }}
+                  {{ scope.row.sf985 === 1 ? ' 985高校 | ' : '' }}
                   <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="招生专业" min-width="200" align="left">
+            <el-table-column label="招生计划" min-width="100" align="left">
               <template #default="scope">
-                <div class="tablezy" style="padding-top: 10px;">
-                  <div class="text-xs text-gray-500">专业名称：<span style="font-size: 16px; font-weight: bold;">{{
-                    scope.row.zymc }}</span>
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                  <div class="text-xs text-gray-500"><span style="font-size: 20px; font-weight: 600; color: #000;">
+                      {{ scope.row.groupJhrs }}</span>人
                   </div>
-                  <div class="text-xs text-gray-500">专业代号：<span style="font-size: 16px; font-weight: bold;">{{
-                    scope.row.zydh }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
-                  </div>
-                  <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark"
-                    :content="scope.row.JHBZ" placement="top">
-                    <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ }}</span></div>
-                  </el-tooltip>
-                  <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span></div>
-                  <div class="text-xs text-gray-500">学制：<span>{{ scope.row.xzdm }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">学费：<span>{{ scope.row.sfbz }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">批次：<span>{{ scope.row.pcmc }}</span>
-                  </div>
-                  <div class="text-xs text-gray-500">投档单位：<span>{{ scope.row.tddwmc }}</span>
-                  </div>
+                  <div class="text-xs text-gray-500">{{ scope.row.xkkm }}</div>
                 </div>
               </template>
             </el-table-column>
@@ -1016,13 +1070,13 @@ function toggleExpand(row: any) {
                   @click="toggleExpand(scope.row)">
                   <el-tag type="primary">
                     <div style="cursor: pointer; display: flex; justify-content: center;align-items: center;">
-                      <p style="margin-right: 5px;">可选专业：{{ scope.row.zyRs.length }}</p>
-                      <el-icon>
+                      <p style="margin-right: 5px;">专业 {{ scope.row.zyRs.length }}</p>
+                      <!-- <el-icon>
                         <ArrowDown />
-                      </el-icon>
+                      </el-icon> -->
                     </div>
                   </el-tag>
-                  <div style="line-height: 30px;">已填报({{ scope.row.chNum }} / {{ scope.row.totalNum }})</div>
+                  <div style="line-height: 30px;">已填({{ scope.row.chNum }})</div>
                 </div>
               </template>
             </el-table-column>
