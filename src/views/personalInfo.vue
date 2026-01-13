@@ -93,7 +93,7 @@ const handleSubjectClick = (subject: string) => {
   console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(',')}`)
 }
 
-// 考生类别查询
+// 考试类别
 const wctypeList: any = ref([])
 const getwctypeList = async () => {
   const res: any = await api.WctypeQueryApi({
@@ -108,7 +108,7 @@ const wctypeChange = () => {
   personalForm.value.yklm = ''
 }
 
-// 考试类别小类查询
+// 详细类别
 const subjectList = ref<any>([])
 const getYklmQuery = async () => {
   const res: any = await api.yklmQueryApi({
@@ -158,7 +158,7 @@ const myUserInfoSaveBtn = async () => {
     return
   }
   if (selectedSubjects.value.length === 0) {
-    ElMessage.warning('请选择高考选科科目')
+    ElMessage.warning('请选择考试类别')
     return
   } else {
     personalForm.value.xkkm = selectedSubjects.value.join(',')
@@ -618,8 +618,8 @@ const zyExportExcel = async () => {
                 </div>
                 <div v-if="personalForm.province" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label class="block text-sm font-medium text-neutral mb-2">高考选科科目</label>
-                    <el-select v-model="personalForm.wctype" placeholder="请选择高考选科科目"
+                    <label class="block text-sm font-medium text-neutral mb-2">考试类别</label>
+                    <el-select v-model="personalForm.wctype" placeholder="请选择考试类别"
                       :disabled="personalForm.remainEditNum <= 0" class="select-tall44px" @change="wctypeChange">
                       <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.wctypestr"
                         :value="item.wctype">
@@ -627,8 +627,8 @@ const zyExportExcel = async () => {
                     </el-select>
                   </div>
                   <div v-if="personalForm.wctype == 2">
-                    <label class="block text-sm font-medium text-neutral mb-2">考试类别</label>
-                    <el-select v-model="personalForm.yklm" placeholder="请选择考试类别"
+                    <label class="block text-sm font-medium text-neutral mb-2">详细类别</label>
+                    <el-select v-model="personalForm.yklm" placeholder="请选择详细类别"
                       :disabled="personalForm.remainEditNum <= 0" class="select-tall44px">
                       <el-option v-for="(item, index) in subjectList" :key="index" :label="item.yklmStr"
                         :value="item.yklm">
