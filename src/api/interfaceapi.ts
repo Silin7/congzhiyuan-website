@@ -11,7 +11,11 @@ export function authcodeApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SmsSend`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SmsSend`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
 }
 
 // 登录或注册二合一
@@ -23,12 +27,20 @@ export function loginOrRegisterApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignIn`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignIn`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
 }
 
 // 用户退出
 export function signOutApi() {
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignOut`)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignOut`, {}, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
 }
 
 // 手机用户设置密码
@@ -41,7 +53,11 @@ export async function passResetApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=PassReset`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=PassReset`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -65,7 +81,11 @@ export async function passModiApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=VfCodeModi`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=VfCodeModi`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -83,7 +103,7 @@ export async function passModiApi(data: any) {
 export function navQueryApi() {
   return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=NavigationQuery`, {
     headers: {
-      'Content-Type': 'application/json; charset=utf-8',
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
     },
   })
 }
@@ -95,7 +115,11 @@ export function topInfoApi(data: any) {
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=TopInfo`, params)
+  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=TopInfo`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
 }
 
 // 志愿填报页批次查询
@@ -107,7 +131,11 @@ export async function pcListApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=PcList`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=PcList`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -131,7 +159,11 @@ export async function tddwListApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=TddwList`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=TddwList`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -154,7 +186,11 @@ export async function genListQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -177,7 +213,11 @@ export async function yxqueryBymcApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=YxqueryBymc`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=YxqueryBymc`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -200,7 +240,11 @@ export async function zyqueryBymcApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyqueryBymc`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyqueryBymc`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -223,7 +267,11 @@ export async function xkmllistApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Xkmllist`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Xkmllist`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -246,7 +294,11 @@ export async function yjxklistApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Yjxklist`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Yjxklist`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -269,7 +321,11 @@ export async function ejxklistApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Ejxklist`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Ejxklist`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -303,7 +359,11 @@ export async function lqInfoZyQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -337,7 +397,11 @@ export async function lqInfoZyGroupQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyGroupQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyGroupQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -362,7 +426,11 @@ export async function myChioesAddApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesAdd`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesAdd`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -385,7 +453,11 @@ export async function myChioesBatchAddApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesBatchAdd`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesBatchAdd`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -409,7 +481,11 @@ export async function myChioesGroupQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChoicesGroupQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChoicesGroupQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -431,7 +507,11 @@ export async function myChGroupSListApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChGroupSList`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChGroupSList`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -454,7 +534,11 @@ export async function zyChoicesQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoicesQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoicesQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -477,7 +561,11 @@ export async function zyGroupChoicesQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyGroupChoicesQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyGroupChoicesQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -500,7 +588,11 @@ export async function delChoiceApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoice`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoice`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -523,7 +615,11 @@ export async function delChoiceGroupApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoiceGroup`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoiceGroup`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -545,7 +641,11 @@ export async function myuserInfoQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data || {}
     } else if (res.data.code === -998) {
@@ -567,7 +667,11 @@ export async function userProvQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -592,7 +696,11 @@ export async function WctypeQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -616,7 +724,11 @@ export async function yklmQueryApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=YklmQuery`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=YklmQuery`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -649,7 +761,11 @@ export async function myUserInfoSaveApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserInfoSave`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserInfoSave`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -674,7 +790,11 @@ export async function wcQueryBycjApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -697,7 +817,11 @@ export async function ZyChoiceSortApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceSort`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceSort`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -720,7 +844,11 @@ export async function ZyChoiceExportExcelApi(data: any) {
     params.append(key, data[key])
   })
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params)
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
