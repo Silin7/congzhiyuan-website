@@ -459,7 +459,7 @@ const getMyChioesGroupQuery = async () => {
   })
   if (res) {
     myChioesGroupQueryInfo.value = res.data?.Rs[0] || {}
-    if (myChioesGroupQueryInfo.value?.chGroupId) {
+    if (myChioesGroupQueryInfo.value?.chGroupId && myChioesGroupQueryInfo.value?.chGroupId != '0') {
       if (zyType === '1') {
         zyHandleCollect()
       }
@@ -765,7 +765,7 @@ function toggleExpand(row: any) {
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-2xl font-bold">结果信息</h2>
           <div class="flex items-center gap-3">
-            <button
+            <button v-if="zyType == '1'"
               class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-green-500 hover:to-teal-500 transition"
               @click="handleBatchAdd">
               <span class="flex items-center space-x-2">
@@ -1119,7 +1119,7 @@ function toggleExpand(row: any) {
           <div
             class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-10">
             <h4 class="text-l font-bold">
-              {{ myChioesGroupQueryInfo.chGroupName }}（{{ myChioesGroupQueryInfo.addNum }}/{{
+              {{ myChioesGroupQueryInfo.chGroupName || '我的志愿' }}（{{ myChioesGroupQueryInfo.addNum }}/{{
                 myChioesGroupQueryInfo.maxNum
               }}）
             </h4>

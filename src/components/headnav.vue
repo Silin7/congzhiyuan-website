@@ -223,6 +223,15 @@ const logoutFunction = async () => {
       })
       window.localStorage.removeItem('token')
       window.localStorage.removeItem('userInfo')
+      window.localStorage.removeItem('selectedSchoolLevel')
+      window.localStorage.removeItem('selectedAdmissionBatch')
+      window.localStorage.removeItem('selectedAdmissionType')
+      window.localStorage.removeItem('selectedSchoolNature')
+      window.localStorage.removeItem('selectedMajorFeature')
+      window.localStorage.removeItem('selectedProvince')
+      window.localStorage.removeItem('selectedRiskLevel')
+      window.localStorage.removeItem('riskThreshold')
+      window.localStorage.removeItem('safeThreshold')
       userInfo.value = {}
       window.location.href = '/'
     } else {

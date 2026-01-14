@@ -55,6 +55,7 @@ const getMyuserInfoQuery = async () => {
       getwctypeList()
       getYklmQuery()
     }
+    localStorage.setItem('userInfo', JSON.stringify(personalForm.value))
   }
 }
 
@@ -189,7 +190,6 @@ const myUserInfoSaveBtn = async () => {
   personalForm.value.token = window.localStorage.getItem('token') || ''
   const res: any = await api.myUserInfoSaveApi(personalForm.value)
   if (res) {
-    localStorage.setItem('userInfo', JSON.stringify(personalForm.value))
     ElMessage.success('保存成功')
     window.location.reload()
   }
@@ -303,13 +303,21 @@ const getMyChioesGroupQuery = async () => {
     if (myChGroupSListId.value == '' && myChioesGroupQueryList.value.length > 0) {
       myChGroupSListId.value = myChioesGroupQueryList.value[0].chGroupId || ''
     }
-    // if (personalForm.value.zyType == '1') {
-    //   handleViewGroup1()
-    // }
-    // if (personalForm.value.zyType == '2') {
-    //   handleViewGroup2()
-    // }
-    handleViewGroup2()
+    if (personalForm.value.zyType == '1') {
+      handleViewGroup1()
+    }
+    if (personalForm.value.zyType == '2') {
+      handleViewGroup2()
+    }
+  }
+}
+// 根据zyType 切换查询
+const handleViewGroup = async (id?: any) => {
+  if (personalForm.value.zyType == '1') {
+    handleViewGroup1(id)
+  }
+  if (personalForm.value.zyType == '2') {
+    handleViewGroup2(id)
   }
 }
 // 专业模式志愿单查询
@@ -839,7 +847,7 @@ const zyExportExcel = async () => {
             <div class="flex align-center flex-wrap gap-4">
               <el-tag v-for="(item, index) in myChioesGroupQueryList" :key="index"
                 :type="item.chGroupId == myChGroupSListId ? 'primary' : 'info'"
-                @click="handleViewGroup1(item.chGroupId)" style="cursor: pointer; font-size: 14px; height: 32px;">
+                @click="handleViewGroup(item.chGroupId)" style="cursor: pointer; font-size: 14px; height: 32px;">
                 {{ item.chGroupName }}（{{ item.addNum }}/{{ item.maxNum }}）
               </el-tag>
               <el-button type="primary" @click="zyExportExcel">导出Excel</el-button>
