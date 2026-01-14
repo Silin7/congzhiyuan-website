@@ -45,7 +45,6 @@ const personalInfo: any = ref<any>({})
 const personalForm: any = ref({})
 const getMyuserInfoQuery = async () => {
   const res: any = await api.myuserInfoQueryApi({
-    token: window.localStorage.getItem('token') || ''
   })
   if (res) {
     personalInfo.value = res.data || {}
@@ -68,9 +67,7 @@ const handleProvinceChange = () => {
 // 获取省份列表
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
-  const res: any = await api.userProvQueryApi({
-    token: window.localStorage.getItem('token') || '',
-  })
+  const res: any = await api.userProvQueryApi({})
   if (res) {
     provinceList.value = res.data.Rs || []
   }
@@ -97,7 +94,6 @@ const handleSubjectClick = (subject: string) => {
 const wctypeList: any = ref([])
 const getwctypeList = async () => {
   const res: any = await api.WctypeQueryApi({
-    token: window.localStorage.getItem('token') || '',
     province: personalForm.value.province || ''
   })
   if (res) {
@@ -112,7 +108,6 @@ const wctypeChange = () => {
 const subjectList = ref<any>([])
 const getYklmQuery = async () => {
   const res: any = await api.yklmQueryApi({
-    token: window.localStorage.getItem('token') || '',
     wctype: '2',
     province: personalForm.value.province || ''
   })
@@ -124,7 +119,6 @@ const getYklmQuery = async () => {
 // 输入分数查询位次查询
 const cjInput = async () => {
   const res: any = await api.wcQueryBycjApi({
-    token: window.localStorage.getItem('token') || '',
     cj: personalForm.value.cj,
     wctype: personalForm.value.wctype,
     yklm: personalForm.value.yklm,
@@ -219,7 +213,6 @@ const handlePasswordSubmit = async () => {
     return
   }
   const res: any = await api.passResetApi({
-    token: window.localStorage.getItem('token') || '',
     newPass: seetingpwdForm.value.newPass,
     vfCode: seetingpwdForm.value.code,
   })
@@ -278,7 +271,6 @@ const handleChangePasswordSubmit = async () => {
     return
   }
   const res: any = await api.passModiApi({
-    token: window.localStorage.getItem('token') || '',
     oldPass: changePasswordForm.value.oldPass,
     newPass: changePasswordForm.value.newPass,
   })
@@ -296,7 +288,6 @@ const myChGroupSListId: any = ref('')
 const myChioesGroupQueryList: any = ref([])
 const getMyChioesGroupQuery = async () => {
   const res: any = await api.myChGroupSListApi({
-    token: window.localStorage.getItem('token') || '',
   })
   if (res) {
     myChioesGroupQueryList.value = res.data.Rs || []
@@ -328,7 +319,6 @@ const handleViewGroup1 = async (id?: any) => {
     myChGroupSListId.value = id
   }
   const res: any = await api.zyChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
     chGroupId: myChGroupSListId.value,
   })
   if (res) {
@@ -346,7 +336,6 @@ const handleViewGroup2 = async (id?: any) => {
     myChGroupSListId.value = id
   }
   const res: any = await api.zyGroupChoicesQueryApi({
-    token: window.localStorage.getItem('token') || '',
     chGroupId: myChGroupSListId.value,
   })
   if (res) {
@@ -360,7 +349,6 @@ const handleViewGroup2 = async (id?: any) => {
 // 专业模式志 - 删除
 const zyHandleDelete = async (row: any) => {
   const res: any = await api.delChoiceApi({
-    token: window.localStorage.getItem('token') || '',
     chId: row.chId,
   })
   if (res) {
@@ -373,7 +361,6 @@ const zyHandleDelete = async (row: any) => {
 // 专业组模式 - 删除收藏
 const zyGroupHandleDelete = async (row: any) => {
   const res: any = await api.delChoiceGroupApi({
-    token: window.localStorage.getItem('token') || '',
     chId: row.chId,
   })
   if (res) {
@@ -429,7 +416,6 @@ const handleSaveSort = async () => {
     xh: index + 1,
   }))
   api.ZyChoiceSortApi({
-    token: window.localStorage.getItem('token') || '',
     jsonStr: JSON.stringify({ Rs }),
   })
 }

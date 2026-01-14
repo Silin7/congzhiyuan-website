@@ -26,7 +26,6 @@ const shengfen: any = ref('山东省')
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
   const res: any = await api.genListQueryApi({
-    token: window.localStorage.getItem('token') || '',
     genType: 'prov'
   })
   if (res) {
