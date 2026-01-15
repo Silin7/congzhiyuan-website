@@ -394,6 +394,7 @@ const rowDrop = () => {
       put: true,
     },
     animation: 150, // ms, number 单位：ms，定义排序动画的时间
+    filter: '.el-table__expanded-cell', // 过滤掉展开行的拖拽
     onAdd: function (e: any) {
       // 拖拽时候添加有新的节点的时候发生该事件
       console.log("onAdd.foo:", e);
@@ -409,6 +410,7 @@ const rowDrop = () => {
     onStart: function (e: any) {
       // 开始拖拽出发该函数
       console.log("onStart.foo:", e);
+      expandedRows.value = []
     },
     onSort: function (e: any) {
       // 发生排序发生该事件
