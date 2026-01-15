@@ -44,8 +44,7 @@ const handleNavItemClick = (navItem: string) => {
 const personalInfo: any = ref<any>({})
 const personalForm: any = ref({})
 const getMyuserInfoQuery = async () => {
-  const res: any = await api.myuserInfoQueryApi({
-  })
+  const res: any = await api.myuserInfoQueryApi()
   if (res) {
     personalInfo.value = res.data || {}
     personalForm.value = JSON.parse(JSON.stringify(personalInfo.value))
@@ -67,7 +66,7 @@ const handleProvinceChange = () => {
 // 获取省份列表
 const provinceList = ref<any>([])
 const genListQueryList = async () => {
-  const res: any = await api.userProvQueryApi({})
+  const res: any = await api.userProvQueryApi()
   if (res) {
     provinceList.value = res.data.Rs || []
   }
@@ -76,18 +75,33 @@ const genListQueryList = async () => {
 // 选科信息
 const selectedSubjects = ref<string[]>([])
 const handleSubjectClick = (subject: string) => {
-
   const index = selectedSubjects.value.indexOf(subject)
   if (index > -1) {
     selectedSubjects.value.splice(index, 1)
   } else {
+    // 3+1+2模式
+    if (personalForm.value.xkMod == 2) {
+      // 物理和历史二选一
+      if (selectedSubjects.value.includes('A') && subject === 'D') {
+        selectedSubjects.value.splice(selectedSubjects.value.indexOf('A'), 1)
+      }
+      if (selectedSubjects.value.includes('D') && subject === 'A') {
+        selectedSubjects.value.splice(selectedSubjects.value.indexOf('D'), 1)
+      }
+      // 化学、生物、政治、地理四科中最多选择2科
+      const bcefSubjects = ['B', 'C', 'E', 'F']
+      const selectedBcefSubjects = selectedSubjects.value.filter(subject => bcefSubjects.includes(subject))
+      if (bcefSubjects.includes(subject) && selectedBcefSubjects.length >= 2) {
+        ElMessage.warning('化学、生物、政治、地理四科中最多选择2科')
+        return
+      }
+    }
     if (selectedSubjects.value.length >= 3) {
       ElMessage.warning('最多选择3科')
       return
     }
     selectedSubjects.value.push(subject)
   }
-  console.log(`选科变化: 当前选中 ${selectedSubjects.value.join(',')}`)
 }
 
 // 考试类别
@@ -175,7 +189,7 @@ const myUserInfoSaveBtn = async () => {
     ElMessage.warning('请输入高考位次')
     return
   }
-  if (personalForm.value.zyType == '2') {
+  if (personalForm.value.xkMod == '2') {
     if (!selectedSubjects.value.includes('A') && !selectedSubjects.value.includes('D')) {
       ElMessage.warning('选科信息中必须包含物理或历史')
       return
@@ -562,7 +576,7 @@ const zyExportExcel = async () => {
             <form id="profileForm">
               <!-- 个人信息表单 -->
               <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-6">
                   <!-- 手机号码 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">手机号码</label>
@@ -587,7 +601,7 @@ const zyExportExcel = async () => {
                     <p class="mt-2 text-sm text-neutral-400">系统中显示的名称</p>
                   </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-6">
                   <!-- 性别 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">性别</label>
@@ -597,6 +611,19 @@ const zyExportExcel = async () => {
                     </el-radio-group>
                   </div>
                   <!-- 省份 -->
+                  <!-- <div>
+                    <label class="block text-sm font-medium text-neutral mb-2">所在省份</label>
+                    <div class="flex flex-wrap gap-3">
+                      <label v-for="(item, index) in provinceList" :key="index" :class="[
+                        'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                        personalForm.province === item.province
+                          ? 'active'
+                          : '',
+                      ]" @click="personalForm.province = item.province">
+                        <span class="text-neutral font-medium">{{ item.province }}</span>
+                      </label>
+                    </div>
+                  </div> -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">所在省份</label>
                     <el-select v-model="personalForm.province" placeholder="请选择省份"
@@ -609,7 +636,7 @@ const zyExportExcel = async () => {
                   </div>
                 </div>
                 <!-- 选科信息 -->
-                <div>
+                <div v-if="personalForm.province && personalForm.xkMod == '1'">
                   <label class="block text-sm font-medium text-neutral mb-3">选科信息</label>
                   <div class="flex flex-wrap gap-3">
                     <label @click.stop="handleSubjectClick('A')" :class="[
@@ -651,6 +678,64 @@ const zyExportExcel = async () => {
                         : '',
                     ]">
                       <span class="text-neutral font-medium">历史</span>
+                    </label>
+                    <label @click.stop="handleSubjectClick('E')" :class="[
+                      'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                      selectedSubjects.includes('E')
+                        ? 'active'
+                        : '',
+                    ]">
+                      <span class="text-neutral font-medium">地理</span>
+                    </label>
+                  </div>
+                </div>
+                <div v-if="personalForm.province && personalForm.xkMod == '2'">
+                  <label class="block text-sm font-medium text-neutral mb-3">选科信息（物理和历史二选一）</label>
+                  <div class="flex flex-wrap gap-3">
+                    <label @click.stop="handleSubjectClick('A')" :class="[
+                      'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                      selectedSubjects.includes('A')
+                        ? 'active'
+                        : '',
+                    ]">
+                      <span class="text-neutral font-medium">物理</span>
+                    </label>
+                    <label @click.stop="handleSubjectClick('D')" :class="[
+                      'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                      selectedSubjects.includes('D')
+                        ? 'active'
+                        : '',
+                    ]">
+                      <span class="text-neutral font-medium">历史</span>
+                    </label>
+                  </div>
+                </div>
+                <div v-if="personalForm.province && personalForm.xkMod == '2'">
+                  <label class="block text-sm font-medium text-neutral mb-3">选科信息（化学、生物、政治、地理四选二）</label>
+                  <div class="flex flex-wrap gap-3">
+                    <label @click.stop="handleSubjectClick('B')" :class="[
+                      'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                      selectedSubjects.includes('B')
+                        ? 'active'
+                        : '',
+                    ]">
+                      <span class="text-neutral font-medium">化学</span>
+                    </label>
+                    <label @click.stop="handleSubjectClick('C')" :class="[
+                      'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                      selectedSubjects.includes('C')
+                        ? 'active'
+                        : '',
+                    ]">
+                      <span class="text-neutral font-medium">生物</span>
+                    </label>
+                    <label @click.stop="handleSubjectClick('F')" :class="[
+                      'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+                      selectedSubjects.includes('F')
+                        ? 'active'
+                        : '',
+                    ]">
+                      <span class="text-neutral font-medium">政治</span>
                     </label>
                     <label @click.stop="handleSubjectClick('E')" :class="[
                       'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',

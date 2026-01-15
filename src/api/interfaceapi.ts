@@ -651,13 +651,9 @@ export async function delChoiceGroupApi(data: any) {
 
 // 个人信息查询
 // a.token:用户token，必选
-export async function myuserInfoQueryApi(data: any) {
-  const params = new FormData()
-  Object.keys(data).forEach(key => {
-    params.append(key, data[key])
-  })
+export async function myuserInfoQueryApi() {
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params, {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, {}, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
       },
@@ -677,13 +673,9 @@ export async function myuserInfoQueryApi(data: any) {
 
 // 考生可选省份查询
 // a.token:用户token，必选
-export async function userProvQueryApi(data: any) {
-  const params = new FormData()
-  Object.keys(data).forEach(key => {
-    params.append(key, data[key])
-  })
+export async function userProvQueryApi() {
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params, {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, {}, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
       },
