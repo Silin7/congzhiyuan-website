@@ -881,9 +881,9 @@ const handleExpandChange = (row: any, expandedRows: any) => {
           </el-table-column>
         </el-table>
         <!-- 专业组模式查询结果表格 -->
-        <el-table v-if="zyType === '2'" v-loading="false" :data="tableData" stripe :row-key="row => row.zyGroupId"
-          :expand-row-keys="expandedRows" @expand-change="handleExpandChange" border size="small"
-          id="custom-expand-table" style="width: 100%">
+        <el-table v-if="zyType === '2'" v-loading="false" :data="tableData" stripe
+          :row-key="(row: any) => row.zyGroupId" :expand-row-keys="expandedRows" @expand-change="handleExpandChange"
+          border size="small" id="custom-expand-table" style="width: 100%">
           <el-table-column type="expand" width="1" align="center">
             <template #default="{ row }">
               <el-table :data="row.zyRs" border :show-header="false">
@@ -917,12 +917,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div>
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                          }}</span>
+                      }}</span>
                       </div>
                     </div>
                   </template>
@@ -933,12 +933,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div>
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -949,12 +949,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div>
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                          }}</span>
+                      }}</span>
                       </div>
                     </div>
                   </template>
