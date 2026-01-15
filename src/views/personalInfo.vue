@@ -370,6 +370,20 @@ const zyGroupHandleDelete = async (row: any) => {
   }
 }
 
+// 折叠展开专业组志愿
+const expandedRows: any = ref([])
+function toggleExpand(row: any) {
+  const index = expandedRows.value.indexOf(row.zyGroupId)
+  if (index > -1) {
+    expandedRows.value.splice(index, 1)
+  } else {
+    expandedRows.value.push(row.zyGroupId)
+  }
+}
+const handleExpandChange = (row: any, expandedRows: any) => {
+  console.log('展开行变化:', row, expandedRows)
+}
+
 // 表格行拖拽
 const rowDrop = () => {
   let tbody = document.querySelector(".el-table__body-wrapper tbody");
@@ -832,8 +846,8 @@ const zyExportExcel = async () => {
           <div class="p-6">
             <div class="flex align-center flex-wrap gap-4">
               <el-tag v-for="(item, index) in myChioesGroupQueryList" :key="index"
-                :type="item.chGroupId == myChGroupSListId ? 'primary' : 'info'"
-                @click="handleViewGroup(item.chGroupId)" style="cursor: pointer; font-size: 14px; height: 32px;">
+                :type="item.chGroupId == myChGroupSListId ? 'primary' : 'info'" @click="handleViewGroup(item.chGroupId)"
+                style="cursor: pointer; font-size: 14px; height: 32px;">
                 {{ item.chGroupName }}（{{ item.addNum }}/{{ item.maxNum }}）
               </el-tag>
               <el-button type="primary" @click="zyExportExcel">导出Excel</el-button>
@@ -958,14 +972,15 @@ const zyExportExcel = async () => {
                   </template>
                 </el-table-column>
               </el-table>
-              <el-table v-if="personalForm.zyType === '2'" v-loading="false" :data="tableData" stripe border
-                size="small" class="custom-table" style="width: 100%">
-                <el-table-column type="expand" width="40" align="center">
+              <el-table v-if="personalForm.zyType === '2'" v-loading="false" :data="tableData" stripe
+                :row-key="(row: { zyGroupId: any }) => row.zyGroupId" :expand-row-keys="expandedRows"
+                @expand-change="handleExpandChange" border size="small" id="custom-expand-table" style="width: 100%">
+                <el-table-column type="expand" width="1" align="center">
                   <template #default="{ row }">
                     <el-table :data="row.zyRs" border :show-header="false">
-                      <el-table-column type="index" width="40" align="center">
+                      <el-table-column type="index" width="41" align="center">
                       </el-table-column>
-                      <el-table-column label="专业" prop="zymc" min-width="200">
+                      <el-table-column label="专业" min-width="200">
                         <template #default="scope">
                           <div class="font-medium tableyxmc">
                             <span>{{ scope.row.zymc }}</span><span v-if="scope.row.zydh">（{{ scope.row.zydh }}）</span>
@@ -992,7 +1007,7 @@ const zyExportExcel = async () => {
                       <el-table-column label="match1Year" min-width="100">
                         <template #default="scope">
                           <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
-                            <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div>
+                            <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
                               }}</span>
@@ -1008,7 +1023,7 @@ const zyExportExcel = async () => {
                       <el-table-column label="match2Year" min-width="100">
                         <template #default="scope">
                           <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
-                            <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div>
+                            <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
                               }}</span>
@@ -1024,7 +1039,7 @@ const zyExportExcel = async () => {
                       <el-table-column label="match3Year" min-width="100">
                         <template #default="scope">
                           <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
-                            <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div>
+                            <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
                               }}</span>
@@ -1037,7 +1052,9 @@ const zyExportExcel = async () => {
                           </div>
                         </template>
                       </el-table-column>
-                      <el-table-column label="操作" width="100" align="center">
+                      <el-table-column label="录取比例" width="100">
+                      </el-table-column>
+                      <el-table-column label="操作" width="80" align="center">
                         <template #default="subScope">
                           <el-button text type="danger" size="small" @click="zyGroupHandleDelete(subScope.row)">
                             删除
@@ -1047,7 +1064,9 @@ const zyExportExcel = async () => {
                     </el-table>
                   </template>
                 </el-table-column>
-                <el-table-column prop="schoolName" label="招生院校" min-width="200" align="left">
+                <el-table-column type="index" width="40" align="center">
+                </el-table-column>
+                <el-table-column label="招生院校" min-width="200">
                   <template #default="scope">
                     <div class="font-medium tableyxmc">
                       <span>{{ scope.row.yxmc }}（{{ scope.row.zyGroupDm }}）专业组</span>
@@ -1067,7 +1086,7 @@ const zyExportExcel = async () => {
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column label="招生计划" min-width="100" align="left">
+                <el-table-column label="招生计划" min-width="100">
                   <template #default="scope">
                     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
                       <div class="text-xs text-gray-500"><span style="font-size: 20px; font-weight: 600; color: #000;">
@@ -1077,7 +1096,7 @@ const zyExportExcel = async () => {
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column min-width="100" align="left">
+                <el-table-column label="match1Year" min-width="100">
                   <template #header>
                     {{ tableData[0].match1Year ?? '历年' }}
                   </template>
@@ -1095,7 +1114,7 @@ const zyExportExcel = async () => {
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column min-width="100" align="left">
+                <el-table-column label="match2Year" min-width="100">
                   <template #header>
                     {{ tableData[0].match2Year ?? '历年' }}
                   </template>
@@ -1113,7 +1132,7 @@ const zyExportExcel = async () => {
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column min-width="100" align="left">
+                <el-table-column label="match3Year" min-width="100">
                   <template #header>
                     {{ tableData[0].match3Year ?? '历年' }}
                   </template>
@@ -1131,10 +1150,33 @@ const zyExportExcel = async () => {
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="bl" label="录取比例" width="100" sortable align="center">
+                <el-table-column label="录取比例" width="100" sortable align="center">
                   <template #default="scope">
                     <div class="text-center text-xs mt-1">
                       <span style="font-weight: bold; color: #000;">{{ scope.row.bl }}</span>%
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="80" align="center">
+                  <template #default="scope">
+                    <div style="display: flex; justify-content: center; align-items: center;"
+                      @click="toggleExpand(scope.row)">
+                      <el-button text type="primary">
+                        <div v-if="!expandedRows.includes(scope.row.zyGroupId)"
+                          style="cursor: pointer; display: flex; justify-content: center;align-items: center;">
+                          展开
+                          <el-icon>
+                            <ArrowDown />
+                          </el-icon>
+                        </div>
+                        <div v-else
+                          style="cursor: pointer; display: flex; justify-content: center;align-items: center;">
+                          收起
+                          <el-icon>
+                            <ArrowUp />
+                          </el-icon>
+                        </div>
+                      </el-button>
                     </div>
                   </template>
                 </el-table-column>
@@ -1404,5 +1446,9 @@ const zyExportExcel = async () => {
   .el-tag--info {
     color: rgb(55 65 81);
   }
+}
+
+#custom-expand-table .el-table__expand-column .cell {
+  display: none;
 }
 </style>

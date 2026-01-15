@@ -377,8 +377,6 @@ const lqInfoZyGroupQuery = async () => {
   const res: any = await api.lqInfoZyGroupQueryApi(data)
   if (res) {
     tableData.value = res.data.Rs || []
-    const aaa = document.getElementById('custom-expand-table')
-    console.log('-------->', aaa)
     total.value = res.recordsTotal || 0
   }
 }
