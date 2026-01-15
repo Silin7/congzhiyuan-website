@@ -22,25 +22,41 @@ export function authcodeApi(data: any) {
 // a.usercode: 登录名（手机号码或卡号）
 // b.vfCode: 验证码
 // c.type:验证码类型 1 短信 2 密码
-export function loginOrRegisterApi(data: any) {
+export async function loginOrRegisterApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignIn`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignIn`, params)
+    if (res.data.code === 0) {
+      return res.data
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 用户退出
-export function signOutApi() {
-  return axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignOut`, {}, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+export async function signOutApi() {
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=SignOut`, {}, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
 }
 
 // 手机用户设置密码
@@ -54,10 +70,10 @@ export async function passResetApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=PassReset`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -82,10 +98,10 @@ export async function passModiApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=VfCodeModi`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -132,10 +148,10 @@ export async function pcListApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=PcList`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -160,10 +176,10 @@ export async function tddwListApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=TddwList`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -187,10 +203,10 @@ export async function genListQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=GenListQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -214,10 +230,10 @@ export async function yxqueryBymcApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=YxqueryBymc`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -241,10 +257,10 @@ export async function zyqueryBymcApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyqueryBymc`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -268,10 +284,10 @@ export async function xkmllistApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Xkmllist`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -295,10 +311,10 @@ export async function yjxklistApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Yjxklist`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -322,10 +338,10 @@ export async function ejxklistApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=Ejxklist`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -360,10 +376,10 @@ export async function lqInfoZyQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -398,10 +414,10 @@ export async function lqInfoZyGroupQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=LqInfoZyGroupQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -427,10 +443,10 @@ export async function myChioesAddApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesAdd`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -454,10 +470,10 @@ export async function myChioesBatchAddApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChioesBatchAdd`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -482,10 +498,10 @@ export async function myChioesGroupQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChoicesGroupQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -508,10 +524,10 @@ export async function myChGroupSListApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=MyChGroupSList`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -535,10 +551,10 @@ export async function zyChoicesQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoicesQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -562,10 +578,10 @@ export async function zyGroupChoicesQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyGroupChoicesQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -589,10 +605,10 @@ export async function delChoiceApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoice`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -616,10 +632,10 @@ export async function delChoiceGroupApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=DelChoiceGroup`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -642,10 +658,10 @@ export async function myuserInfoQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyuserInfoQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data || {}
     } else if (res.data.code === -998) {
@@ -668,10 +684,10 @@ export async function userProvQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=UserProvQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -697,10 +713,10 @@ export async function WctypeQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WctypeQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -725,10 +741,10 @@ export async function yklmQueryApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=YklmQuery`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -762,10 +778,10 @@ export async function myUserInfoSaveApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserInfoSave`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -791,10 +807,10 @@ export async function wcQueryBycjApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=WcQueryBycj`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -818,10 +834,10 @@ export async function ZyChoiceSortApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceSort`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {
@@ -845,10 +861,10 @@ export async function ZyChoiceExportExcelApi(data: any) {
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params, {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  })
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
     if (res.data.code === 0) {
       return res.data
     } else if (res.data.code === -998) {

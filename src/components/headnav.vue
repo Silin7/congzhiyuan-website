@@ -115,30 +115,13 @@ const handleLogin = async () => {
       ElMessage.warning('请输入验证码')
       return
     }
-    try {
-      const res: any = await api.loginOrRegisterApi({
-        usercode: loginForm.phone,
-        vfCode: loginForm.code,
-        type: 1
-      })
-      if (res.data.code === 0) {
-        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
-        localStorage.setItem('token', res.data.data.token)
-        closeLoginModal()
-        userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
-        if (userInfo.value.zyType === '0') {
-          ElMessage.warning('请先完善个人信息')
-          setTimeout(() => {
-            router.push('/personalInfo')
-          }, 1000)
-        } else {
-          ElMessage.success('登录成功')
-        }
-      } else {
-        ElMessage.error(res.data.message || '登录失败')
-      }
-    } catch (error) {
-      ElMessage.error('登录失败')
+    const res: any = await api.loginOrRegisterApi({
+      usercode: loginForm.phone,
+      vfCode: loginForm.code,
+      type: 1
+    })
+    if (res) {
+      userHandel(res)
     }
   }
   else if (loginType.value === 'account') {
@@ -150,23 +133,13 @@ const handleLogin = async () => {
       ElMessage.warning('请输入密码')
       return
     }
-    try {
-      const res: any = await api.loginOrRegisterApi({
-        usercode: loginForm.account,
-        vfCode: loginForm.password,
-        type: 2
-      })
-      if (res.data.code === 0) {
-        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
-        localStorage.setItem('token', res.data.data.token)
-        ElMessage.success('登录成功')
-        closeLoginModal()
-        userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
-      } else {
-        ElMessage.error(res.data.message || '登录失败')
-      }
-    } catch (error) {
-      ElMessage.error('登录失败')
+    const res: any = await api.loginOrRegisterApi({
+      usercode: loginForm.account,
+      vfCode: loginForm.password,
+      type: 2
+    })
+    if (res) {
+      userHandel(res)
     }
   }
   else if (loginType.value === 'card') {
@@ -178,24 +151,29 @@ const handleLogin = async () => {
       ElMessage.warning('请输入密码')
       return
     }
-    try {
-      const res: any = await api.loginOrRegisterApi({
-        usercode: loginForm.cardNumber,
-        vfCode: loginForm.cardPassword,
-        type: 2
-      })
-      if (res.data.code === 0) {
-        localStorage.setItem('userInfo', JSON.stringify(res.data.data))
-        localStorage.setItem('token', res.data.data.token)
-        ElMessage.success('登录成功')
-        closeLoginModal()
-        userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
-      } else {
-        ElMessage.error(res.data.message || '登录失败')
-      }
-    } catch (error) {
-      ElMessage.error('登录失败')
+    const res: any = await api.loginOrRegisterApi({
+      usercode: loginForm.cardNumber,
+      vfCode: loginForm.cardPassword,
+      type: 2
+    })
+    if (res) {
+      userHandel(res)
     }
+  }
+}
+// 首次登录逻辑处理
+const userHandel = (res: any) => {
+  userInfo.value = res.data || {}
+  localStorage.setItem('userInfo', JSON.stringify(res.data))
+  localStorage.setItem('token', res.data.token)
+  closeLoginModal()
+  if (userInfo.value.ifProvSave == '0' || userInfo.value.ifUserActive == '0') {
+    ElMessage.warning('请先完善个人信息')
+    setTimeout(() => {
+      router.push('/personalInfo')
+    }, 500)
+  } else {
+    ElMessage.success('登录成功')
   }
 }
 
@@ -213,31 +191,25 @@ function goUserCenter() {
 
 // 退出登录
 const logoutFunction = async () => {
-  try {
-    const res: any = await api.signOutApi()
-    if (res.data.code === 0) {
-      ElMessage({
-        type: 'success',
-        message: '退出成功',
-      })
-      window.localStorage.removeItem('token')
-      window.localStorage.removeItem('userInfo')
-      window.localStorage.removeItem('selectedSchoolLevel')
-      window.localStorage.removeItem('selectedAdmissionBatch')
-      window.localStorage.removeItem('selectedAdmissionType')
-      window.localStorage.removeItem('selectedSchoolNature')
-      window.localStorage.removeItem('selectedMajorFeature')
-      window.localStorage.removeItem('selectedProvince')
-      window.localStorage.removeItem('selectedRiskLevel')
-      window.localStorage.removeItem('riskThreshold')
-      window.localStorage.removeItem('safeThreshold')
-      userInfo.value = {}
-      window.location.href = '/'
-    } else {
-      ElMessage.error(res.data.message || '退出登录失败')
-    }
-  } catch (error) {
-    ElMessage.error('退出登录失败')
+  const res: any = await api.signOutApi()
+  if (res) {
+    ElMessage({
+      type: 'success',
+      message: '退出成功',
+    })
+    userInfo.value = {}
+    window.location.href = '/'
+    window.localStorage.removeItem('token')
+    window.localStorage.removeItem('userInfo')
+    window.localStorage.removeItem('selectedSchoolLevel')
+    window.localStorage.removeItem('selectedAdmissionBatch')
+    window.localStorage.removeItem('selectedAdmissionType')
+    window.localStorage.removeItem('selectedSchoolNature')
+    window.localStorage.removeItem('selectedMajorFeature')
+    window.localStorage.removeItem('selectedProvince')
+    window.localStorage.removeItem('selectedRiskLevel')
+    window.localStorage.removeItem('riskThreshold')
+    window.localStorage.removeItem('safeThreshold')
   }
 }
 </script>
