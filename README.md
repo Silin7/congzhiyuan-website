@@ -6,8 +6,4 @@
 
 ## pnpm dev / build
 
-### 响应式布局
-
-- 手机端 < 768px
-- pad端 < 1200px
-- pc端 >= 1200px
+### build打包完成之后把public文件夹拖入dist文件夹，因为index.html引入了public路径
