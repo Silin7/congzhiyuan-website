@@ -17,7 +17,6 @@ function useDebounce(fn: any, wait?: number) {
 
 // 初始化时根据路由参数设置选中的导航项
 onMounted(() => {
-  genListQueryList()
   getMyuserInfoQuery()
 })
 
@@ -53,15 +52,6 @@ const getMyuserInfoQuery = async () => {
 const handleProvinceChange = () => {
   getwctypeList()
   getYklmQuery()
-}
-
-// 获取省份列表
-const provinceList = ref<any>([])
-const genListQueryList = async () => {
-  const res: any = await api.userProvQueryApi()
-  if (res) {
-    provinceList.value = res.data.Rs || []
-  }
 }
 
 // 选科信息
@@ -616,17 +606,6 @@ const zyExportExcel = async () => {
                       <el-radio value="2" size="large">女</el-radio>
                     </el-radio-group>
                   </div>
-                  <!-- 省份 -->
-                  <!-- <div>
-                    <label class="block text-sm font-medium text-neutral mb-2">所在省份</label>
-                    <el-select v-model="personalForm.province" placeholder="请选择省份"
-                      :disabled="personalForm.remaineditnum <= 0" class="select-tall44px"
-                      @change="handleProvinceChange">
-                      <el-option v-for="(item, index) in provinceList" :key="index" :label="item.province"
-                        :value="item.province">
-                      </el-option>
-                    </el-select>
-                  </div> -->
                 </div>
                 <!-- 选科信息 -->
                 <div v-if="personalForm.xkMod == '1'">

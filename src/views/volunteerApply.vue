@@ -3,10 +3,10 @@ import { onMounted, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
-import zyTypeRule from '@/hooks/zyTypeRule'
+import selectProvince from '@/components/selectProvince.vue'
+
 
 onMounted(() => {
-  zyTypeRule()
   getPcList()
   if (localStorage.getItem('selectedAdmissionBatch')) {
     getTddwList()
@@ -510,6 +510,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
 
 <template>
   <div class="volunteer-apply-page">
+    <component :is="selectProvince" />
     <main class="max-w-7xl mx-auto px-4 py-8">
       <!-- 查询条件 -->
       <section class="mb-10">

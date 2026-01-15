@@ -4,3 +4,10 @@
   // justify-content: flex-end;
   margin-top: 20px;
 }
+
+.province-dialog .active {
+  background: linear-gradient(to right, #1890ff, #6c5ce7);
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #1890ff !important;
+  color: white;
+}

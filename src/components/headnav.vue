@@ -386,7 +386,8 @@ const logoutFunction = async () => {
   </el-dialog>
 
   <!-- 选择省份弹窗 -->
-  <el-dialog v-model="showProvModal" width="600" style="padding: 1.5rem; border-radius: 0.75rem">
+  <el-dialog v-model="showProvModal" width="600" :show-close="false" :close-on-click-modal="false"
+    :close-on-press-escape="false">
     <template #header>
       <h2 class="text-2xl font-bold text-gray-800">
         请先选择省份
@@ -550,13 +551,6 @@ const logoutFunction = async () => {
 .popoverItem:hover {
   color: #165dff;
   background-color: #eee;
-}
-
-.province-dialog .active {
-  background: linear-gradient(to right, #1890ff, #6c5ce7);
-  background-color: rgba(0, 0, 0, 0);
-  border-color: #1890ff !important;
-  color: white;
 }
 </style>
 <style lang="scss">

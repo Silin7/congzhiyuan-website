@@ -685,7 +685,8 @@ export async function userProvQueryApi() {
     } else if (res.data.code === -998) {
       useDebounce(tokenLose)
     } else {
-      ElMessage.error(res.data.message || '请求失败')
+      // ElMessage.error(res.data.message || '请求失败')
+      console.error('res.data.code !== 0 -------->', res.data.message || '请求失败')
     }
   } catch (error: any) {
     console.error('error -------->', error)
@@ -897,7 +898,7 @@ export async function ZyChoiceExportExcelApi(data: any) {
 
 // token失效处理
 function tokenLose() {
-  ElMessage.error('用户信息失效,请重新登录')
+  ElMessage.error('请登录后操作')
   setTimeout(() => {
     window.location.href = '/'
   }, 1000)

@@ -3,9 +3,9 @@ import { onMounted, ref } from 'vue'
 import sideTop from '@/components/sideTop.vue'
 import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
-import zyTypeRule from '@/hooks/zyTypeRule'
+import selectProvince from '@/components/selectProvince.vue'
+
 onMounted(() => {
-  zyTypeRule()
   getTopInfo()
 })
 
@@ -30,6 +30,7 @@ const getTopInfo = async () => {
 
 <template>
   <div class="home-page">
+    <component :is="selectProvince"></component>
     <main>
       <!-- AI智能志愿填报 -->
       <section class="bg-gradient-to-r from-indigo-500 to-purple-600 py-16 px-12 text-center">
