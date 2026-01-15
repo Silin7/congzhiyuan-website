@@ -693,6 +693,31 @@ export async function userProvQueryApi() {
   }
 }
 
+// 考生省份保存
+// a.token:用户token，必选
+export async function myUserPorvSaveApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=user&act=MyUserPorvSave`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
 
 // tips: wctype 用户信息返回int 此接口返回char
 // 考生类别查询

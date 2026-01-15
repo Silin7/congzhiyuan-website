@@ -14,24 +14,20 @@ const currentPath = computed(() => route.path)
 const userInfo = ref<any>(null)
 onMounted(() => {
   userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
+  // if (userInfo.value?.ifProvSave == '1' && userInfo.value?.ifUserActive == '0') {
+  //   ElMessage.warning('请先完善成绩信息')
+  //   router.push({
+  //     path: '/personalInfo',
+  //   })
+  // }
   // 上部导航栏显示查询
   api.navQueryApi().then(res => {
     console.log(res)
   })
-  genListQueryList()
 })
 
 // 选择的省份
-const shengfen: any = ref('山东省')
-const provinceList = ref<any>([])
-const genListQueryList = async () => {
-  const res: any = await api.genListQueryApi({
-    genType: 'prov'
-  })
-  if (res) {
-    provinceList.value = res.data.Rs || []
-  }
-}
+const shengfen: any = ref('')
 
 // 登录弹窗状态
 const showLoginModal = ref(false)
@@ -161,19 +157,56 @@ const handleLogin = async () => {
     }
   }
 }
+
 // 首次登录逻辑处理
 const userHandel = (res: any) => {
   userInfo.value = res.data || {}
   localStorage.setItem('userInfo', JSON.stringify(res.data))
   localStorage.setItem('token', res.data.token)
   closeLoginModal()
-  if (userInfo.value.ifProvSave == '0' || userInfo.value.ifUserActive == '0') {
-    ElMessage.warning('请先完善个人信息')
-    setTimeout(() => {
-      router.push('/personalInfo')
-    }, 500)
+  if (userInfo.value.ifProvSave == '0') {
+    genListQueryList()
+  } else if (userInfo.value.ifUserActive == '0') {
+    ElMessage.warning('请完善成绩信息')
+    router.push({
+      path: '/personalInfo',
+    })
   } else {
     ElMessage.success('登录成功')
+  }
+}
+
+// 获取省份列表
+const showProvModal = ref(false)
+const provinceSelected = ref<any>('')
+const provinceList = ref<any>([])
+const genListQueryList = async () => {
+  const res: any = await api.userProvQueryApi()
+  if (res) {
+    provinceList.value = res.data.Rs || []
+    showProvModal.value = true
+  }
+}
+
+// 保存省份
+const myUserPorvSave = async () => {
+  if (!provinceSelected.value) {
+    ElMessage.warning('请选择省份')
+    return
+  }
+  const res: any = await api.myUserPorvSaveApi({
+    provId: provinceSelected.value
+  })
+  if (res) {
+    showProvModal.value = false
+    if (userInfo.value.ifUserActive == '0') {
+      ElMessage.warning('请完善成绩信息')
+      router.push({
+        path: '/personalInfo',
+      })
+    } else {
+      ElMessage.success('登录成功')
+    }
   }
 }
 
@@ -193,10 +226,7 @@ function goUserCenter() {
 const logoutFunction = async () => {
   const res: any = await api.signOutApi()
   if (res) {
-    ElMessage({
-      type: 'success',
-      message: '退出成功',
-    })
+    ElMessage.success('退出成功')
     userInfo.value = {}
     window.location.href = '/'
     window.localStorage.removeItem('token')
@@ -224,10 +254,11 @@ const logoutFunction = async () => {
           <span
             class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">聪志愿AI</span>
         </a>
-        <el-select v-model="shengfen" placeholder="Select" class="shengfen-select">
+        {{ shengfen }}
+        <!-- <el-select v-model="shengfen" placeholder="Select" class="shengfen-select">
           <el-option v-for="(item, index) in provinceList" :key="index" :label="item.province" :value="item.id">
           </el-option>
-        </el-select>
+        </el-select> -->
       </div>
       <div class="nav-menu">
         <a href="/#/" class="nav-link" :class="{ active: currentPath === '/' }">首页</a>
@@ -257,7 +288,7 @@ const logoutFunction = async () => {
   </header>
 
   <!-- 登录弹窗 -->
-  <el-dialog v-model="showLoginModal" width="448px" center @close="closeLoginModal"
+  <el-dialog v-model="showLoginModal" width="448" center @close="closeLoginModal"
     style="padding: 1.5rem; border-radius: 0.75rem">
     <template #header>
       <h2 class="text-2xl font-bold text-gray-800">
@@ -352,6 +383,30 @@ const logoutFunction = async () => {
         登录
       </el-button>
     </div>
+  </el-dialog>
+
+  <!-- 选择省份弹窗 -->
+  <el-dialog v-model="showProvModal" width="600" style="padding: 1.5rem; border-radius: 0.75rem">
+    <template #header>
+      <h2 class="text-2xl font-bold text-gray-800">
+        请先选择省份
+      </h2>
+    </template>
+    <div class="flex flex-wrap gap-3 province-dialog">
+      <label v-for="(item, index) in provinceList" :key="index" @click="provinceSelected = item.id" :class="[
+        'subject-tag px-4 py-2 border-2 border-gray-300 rounded-full cursor-pointer transition duration-200 hover:border-primary hover:bg-blue-50',
+        provinceSelected === item.id
+          ? 'active'
+          : '',
+      ]">
+        <span class="text-neutral font-medium">{{ item.province }}</span>
+      </label>
+    </div>
+    <template #footer>
+      <el-button type="primary" @click="myUserPorvSave">
+        保存
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 
@@ -495,6 +550,13 @@ const logoutFunction = async () => {
 .popoverItem:hover {
   color: #165dff;
   background-color: #eee;
+}
+
+.province-dialog .active {
+  background: linear-gradient(to right, #1890ff, #6c5ce7);
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #1890ff !important;
+  color: white;
 }
 </style>
 <style lang="scss">
