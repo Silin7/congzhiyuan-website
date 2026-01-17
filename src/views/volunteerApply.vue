@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
@@ -208,7 +208,9 @@ const disciplineCategories = ref('')
 const disciplineCategoriesChange = (value: string) => {
   disciplineCategories.value = value
   firstDiscipline.value = ''
+  firstDisciplineList.value = []
   subDiscipline.value = ''
+  subDisciplineList.value = []
   getFirstDisciplineList()
 }
 
@@ -220,13 +222,40 @@ const getFirstDisciplineList = async () => {
   })
   if (res) {
     firstDisciplineList.value = res.data.Rs || []
+    firstDisciplineList.value.forEach((item: any) => {
+      if (firstDisciplineChecked.value.includes(item.zydm)) {
+        item.checked = true
+      } else {
+        item.checked = false
+      }
+    })
   }
 }
+const firstSelectRef = ref()
 const firstDiscipline = ref('')
 const firstDisciplineChange = (value: string) => {
   firstDiscipline.value = value
   subDiscipline.value = ''
+  subDisciplineList.value = []
   getSubDisciplineList()
+  nextTick(() => {
+    firstSelectRef.value.blur()
+  })
+}
+const firstDisciplineChecked: any = ref([])
+const firstDisciplineCheckClick = (item: any) => {
+  const index = yixuanzhuanye.value.indexOf(item)
+  if (index > -1) {
+    yixuanzhuanye.value.splice(index, 1)
+  } else {
+    yixuanzhuanye.value.push(item)
+  }
+  const index2 = firstDisciplineChecked.value.indexOf(item.zydm)
+  if (index2 > -1) {
+    firstDisciplineChecked.value.splice(index2, 1)
+  } else {
+    firstDisciplineChecked.value.push(item.zydm)
+  }
 }
 
 // 二级学科
@@ -237,18 +266,62 @@ const getSubDisciplineList = async () => {
   })
   if (res) {
     subDisciplineList.value = res.data.Rs || []
+    subDisciplineList.value.forEach((item: any) => {
+      if (subDisciplineChecked.value.includes(item.zydm)) {
+        item.checked = true
+      } else {
+        item.checked = false
+      }
+    })
   }
 }
+const subSelectRef = ref()
 const subDiscipline = ref('')
 const subDisciplineChange = (value: string) => {
-  const obj = subDisciplineList.value.filter((item: any) => item.zydm === value)[0]
-  yixuanzhuanye.value.push(obj)
   subDiscipline.value = value
   console.log(`选择了二级学科: ${value}`)
+  nextTick(() => {
+    subSelectRef.value.blur()
+  })
+}
+const subDisciplineChecked: any = ref([])
+const subDisciplineCheckClick = (item: any) => {
+  const index = yixuanzhuanye.value.indexOf(item)
+  if (index > -1) {
+    yixuanzhuanye.value.splice(index, 1)
+  } else {
+    yixuanzhuanye.value.push(item)
+  }
+  const index2 = subDisciplineChecked.value.indexOf(item.zydm)
+  if (index2 > -1) {
+    subDisciplineChecked.value.splice(index2, 1)
+  } else {
+    subDisciplineChecked.value.push(item.zydm)
+  }
 }
 
 // 已选专业
-const yixuanzhuanyeClick = (index: any) => {
+const yixuanzhuanyeClick = async (index: any) => {
+  const hasFirst: any = ref(null)
+  await firstDisciplineChecked.value.forEach((item: any, index2: number) => {
+    if (item === yixuanzhuanye.value[index].zydm) {
+      hasFirst.value = index
+    }
+  })
+  if (hasFirst.value !== null) {
+    firstDisciplineChecked.value.splice(hasFirst.value, 1)
+    getFirstDisciplineList()
+  }
+  const hasSub: any = ref(null)
+  await subDisciplineChecked.value.forEach((item: any, index2: number) => {
+    if (item === yixuanzhuanye.value[index].zydm) {
+      hasSub.value = index
+    }
+  })
+  if (hasSub.value !== null && firstDiscipline.value) {
+    subDisciplineChecked.value.splice(hasSub.value, 1)
+    getSubDisciplineList()
+  }
   yixuanzhuanye.value.splice(index, 1)
 }
 
@@ -621,18 +694,32 @@ const handleExpandChange = (row: any, expandedRows: any) => {
             </el-col>
             <el-col :span="6">
               <div class="tagTitle">一级学科：</div>
-              <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px"
-                @change="firstDisciplineChange">
+              <el-select ref="firstSelectRef" v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px">
                 <el-option v-for="(item, index) in firstDisciplineList" :key="index" :value="item.zydm"
-                  :label="item.zymc" />
+                  :label="item.zymc">
+                  <template #default>
+                    <div style="display: flex; align-items: center; width: 100%;"
+                      @click.stop="firstDisciplineChange(item.zydm)">
+                      <el-checkbox v-model="item.checked" @click.stop="firstDisciplineCheckClick(item)"></el-checkbox>
+                      <div style="margin-left: 5px;">{{ item.zymc }}</div>
+                    </div>
+                  </template>
+                </el-option>
               </el-select>
             </el-col>
             <el-col :span="6">
               <div class="tagTitle">二级学科：</div>
-              <el-select v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px"
-                @change="subDisciplineChange">
+              <el-select ref="subSelectRef" v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px">
                 <el-option v-for="(item, index) in subDisciplineList" :key="index" :value="item.zydm"
-                  :label="item.zymc" />
+                  :label="item.zymc">
+                  <template #default>
+                    <div style="display: flex; align-items: center; width: 100%;"
+                      @click.stop="subDisciplineChange(item.zydm)">
+                      <el-checkbox v-model="item.checked" @click.stop="subDisciplineCheckClick(item)"></el-checkbox>
+                      <div style="margin-left: 5px;">{{ item.zymc }}</div>
+                    </div>
+                  </template>
+                </el-option>
               </el-select>
             </el-col>
           </el-row>
