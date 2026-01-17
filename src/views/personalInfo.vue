@@ -455,7 +455,11 @@ const zyExportExcel = async () => {
   params.append('token', window.localStorage.getItem('token') || '')
   params.append('chGroupId', myChGroupSListId.value)
   try {
-    const response = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params)
+    const response = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=ZyChoiceExportExcel`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      }
+    })
     // 触发浏览器下载
     const a = document.createElement('a')
     a.href = response.data.file
