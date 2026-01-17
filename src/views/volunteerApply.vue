@@ -231,7 +231,6 @@ const getFirstDisciplineList = async () => {
     })
   }
 }
-const firstSelectRef = ref()
 const firstDiscipline = ref('')
 const firstDisciplineChange = (value: string) => {
   firstDiscipline.value = value
@@ -239,7 +238,7 @@ const firstDisciplineChange = (value: string) => {
   subDisciplineList.value = []
   getSubDisciplineList()
   nextTick(() => {
-    firstSelectRef.value.blur()
+    subSelectRef.value.toggleMenu()
   })
 }
 const firstDisciplineChecked: any = ref([])
@@ -694,7 +693,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
             </el-col>
             <el-col :span="6">
               <div class="tagTitle">一级学科：</div>
-              <el-select ref="firstSelectRef" v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px">
+              <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px">
                 <el-option v-for="(item, index) in firstDisciplineList" :key="index" :value="item.zydm"
                   :label="item.zymc">
                   <template #default>
@@ -728,7 +727,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               <div class="tagTitle" style="margin-bottom: 0;">所选专业：</div>
               <div class="tagContent">
                 <el-tag v-for="(item, index) in yixuanzhuanye" :key="index" type="primary" closable
-                  style="margin-right: 10px; cursor: pointer;" @close="yixuanzhuanyeClick(index)">
+                  style="margin: 5px 10px 5px 0; cursor: pointer;" @close="yixuanzhuanyeClick(index)">
                   {{ item.zymc || item.text }}
                 </el-tag>
               </div>
