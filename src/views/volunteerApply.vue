@@ -191,7 +191,7 @@ const handleMajorNameChange = async (value: string) => {
   const obj = majorNameOptions.value.filter((item: any) => item.id === value)[0]
   yixuanzhuanye.value.push(obj)
   selectedMajor.value = value
-  console.log(`选择了专业名称: ${value}`)
+  majorName.value = ''
 }
 
 // 学科门类
