@@ -451,8 +451,9 @@ const rowDrop = () => {
 
 // 专业模式志愿单保存排序
 const handleSaveSort = async () => {
+  console.log('-------->', tuozhuaiTableData.value)
   const Rs = await tuozhuaiTableData.value.map((item: any, index: number) => ({
-    id: item.chId,
+    id: item.chId || item.chZyGroupId,
     xh: index + 1,
   }))
   api.ZyChoiceSortApi({
@@ -974,7 +975,7 @@ const zyExportExcel = async () => {
                       <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark"
                         :content="scope.row.JHBZ" placement="top">
                         <div class="flex items-center text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ
-                        }}</span></div>
+                            }}</span></div>
                       </el-tooltip>
                       <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span>
                       </div>
@@ -997,12 +998,12 @@ const zyExportExcel = async () => {
                     <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1015,12 +1016,12 @@ const zyExportExcel = async () => {
                     <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1033,12 +1034,12 @@ const zyExportExcel = async () => {
                     <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1080,7 +1081,7 @@ const zyExportExcel = async () => {
                             <p>
                               <span style="font-weight: normal;">专业名称：</span><span>{{ scope.row.zymc }}</span>
                               &nbsp;
-                              <span style="font-weight: normal;">专业代号：</span><span>{{ scope.row.zydh}}</span>
+                              <span style="font-weight: normal;">专业代号：</span><span>{{ scope.row.zydh }}</span>
                             </p>
                           </div>
                           <el-tooltip v-if="scope.row.jhbz" popper-class="custom-tooltip" effect="dark"
@@ -1108,12 +1109,12 @@ const zyExportExcel = async () => {
                             <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                              }}</span>
+                                }}</span>
                             </div>
                             <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                             <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                             <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                            }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </template>
@@ -1124,12 +1125,12 @@ const zyExportExcel = async () => {
                             <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                              }}</span>
+                                }}</span>
                             </div>
                             <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                             <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                             <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                            }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </template>
@@ -1140,12 +1141,12 @@ const zyExportExcel = async () => {
                             <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                              }}</span>
+                                }}</span>
                             </div>
                             <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                             <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                             <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                            }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </template>
@@ -1178,7 +1179,7 @@ const zyExportExcel = async () => {
                       <span>{{ scope.row.yxmc }}（{{ scope.row.zyGroupDm }}）专业组</span>
                       <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
                       <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
-                      }}</span>
+                        }}</span>
                       <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                     </div>
                     <div class="text-xs text-gray-500">
@@ -1198,7 +1199,8 @@ const zyExportExcel = async () => {
                       <div class="text-xs text-gray-500"><span style="font-size: 20px; font-weight: 600; color: #000;">
                           {{ scope.row.groupJhrs }}</span>人
                       </div>
-                      <div class="text-xs text-gray-500">{{ scope.row.xkkm }}</div>
+                      <div class="text-xs text-gray-500" style="margin-top: 5px;">{{ scope.row.xkkm }}</div>
+                      <div class="text-xs text-gray-500" style="margin-top: 5px;">{{ scope.row.tddwmc }}</div>
                     </div>
                   </template>
                 </el-table-column>
@@ -1210,12 +1212,12 @@ const zyExportExcel = async () => {
                     <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1228,12 +1230,12 @@ const zyExportExcel = async () => {
                     <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1246,12 +1248,12 @@ const zyExportExcel = async () => {
                     <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>

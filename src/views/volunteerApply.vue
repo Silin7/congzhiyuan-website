@@ -1099,7 +1099,8 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                 <div class="text-xs text-gray-500"><span style="font-size: 20px; font-weight: 600; color: #000;">
                     {{ scope.row.groupJhrs }}</span>人
                 </div>
-                <div class="text-xs text-gray-500">{{ scope.row.xkkm }}</div>
+                <div class="text-xs text-gray-500" style="margin-top: 5px;">{{ scope.row.xkkm }}</div>
+                <div class="text-xs text-gray-500" style="margin-top: 5px;">{{ scope.row.tddwmc }}</div>
               </div>
             </template>
           </el-table-column>
