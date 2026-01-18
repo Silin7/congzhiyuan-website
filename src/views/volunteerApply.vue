@@ -493,10 +493,10 @@ const goMyAspiration = () => {
     ElMessage.warning('请选择院校层次')
     return
   }
-  if (!selectedAdmissionBatch.value) {
-    ElMessage.warning('请选择录取批次')
-    return
-  }
+  // if (!selectedAdmissionBatch.value) {
+  //   ElMessage.warning('请选择录取批次')
+  //   return
+  // }
   collectionDrawer.value = true
   getMyChioesGroupQuery()
 }
@@ -554,9 +554,20 @@ const zyHandleDelete = async (row: any) => {
   }
 }
 
-// 专业组模式 - 删除收藏
-const zyGroupHandleDelete = async (row: any) => {
+// 专业组模式 - 外层删除收藏
+const zyGroupHandleDelete1 = async (row: any) => {
   const res: any = await api.delChoiceGroupApi({
+    chZyGroupId: row.chZyGroupId,
+  })
+  if (res) {
+    ElMessage.success('删除成功')
+    // 刷新收藏分组查询
+    getMyChioesGroupQuery()
+  }
+}
+// 专业组模式 - 里层删除收藏
+const zyGroupHandleDelete2 = async (row: any) => {
+  const res: any = await api.delChoiceApi({
     chId: row.chId,
   })
   if (res) {
@@ -1054,6 +1065,9 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       @click="zyGroupHandleApply(subScope.row.zyid, row)">
                       填报
                     </el-button>
+                    <el-button v-else text type="danger" size="small">
+                      已填报
+                    </el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1228,16 +1242,16 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               <span>{{ item.yxmc }}</span>
               <span class="lqdcstr bg3">{{ item.yxdm }}</span>
             </div>
-            <div v-for="(item2, index) in item.zyRs" :key="index" style="position: relative;">
+            <el-icon class="deleteIcon" color="#F56C6C" @click="zyGroupHandleDelete1(item)">
+              <DeleteFilled />
+            </el-icon>
+            <div v-for="(item2, index) in item.zyRs" :key="index" style="position: relative; margin-top: 10px;">
               <div class="text-xs text-gray-500 chGroupSub">
-                <p style="width: 100%;">专业名称：<span>{{ item2.zymc }}</span></p>
+                <p style="width: 100%;"><span>{{ item2.zymc }}</span></p>
                 <p>专业代号：<span>{{ item2.zydh }}</span></p>
-                <p>计划人数：<span>{{ item2.jhrs }}</span></p>
+                <p>计划数：<span>{{ item2.jhrs }}</span></p>
               </div>
-              <div class="text-xs text-gray-500 chGroupSub">
-                <p v-if="item2.bl">概率：<span>{{ item2.bl }}%</span></p>
-              </div>
-              <el-icon class="deleteIcon2" color="#F56C6C" @click="zyGroupHandleDelete(item2)">
+              <el-icon class="deleteIcon2" color="#F56C6C" @click="zyGroupHandleDelete2(item2)">
                 <DeleteFilled />
               </el-icon>
             </div>
@@ -1405,7 +1419,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
     position: relative;
     margin-bottom: 20px;
     background-color: #2563EB10;
-    padding: 10px 40px 10px 10px;
+    padding: 10px;
     border-radius: 10px;
 
     .chGroupName {
