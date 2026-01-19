@@ -896,6 +896,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                 </div>
                 <div class="text-xs text-gray-500">计划人数：<span>{{ scope.row.jhrs }}</span>
                 </div>
+                <div v-if="scope.row.zyts" class="text-xs text-gray-500">{{ scope.row.zyts }}</div>
                 <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark" :content="scope.row.JHBZ"
                   placement="top">
                   <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ }}</span></div>

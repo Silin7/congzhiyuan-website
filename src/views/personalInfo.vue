@@ -602,9 +602,9 @@ const zyExportExcel = async () => {
                     </el-input>
                     <p class="mt-2 text-sm text-neutral-400">用于接收志愿填报提醒和系统通知</p>
                   </div>
-                  <!-- 昵称 -->
+                  <!-- 姓名 -->
                   <div>
-                    <label class="block text-sm font-medium text-neutral mb-2">昵称</label>
+                    <label class="block text-sm font-medium text-neutral mb-2">姓名</label>
                     <el-input v-model="personalForm.userName" placeholder="请输入昵称" class="input-tall44px">
                       <template #suffix>
                         <el-icon class="el-input__icon">
