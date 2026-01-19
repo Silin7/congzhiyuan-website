@@ -451,7 +451,6 @@ const rowDrop = () => {
 
 // 专业模式志愿单保存排序
 const handleSaveSort = async () => {
-  console.log('-------->', tuozhuaiTableData.value)
   const Rs = await tuozhuaiTableData.value.map((item: any, index: number) => ({
     id: item.chId || item.chZyGroupId,
     xh: index + 1,

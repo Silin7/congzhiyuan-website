@@ -877,11 +877,11 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               </div>
               <div class="text-xs text-gray-500">
                 {{ scope.row.provice }}/{{ scope.row.city }}
-                {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
-                {{ scope.row.sylxk === 1 ? ' 一流学科建设高校 | ' : '' }}
                 {{ scope.row.sf211 === 1 ? ' 211高校 |' : '' }}
                 {{ scope.row.sf985 === 1 ? ' 985高校' : '' }}
                 <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
+                <span v-if="scope.row.byly && scope.row.yxts"> | </span>
+                <span v-if="scope.row.yxts">{{ scope.row.yxts }}</span>
               </div>
             </template>
           </el-table-column>
@@ -992,6 +992,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                     <div class="font-medium tableyxmc">
                       <span>{{ scope.row.zymc }}</span><span v-if="scope.row.zydh">（{{ scope.row.zydh }}）</span>
                     </div>
+                    <div v-if="scope.row.zyts" class="text-xs text-gray-500">{{ scope.row.zyts }}</div>
                     <el-tooltip v-if="scope.row.jhbz" popper-class="custom-tooltip" effect="dark"
                       :content="scope.row.jhbz" placement="top">
                       <div class="text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.jhbz }}</span></div>
@@ -1084,12 +1085,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               </div>
               <div class="text-xs text-gray-500">
                 院校代码：<span style="font-weight: bold; color: #000;">{{ scope.row.yxdm }}</span> |
-                {{ scope.row.provice }}/{{ scope.row.city }} |
-                {{ scope.row.sylyx === 1 ? ' 一流大学 | ' : '' }}
-                {{ scope.row.sylxk === 1 ? ' 一流学科建设高校 | ' : '' }}
+                {{ scope.row.provice }}/{{ scope.row.city }}
                 {{ scope.row.sf211 === 1 ? ' 211高校 | ' : '' }}
                 {{ scope.row.sf985 === 1 ? ' 985高校 | ' : '' }}
                 <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
+                <span v-if="scope.row.byly && scope.row.yxts"> | </span>
+                <span v-if="scope.row.yxts">{{ scope.row.yxts }}</span>
               </div>
             </template>
           </el-table-column>
