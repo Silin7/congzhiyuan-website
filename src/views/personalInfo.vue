@@ -193,7 +193,6 @@ const myUserInfoSaveBtn = async () => {
       return
     }
   }
-  personalForm.value.token = window.localStorage.getItem('token') || ''
   const res: any = await api.myUserInfoSaveApi(personalForm.value)
   if (res) {
     localStorage.setItem('userInfo', JSON.stringify(personalForm.value))
@@ -616,6 +615,12 @@ const zyExportExcel = async () => {
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-6">
+                  <!-- 所在高中 -->
+                  <div>
+                    <label class="block text-sm font-medium text-neutral mb-2">所在高中</label>
+                    <el-input v-model="personalForm.highSchool" placeholder="请输入所在高中" class="input-tall44px">
+                    </el-input>
+                  </div>
                   <!-- 性别 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">性别</label>
