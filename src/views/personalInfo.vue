@@ -152,7 +152,7 @@ const myUserInfoSaveBtn = async () => {
     return
   }
   if (!personalForm.value.userName) {
-    ElMessage.warning('请输入昵称')
+    ElMessage.warning('请输入姓名')
     return
   }
   if (!personalForm.value.sex) {
@@ -164,18 +164,18 @@ const myUserInfoSaveBtn = async () => {
   //   return
   // }
   if (selectedSubjects.value.length === 0) {
-    ElMessage.warning('请选择考试类别')
+    ElMessage.warning('请选择选科信息')
     return
   } else {
     personalForm.value.xkkm = selectedSubjects.value.join(',')
   }
   if (!personalForm.value.wctype) {
-    ElMessage.warning('请选择考生类别')
+    ElMessage.warning('请选择考试类别')
     return
   }
   if (personalForm.value.wctype == 2) {
     if (!personalForm.value.yklm) {
-      ElMessage.warning('请选择考试类别')
+      ElMessage.warning('请选择详细类别')
       return
     }
   }
@@ -604,7 +604,7 @@ const zyExportExcel = async () => {
                   <!-- 姓名 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">姓名</label>
-                    <el-input v-model="personalForm.userName" placeholder="请输入昵称" class="input-tall44px">
+                    <el-input v-model="personalForm.userName" placeholder="请输入姓名" class="input-tall44px">
                       <template #suffix>
                         <el-icon class="el-input__icon">
                           <Edit />
