@@ -493,10 +493,10 @@ const goMyAspiration = () => {
     ElMessage.warning('请选择院校层次')
     return
   }
-  // if (!selectedAdmissionBatch.value) {
-  //   ElMessage.warning('请选择录取批次')
-  //   return
-  // }
+  if (!selectedAdmissionBatch.value) {
+    ElMessage.warning('请选择录取批次')
+    return
+  }
   collectionDrawer.value = true
   getMyChioesGroupQuery()
 }
