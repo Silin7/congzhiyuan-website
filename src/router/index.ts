@@ -37,6 +37,17 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/schoolDetail',
+    name: 'schoolDetail',
+    component: () => import('@/views/schoolDetail.vue'),
+    meta: {
+      title: '院校详情',
+      stcode: 'schoolDetail',
+      hashead: true,
+      hasfoot: true,
+    },
+  },
+  {
     path: '/majorAnalysis',
     name: 'majorAnalysis',
     component: () => import('@/views/majorAnalysis.vue'),

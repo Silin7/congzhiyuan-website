@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
 import * as api from '@/api/interfaceapi'
 import sideTop from '@/components/sideTop.vue'
@@ -46,23 +47,6 @@ const handleSchoolLevelClick = (level: string) => {
 
 // 院校名称
 const schoolName = ref('')
-const schoolNameOptions: any = ref([])
-const getSchoolNameOptions = async (value: any) => {
-  if (value.length >= 3) {
-    const res: any = await api.yxqueryBymcApi({
-      yxmc: value || '',
-    })
-    if (res) {
-      schoolNameOptions.value = res.data.Rs || []
-    }
-  } else {
-    schoolNameOptions.value = []
-  }
-}
-const selectedSchool = ref('')
-const handleSchoolNameChange = (value: string) => {
-  selectedSchool.value = value
-}
 
 // 声明 表格数据 分页 相关变量
 const tableData = ref([])
@@ -104,6 +88,20 @@ const handleSizeChange = (size: number) => {
   pageSize.value = size
   currentPage.value = 1
   handleSearch()
+}
+
+// 处理院校详情点击事件
+const router = useRouter()
+
+const handleSchoolDetailClick = (school: any) => {
+  // // 跳转到院校详情页面
+  // router.push({
+  //   path: '/schoolDetail',
+  //   query: {
+  //     yxid: school.yxid,
+  //   }
+  // })
+  window.open(`/#/schoolDetail?yxid=${school.yxid}`)
 }
 </script>
 
@@ -149,11 +147,6 @@ const handleSizeChange = (size: number) => {
             <div class="tagTitle">院校名称：</div>
             <el-input v-model="schoolName" placeholder="输入院校名称" class="input-tall38px"
               style="margin-bottom: 10px; width: calc(50% - 90px)"></el-input>
-            <!-- <el-select v-model="schoolName" filterable remote reserve-keyword placeholder="输入院校名称"
-              :remote-method="getSchoolNameOptions" @change="handleSchoolNameChange" class="select-tall38px" clearable
-              style="margin-bottom: 10px; width: calc(50% - 90px)">
-              <el-option v-for="(item, index) in schoolNameOptions" :key="index" :label="item.text" :value="item.id" />
-            </el-select> -->
           </div>
           <!-- 立即开始智能检索 -->
           <div class="mt-8 flex justify-center">
@@ -190,7 +183,7 @@ const handleSizeChange = (size: number) => {
             style="width: 100%">
             <el-table-column label="院校名称" min-width="180" align="left">
               <template #default="scope">
-                <div class="tableyxmc">{{ scope.row.yxmc }}</div>
+                <div class="tableyxmc" @click="handleSchoolDetailClick(scope.row)">{{ scope.row.yxmc }}</div>
               </template>
             </el-table-column>
             <el-table-column prop="provcity" label="所在省份" min-width="120" align="left"></el-table-column>
