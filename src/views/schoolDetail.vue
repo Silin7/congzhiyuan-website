@@ -12,7 +12,7 @@ onMounted(() => {
 // 院校详情
 const schoolDetail = ref<any>({})
 const getSchoolDetail = async () => {
-  const res: any = await api.YxDetailsQuery({
+  const res: any = await api.YxDetailsQueryApi({
     yxid: route.query.yxid,
   })
   if (res) {

@@ -928,13 +928,90 @@ export async function YxListQueryApi(data: any) {
 
 // 院校详情查询
 // a.yxid: 院校id，必选
-export async function YxDetailsQuery(data: any) {
+export async function YxDetailsQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {
     params.append(key, data[key])
   })
   try {
     const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=YxDetailsQuery`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 专业库专业层次查询
+export async function ZyCcQueryApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=ZyCcQuery`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 专业库专业层次查询
+// a.ccdm：层次代码
+export async function ZyListQueryApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=ZyListQuery`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 专业详情查询
+// a.zydm:专业列表查询对应的id
+export async function ZyDetailsQueryApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=ZyDetailsQuery`, params, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
       },

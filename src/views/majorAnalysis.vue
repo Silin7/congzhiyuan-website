@@ -78,44 +78,6 @@ const handleViewSchools = (majorCode: string, majorName: string) => {
             </button>
           </div>
         </div>
-        <!-- 联动筛选区域 -->
-        <div class="px-6 py-4 flex flex-wrap gap-4 border-b bg-gray-50">
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-secondary mb-2">选择门类</label>
-            <select v-model="selectedCategory"
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              id="majorCategorySelect">
-              <option value="">全部门类</option>
-              <option value="哲学">哲学</option>
-              <option value="经济学">经济学</option>
-              <option value="法学">法学</option>
-              <option value="教育学">教育学</option>
-              <option value="文学">文学</option>
-            </select>
-          </div>
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-secondary mb-2">选择专业类</label>
-            <select v-model="selectedMajorType"
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              id="majorTypeSelect">
-              <option value="">全部专业类</option>
-            </select>
-          </div>
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-secondary mb-2">选择专业</label>
-            <select v-model="selectedMajor"
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-              id="majorNameSelect">
-              <option value="">全部专业</option>
-            </select>
-          </div>
-          <div class="flex items-end">
-            <button @click="handleResetFilter"
-              class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100 transition" id="resetFilterBtn">
-              重置筛选
-            </button>
-          </div>
-        </div>
         <!-- 专业目录表格 -->
         <div class="overflow-x-auto hide-scrollbar">
           <table class="min-w-full divide-y divide-gray-200">
