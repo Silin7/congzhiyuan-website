@@ -896,6 +896,62 @@ export async function ZyChoiceExportExcelApi(data: any) {
   }
 }
 
+// 院校列表查询
+// a.ccdm：层次 1本科 2专科，单选
+// b.yxmc: 院校名称
+// c.genList 通用列表项查询字段拼接字符串, 格式{ "Rs": [{ "id": 1, "genType": "prov" }] } 用来传院校省份
+// d.startrow: 开始页
+// e.pagesize: 每页行数
+export async function YxListQueryApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=YxListQuery`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 院校详情查询
+// a.yxid: 院校id，必选
+export async function YxDetailsQuery(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=gen&act=YxDetailsQuery`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
 // token失效处理
 function tokenLose() {
   ElMessage.error('请登录后操作')

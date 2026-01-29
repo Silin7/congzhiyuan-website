@@ -478,6 +478,7 @@ const handlePageChange = (page: number) => {
 }
 const handleSizeChange = (size: number) => {
   pageSize.value = size
+  currentPage.value = 1
   if (zyType === '1') {
     lqInfoZyQuery()
   }
