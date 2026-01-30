@@ -52,29 +52,29 @@ const handleNodeClick = (data: any) => {
 
 <template>
   <div class="major-analysis-page">
-    <main class="container mx-auto px-6 py-8">
-      <div class="bg-white rounded-lg shadow-sm">
-        <!-- 内容标题 -->
-        <div class="px-6 py-4 border-b">
-          <h1 class="text-2xl font-bold text-secondary">大学专业信息库</h1>
-          <p class="text-info mt-2">全面解析专业门类、培养方向与就业前景</p>
-        </div>
-        <!-- 分类按钮区域 -->
-        <div class="px-6 py-4 flex items-center justify-between border-b">
-          <div class="flex space-x-3">
-            <button v-for="(item, index) in educationTypeList" :key="index" @click="handleEducationTypeClick(item.ccdm)"
-              :class="[
-                'px-4 py-2 rounded-full education-type-btn',
-                selectedEducationType === item.ccdm ? 'bg-blue-600 text-white border-blue-600' : 'border',
-              ]" data-type="undergraduate">
-              {{ item.ccmc }}
-            </button>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <section class="mb-6">
+        <h2 class="text-2xl font-bold text-center mb-2">大学专业信息库</h2>
+        <h4 class="text-1xl text-center mb-6" style="color: #646566;">全面解析专业门类、培养方向与就业前景</h4>
+        <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
+          <div class="tagBox">
+            <!-- <div class="tagTitle">院校层次：</div> -->
+            <div class="tagContent">
+              <div v-for="(item, index) in educationTypeList" :key="index">
+                <div :class="selectedEducationType === item.ccdm ? 'primaryTag' : 'infoTag'"
+                  @click="handleEducationTypeClick(item.ccdm)">
+                  {{ item.ccmc }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="">
+      </section>
+      <section>
+        <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
           <el-tree style="max-width: 600px" :data="majorTypeList" :props="defaultProps" @node-click="handleNodeClick" />
         </div>
-      </div>
+      </section>
     </main>
     <sideTop />
   </div>
@@ -91,5 +91,48 @@ const handleNodeClick = (data: any) => {
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
   border-top: 1px solid #e5e7eb;
+}
+
+.tagBox {
+  display: flex;
+  align-items: center;
+}
+
+.tagTitle {
+  margin-bottom: 10px;
+  margin-right: 20px;
+  font-size: 14px;
+  color: #646566;
+}
+
+.tagContent {
+  width: calc(100% - 100px);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .primaryTag {
+    cursor: pointer;
+    margin-right: 8px;
+    font-size: 14px;
+    line-height: 30px;
+    padding: 0 20px;
+    color: #fff;
+    background-color: #2563EB;
+    border: 1px solid #2563EB;
+    border-radius: 4px;
+  }
+
+  .infoTag {
+    cursor: pointer;
+    margin-right: 8px;
+    font-size: 14px;
+    line-height: 30px;
+    color: rgb(55 65 81);
+    padding: 0 20px;
+    background-color: #fff;
+    border: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
+    border-radius: 4px;
+  }
 }
 </style>
