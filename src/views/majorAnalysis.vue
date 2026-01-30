@@ -8,21 +8,44 @@ onMounted(() => {
 })
 
 // 获取专业分类数据
+const selectedEducationType: any = ref('')
+const educationTypeList: any = ref([])
 const getZyCcQueryApi = async () => {
-  const res = await api.ZyCcQueryApi({})
+  const res: any = await api.ZyCcQueryApi({})
   if (res) {
-    console.log(res);
+    educationTypeList.value = res.data || []
+    selectedEducationType.value = educationTypeList.value[0]?.ccdm || ''
+    getZyListQueryApi()
   }
 }
 
-// 声明响应式变量
-// 教育类型 - 可选值：'undergraduate', 'vocational-undergrad', 'vocational-college'
-const selectedEducationType = ref('undergraduate')
-
-// 教育类型点击事件处理函数
 const handleEducationTypeClick = (type: string) => {
   selectedEducationType.value = type
-  console.log(`选择了教育类型: ${type}`)
+  getZyListQueryApi()
+}
+
+// 获取专业列表数据
+const majorTypeList: any = ref([])
+const getZyListQueryApi = async () => {
+  const res: any = await api.ZyListQueryApi({
+    ccdm: selectedEducationType.value,
+  })
+  if (res) {
+    majorTypeList.value = res.data.Rs || []
+  }
+}
+
+const defaultProps = {
+  children: 'children',
+  label: 'label',
+}
+
+
+const handleNodeClick = (data: any) => {
+  if (!data.children) {
+    console.log('-------->', '最后一层', data.id)
+    window.open(`/#/majorDetail?zydm=${data.id}`)
+  }
 }
 
 </script>
@@ -39,27 +62,17 @@ const handleEducationTypeClick = (type: string) => {
         <!-- 分类按钮区域 -->
         <div class="px-6 py-4 flex items-center justify-between border-b">
           <div class="flex space-x-3">
-            <button @click="handleEducationTypeClick('undergraduate')" :class="[
-              'px-4 py-2 rounded-full education-type-btn',
-              selectedEducationType === 'undergraduate' ? 'bg-blue-600 text-white border-blue-600' : 'border',
-            ]" data-type="undergraduate">
-              本科（普通教育）
-            </button>
-            <button @click="handleEducationTypeClick('vocational-undergrad')" :class="[
-              'px-4 py-2 rounded-full education-type-btn',
-              selectedEducationType === 'vocational-undergrad'
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'border',
-            ]" data-type="vocational-undergrad">
-              本科（职业教育）
-            </button>
-            <button @click="handleEducationTypeClick('vocational-college')" :class="[
-              'px-4 py-2 rounded-full education-type-btn',
-              selectedEducationType === 'vocational-college' ? 'bg-blue-600 text-white border-blue-600' : 'border',
-            ]" data-type="vocational-college">
-              高职（专科）
+            <button v-for="(item, index) in educationTypeList" :key="index" @click="handleEducationTypeClick(item.ccdm)"
+              :class="[
+                'px-4 py-2 rounded-full education-type-btn',
+                selectedEducationType === item.ccdm ? 'bg-blue-600 text-white border-blue-600' : 'border',
+              ]" data-type="undergraduate">
+              {{ item.ccmc }}
             </button>
           </div>
+        </div>
+        <div class="">
+          <el-tree style="max-width: 600px" :data="majorTypeList" :props="defaultProps" @node-click="handleNodeClick" />
         </div>
       </div>
     </main>

@@ -113,13 +113,13 @@ const getSchoolDetail = async () => {
           <div>
             <div class="text-sm text-blue-600">
               男女比例：
-              <span class="font-medium text-gray-900">{{ schoolDetail.yxsexbl }}</span>
+              <span class="font-medium text-gray-900">{{ schoolDetail.yxsexbl || '无' }}</span>
             </div>
           </div>
           <div>
             <div class="text-sm text-blue-600">
               保研率：
-              <span class="font-medium text-gray-900">{{ schoolDetail.byly }}</span>
+              <span class="font-medium text-gray-900">{{ schoolDetail.byly || '无' }}</span>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+// import { useRouter } from 'vue-router'
 import { ElTable, ElTableColumn, ElPagination } from 'element-plus'
 import * as api from '@/api/interfaceapi'
 import sideTop from '@/components/sideTop.vue'
@@ -91,7 +91,7 @@ const handleSizeChange = (size: number) => {
 }
 
 // 处理院校详情点击事件
-const router = useRouter()
+// const router = useRouter()
 
 const handleSchoolDetailClick = (school: any) => {
   // // 跳转到院校详情页面
@@ -180,12 +180,13 @@ const handleSchoolDetailClick = (school: any) => {
         <!-- 查询结果表格 -->
         <div class="overflow-x-auto">
           <el-table v-loading="false" :data="tableData" stripe border size="small" class="custom-table"
-            style="width: 100%">
-            <el-table-column label="院校名称" min-width="180" align="left">
+            style="width: 100%" @row-click="handleSchoolDetailClick">
+            <!-- <el-table-column label="院校名称" min-width="180" align="left">
               <template #default="scope">
                 <div class="tableyxmc" @click="handleSchoolDetailClick(scope.row)">{{ scope.row.yxmc }}</div>
               </template>
-            </el-table-column>
+            </el-table-column> -->
+            <el-table-column prop="yxmc" label="院校名称" min-width="180" align="left"></el-table-column>
             <el-table-column prop="provcity" label="所在省份" min-width="120" align="left"></el-table-column>
             <el-table-column prop="ccmc" label="办学层次" min-width="100" align="left"></el-table-column>
             <el-table-column prop="yxxz" label="院校性质" min-width="100" align="left"></el-table-column>

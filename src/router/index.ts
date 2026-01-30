@@ -59,6 +59,17 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/majorDetail',
+    name: 'majorDetail',
+    component: () => import('@/views/majorDetail.vue'),
+    meta: {
+      title: '专业解析',
+      stcode: 'majorDetail',
+      hashead: true,
+      hasfoot: true,
+    },
+  },
+  {
     path: '/aiAssessment',
     name: 'aiAssessment',
     component: () => import('@/views/aiAssessment.vue'),
