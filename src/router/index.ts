@@ -81,6 +81,28 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/aiAssessmentDetail',
+    name: 'aiAssessmentDetail',
+    component: () => import('@/views/aiAssessmentDetail.vue'),
+    meta: {
+      title: 'AI测评详情',
+      stcode: 'aiAssessmentDetail',
+      hashead: true,
+      hasfoot: true,
+    },
+  },
+  {
+    path: '/aiAssessmentStart',
+    name: 'aiAssessmentStart',
+    component: () => import('@/views/aiAssessmentStart.vue'),
+    meta: {
+      title: 'AI测评开始',
+      stcode: 'aiAssessmentStart',
+      hashead: true,
+      hasfoot: true,
+    },
+  },
+  {
     path: '/personalInfo',
     name: 'personalInfo',
     component: () => import('@/views/personalInfo.vue'),
