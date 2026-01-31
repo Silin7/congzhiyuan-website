@@ -265,7 +265,7 @@ const logoutFunction = async () => {
         <a href="/#/volunteerApply" class="nav-link" :class="{ active: currentPath === '/volunteerApply' }">志愿填报</a>
         <a href="/#/schoolSearch" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
         <a href="/#/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
-        <a href="/#/" class="nav-link" :class="{ active: currentPath === '/aiAssessment' }">AI测评</a>
+        <a href="/#/aiAssessmentList" class="nav-link" :class="{ active: currentPath === '/aiAssessmentList' }">AI测评</a>
       </div>
       <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
         <i class="fa fa-user-circle mr-2"></i>

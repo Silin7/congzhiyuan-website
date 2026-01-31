@@ -70,12 +70,12 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
-    path: '/aiAssessment',
-    name: 'aiAssessment',
-    component: () => import('@/views/aiAssessment.vue'),
+    path: '/aiAssessmentList',
+    name: 'aiAssessmentList',
+    component: () => import('@/views/aiAssessmentList.vue'),
     meta: {
       title: 'AI测评',
-      stcode: 'aiAssessment',
+      stcode: 'aiAssessmentList',
       hashead: true,
       hasfoot: true,
     },
