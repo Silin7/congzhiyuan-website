@@ -1135,13 +1135,9 @@ export async function scaleSaveApi(data: any) {
 
 // 测评记录查询
 // a.token
-export async function assListQueryApi(data: any) {
-  const params = new FormData()
-  Object.keys(data).forEach(key => {
-    params.append(key, data[key])
-  })
+export async function assListQueryApi() {
   try {
-    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=ass&act=assListQuery`, params, {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=ass&act=assListQuery`, {}, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
       },
