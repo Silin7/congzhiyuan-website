@@ -25,8 +25,12 @@ const getScaleStartApi = async () => {
       <section>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
           <h2 class="cp-result-title">{{ scaleDetailsQuery.scaleName || '' }}</h2>
+          <div class="cp-result-time" style="margin-bottom: 8px;">
+            测评人：{{ scaleDetailsQuery.userName }}
+          </div>
           <div class="cp-result-time">
-            报告时间：{{ scaleDetailsQuery.completeTime ? dayjs(scaleDetailsQuery.completeTime).format('YYYY-MM-DD HH:mm:ss') : '暂无时间' }}
+            报告时间：{{ scaleDetailsQuery.completeTime ? dayjs(scaleDetailsQuery.completeTime).format('YYYY-MM-DD HH:mm:ss')
+              : '暂无时间' }}
           </div>
           <h3 class="result-part-title">测评结果</h3>
           <div class="result-top-des">
