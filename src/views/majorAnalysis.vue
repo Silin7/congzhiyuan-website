@@ -72,7 +72,7 @@ const handleNodeClick = (data: any) => {
       </section>
       <section>
         <div class="rounded-2xl shadow-lg p-6 border border-gray-200">
-          <el-tree indent="50" :data="majorTypeList" :props="defaultProps" @node-click="handleNodeClick" />
+          <el-tree indent="100" :data="majorTypeList" :props="defaultProps" @node-click="handleNodeClick" />
         </div>
       </section>
     </main>

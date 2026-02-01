@@ -74,7 +74,14 @@ const getscaleSaveApi = async (params: any) => {
       type: 'success',
       message: '提交成功',
     })
-    router.go(-1)
+    setTimeout(() => {
+      router.push({
+        path: '/aiAssessmentView',
+        query: {
+          asId: scaleDetailsQuery.value.asId
+        }
+      })
+    }, 1000)
   }
 }
 </script>
