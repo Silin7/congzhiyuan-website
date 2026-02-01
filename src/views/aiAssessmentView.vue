@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import * as api from '@/api/interfaceapi'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import dayjs from 'dayjs'
 
 onMounted(() => {
   getScaleStartApi()
@@ -10,71 +10,11 @@ onMounted(() => {
 const route = useRoute()
 
 const asId = ref(route.query.asId)
-const activeIndex = ref(0)
 const scaleDetailsQuery: any = ref({})
 const getScaleStartApi = async () => {
   const res = await api.assDetailQueryApi({ asId: asId.value })
   if (res) {
-    scaleDetailsQuery.value = res.data || {}
-    if (scaleDetailsQuery.value.questionsJson.length > 0) {
-      scaleDetailsQuery.value.questionsJson.forEach((item: any) => {
-        item.answerNum = null
-      })
-    }
-  }
-}
-
-// 选中题目，自动下一题
-const handleChange = () => {
-  if (activeIndex.value === scaleDetailsQuery.value.questionsJson.length - 1) {
-    return
-  }
-  setTimeout(() => {
-    activeIndex.value++
-  }, 500)
-}
-
-// 提交评估-校验
-const submitCheck = () => {
-  const index = scaleDetailsQuery.value.questionsJson.findIndex((item: any) => item.answerNum === null)
-  if (index !== -1) {
-    ElMessage.error(`请回答第 ${index + 1} 题`)
-    return
-  }
-  const answerJson = scaleDetailsQuery.value.questionsJson.map((item: any) => ({
-    questionId: item.questionId,
-    answerNum: item.answerNum
-  }))
-  const params = {
-    asId: scaleDetailsQuery.value.asId,
-    answerJson
-  }
-  ElMessageBox.confirm(
-    '是否确认提交？',
-    '温馨提示',
-    {
-      confirmButtonText: '提交',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-    .then(() => {
-      getscaleSaveApi(params)
-    })
-    .catch(() => {
-    })
-}
-
-// 提交评估
-const router = useRouter()
-const getscaleSaveApi = async (params: any) => {
-  const res = await api.scaleSaveApi(params)
-  if (res) {
-    ElMessage({
-      type: 'success',
-      message: '提交成功',
-    })
-    router.go(-1)
+    scaleDetailsQuery.value = res.data.Rs || {}
   }
 }
 </script>
@@ -84,30 +24,27 @@ const getscaleSaveApi = async (params: any) => {
     <main class="max-w-7xl mx-auto px-4 py-8">
       <section>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
-          <!-- <div v-if="scaleDetailsQuery?.questionsJson?.length > 0" class="card-title">
-            共 {{ scaleDetailsQuery.questionsJson.length }} 道题目
-          </div> -->
-          <div class="mb-6">
-            <div v-for="(item, index) in scaleDetailsQuery.questionsJson" :key="item.questionId">
-              <div v-if="index === activeIndex" class="question-item">
-                <div class="question-title">
-                  {{ item.questionNum }}. {{ item.question }}
-                </div>
-                <div class="question-answers">
-                  <div v-for="(answer, answerIndex) in item.answers" :key="answerIndex" class="answer-item">
-                    <el-radio-group v-model="item.answerNum" @change="handleChange">
-                      <el-radio :value="answer.answerNum" size="large">{{ answer.answer }}</el-radio>
-                    </el-radio-group>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <h2 class="cp-result-title">{{ scaleDetailsQuery.scaleName || '' }}</h2>
+          <div class="cp-result-time">
+            报告时间：{{ scaleDetailsQuery.completeTime ? dayjs(scaleDetailsQuery.completeTime).format('YYYY-MM-DD HH:mm:ss') : '暂无时间' }}
           </div>
-          <div v-if="scaleDetailsQuery?.questionsJson?.length > 0" class="flex justify-center">
-            <el-button type="primary" :disabled="activeIndex === 0" @click="activeIndex--">上一题</el-button>
-            <el-button type="success" v-if="activeIndex === scaleDetailsQuery.questionsJson.length - 1"
-              @click="submitCheck">提交答案</el-button>
-            <el-button v-else type="primary" @click="activeIndex++">下一题</el-button>
+          <h3 class="result-part-title">测评结果</h3>
+          <div class="result-top-des">
+            <p>
+              {{ scaleDetailsQuery.report || '暂无测评结果' }}
+            </p>
+          </div>
+          <h3 class="result-part-title">综合建议</h3>
+          <div class="result-top-des">
+            <p>
+              {{ scaleDetailsQuery.recommendations || '暂无建议' }}
+            </p>
+          </div>
+          <h3 class="result-part-title">重要提示</h3>
+          <div class="result-top-des">
+            <p>
+              测评结果及解读内容仅供参考。
+            </p>
           </div>
         </div>
       </section>
@@ -128,25 +65,49 @@ const getscaleSaveApi = async (params: any) => {
   border-top: 1px solid #e5e7eb;
 }
 
-.card-title {
+.cp-result-title {
+  margin-bottom: 8px;
+  text-align: center;
   font-size: 30px;
+  font-weight: 400;
+  color: #13161b;
   line-height: 42px;
+}
+
+.cp-result-time {
+  line-height: 20px;
+  text-align: center;
+  font-size: 14px;
   font-weight: 400;
-  // color: #2563EB;
+  color: #8d949f;
+  margin-bottom: 48px;
 }
 
-.question-title {
-  margin-bottom: 20px;
-  font-size: 24px;
-  line-height: 36px;
+.result-part-title::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 16px;
+  background: #294ed6;
+  vertical-align: middle;
+  margin-right: 6px;
+  transform: rotate(4deg);
+  margin-bottom: 2px;
+}
+
+.result-part-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #13161b;
+  line-height: 30px;
+  margin-bottom: 24px;
+}
+
+.result-top-des {
+  margin-bottom: 64px;
+  font-size: 16px;
   font-weight: 400;
-}
-
-.question-answers {
-  margin-bottom: 20px;
-}
-
-.answer-item {
-  margin-bottom: 10px;
+  color: #525252;
+  line-height: 30px;
 }
 </style>

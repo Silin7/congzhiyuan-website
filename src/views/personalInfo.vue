@@ -1354,7 +1354,7 @@ const scaleRowClick = (row: any) => {
                 <el-table-column label="测评时间" min-width="150">
                   <template #default="scope">
                     <div>
-                      {{ dayjs(scope.row.createTime).format('YYYY-MM-DD HH:mm:ss') }}
+                      {{ dayjs(scope.row.completeTime).format('YYYY-MM-DD HH:mm:ss') }}
                     </div>
                   </template>
                 </el-table-column>
