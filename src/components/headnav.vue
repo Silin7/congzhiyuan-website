@@ -553,7 +553,8 @@ const logoutFunction = async () => {
   background-color: #eee;
 }
 </style>
-<style lang="scss">
+
+<!-- <style lang="scss">
 .el-collapse {
   border: 0 !important;
 
@@ -585,4 +586,4 @@ const logoutFunction = async () => {
     color: #165dff !important;
   }
 }
-</style>
+</style> -->

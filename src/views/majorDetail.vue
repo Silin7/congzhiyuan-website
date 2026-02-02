@@ -26,10 +26,9 @@ const getMajorDetail = async () => {
     <header class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm animate-slide-up">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="space-y-4">
-          <div class="flex items-center space-x-3">
+          <div v-if="majorDetail.zydm" class="flex items-center space-x-3">
             <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">{{
               majorDetail.zydm }}</span>
-
           </div>
           <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900">{{ majorDetail.zymc }}</h1>
           <p class="text-slate-500 text-lg flex items-center gap-2">
@@ -70,7 +69,7 @@ const getMajorDetail = async () => {
           </div>
           <div class="grid grid-cols-1 gap-6">
             <!-- 专业是什么 -->
-            <div class="space-y-3">
+            <div v-if="majorDetail.zyMemo1" class="space-y-3">
               <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="lucide:help-circle" class="iconify text-blue-600 iconify--lucide">
@@ -85,7 +84,7 @@ const getMajorDetail = async () => {
               </p>
             </div>
             <!-- 专业学什么 -->
-            <div class="space-y-3">
+            <div v-if="majorDetail.zyMemo2" class="space-y-3">
               <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="lucide:book-open" class="iconify text-indigo-600 iconify--lucide">
@@ -104,7 +103,7 @@ const getMajorDetail = async () => {
               </div>
             </div>
             <!-- 专业干什么 -->
-            <div class="space-y-3">
+            <div v-if="majorDetail.zyMemo3" class="space-y-3">
               <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="lucide:briefcase" class="iconify text-emerald-600 iconify--lucide">
@@ -116,6 +115,21 @@ const getMajorDetail = async () => {
               </h3>
               <p class="text-slate-600 leading-relaxed text-base">
                 {{ majorDetail.zyMemo3 }}
+              </p>
+            </div>
+            <!-- 考研方向 -->
+            <div v-if="majorDetail.zyMemo4" class="space-y-3">
+              <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
+                  viewBox="0 0 24 24" data-icon="lucide:briefcase" class="iconify text-emerald-600 iconify--lucide">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    <rect width="20" height="14" x="2" y="6" rx="2"></rect>
+                  </g>
+                </svg>考研方向
+              </h3>
+              <p class="text-slate-600 leading-relaxed text-base">
+                {{ majorDetail.zyMemo4 }}
               </p>
             </div>
           </div>

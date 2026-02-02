@@ -180,16 +180,20 @@ const handleSchoolDetailClick = (school: any) => {
         <!-- 查询结果表格 -->
         <div class="overflow-x-auto">
           <el-table v-loading="false" :data="tableData" stripe border size="small" class="custom-table"
-            style="width: 100%" @row-click="handleSchoolDetailClick">
-            <!-- <el-table-column label="院校名称" min-width="180" align="left">
+            style="width: 100%">
+            <el-table-column label="院校名称" min-width="180" align="left">
               <template #default="scope">
-                <div class="tableyxmc" @click="handleSchoolDetailClick(scope.row)">{{ scope.row.yxmc }}</div>
+                <div class="tableyxmc">{{ scope.row.yxmc }}</div>
               </template>
-            </el-table-column> -->
-            <el-table-column prop="yxmc" label="院校名称" min-width="180" align="left"></el-table-column>
+            </el-table-column>
             <el-table-column prop="provcity" label="所在省份" min-width="120" align="left"></el-table-column>
             <el-table-column prop="ccmc" label="办学层次" min-width="100" align="left"></el-table-column>
             <el-table-column prop="yxxz" label="院校性质" min-width="100" align="left"></el-table-column>
+            <el-table-column label="操作" width="100" align="center">
+              <template #default="scope">
+                <el-button text type="primary" size="mini" @click="handleSchoolDetailClick(scope.row)" style="font-size: 12px;">查看详情</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
         <!-- 分页控件 -->
@@ -349,8 +353,8 @@ const handleSchoolDetailClick = (school: any) => {
   }
 }
 
-.tableyxmc:hover {
-  cursor: pointer;
-  color: #2563eb;
+.tableyxmc {
+  font-size: 14px;
+  font-weight: 700;
 }
 </style>

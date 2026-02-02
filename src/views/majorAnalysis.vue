@@ -24,7 +24,8 @@ const handleEducationTypeClick = (type: string) => {
   getZyListQueryApi()
 }
 
-// 获取专业列表数据
+// 专业分类数据
+const collapseActive: any = ref('')
 const majorTypeList: any = ref([])
 const getZyListQueryApi = async () => {
   const res: any = await api.ZyListQueryApi({
@@ -35,12 +36,7 @@ const getZyListQueryApi = async () => {
   }
 }
 
-const defaultProps = {
-  children: 'children',
-  label: 'label',
-}
-
-
+// 专业详情
 const handleNodeClick = (data: any) => {
   if (!data.children) {
     console.log('-------->', '最后一层', data.id)
@@ -56,7 +52,7 @@ const handleNodeClick = (data: any) => {
       <section class="mb-6">
         <h2 class="text-2xl font-bold text-center mb-2">大学专业信息库</h2>
         <h4 class="text-1xl text-center mb-6" style="color: #646566;">全面解析专业门类、培养方向与就业前景</h4>
-        <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
+        <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200" style="padding-bottom: 10px;">
           <div class="tagBox">
             <!-- <div class="tagTitle">院校层次：</div> -->
             <div class="tagContent">
@@ -68,11 +64,43 @@ const handleNodeClick = (data: any) => {
               </div>
             </div>
           </div>
+          <div class="tagBox">
+            <div class="tagContent">
+              <div v-for="(item, index) in majorTypeList" :key="index">
+                <div :class="collapseActive === item.id ? 'primaryTag' : 'infoTag'" @click="collapseActive = item.id">
+                  {{ item.label }}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
       <section>
         <div class="rounded-2xl shadow-lg p-6 border border-gray-200">
-          <el-tree indent="100" :data="majorTypeList" :props="defaultProps" @node-click="handleNodeClick" />
+          <!-- <el-tree indent="100" :data="majorTypeList" :props="defaultProps" @node-click="handleNodeClick" /> -->
+          <el-collapse v-model="collapseActive" accordion expand-icon-position="left">
+            <el-collapse-item v-for="(item, index) in majorTypeList" :key="index" :name="item.id">
+              <template #title>
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                  <span>{{ item.label }}</span>
+                  <span style="font-size: 12px; color: #646566;">{{ item.yjxkNum }}个专业类 {{ item.ejxkNum }}个专业</span>
+                </div>
+              </template>
+              <div v-for="(item2, index2) in item.children" :key="index2" :name="item2.id">
+                <div class="zfl-box">
+                  <div class="zfl-label">
+                    <span class="zfl-label-shu"></span>
+                    <span class="zfl-label-span">{{ item2.label }}</span>
+                  </div>
+                  <div class="zfl-content">
+                    <div v-for="(item3, index3) in item2.children" :key="index3" :name="item3.id" class="zzdl-item">
+                      <span @click="handleNodeClick(item3)">{{ item3.label }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
       </section>
     </main>
@@ -112,6 +140,7 @@ const handleNodeClick = (data: any) => {
   flex-wrap: wrap;
 
   .primaryTag {
+    margin-bottom: 10px;
     cursor: pointer;
     margin-right: 8px;
     font-size: 14px;
@@ -124,6 +153,7 @@ const handleNodeClick = (data: any) => {
   }
 
   .infoTag {
+    margin-bottom: 10px;
     cursor: pointer;
     margin-right: 8px;
     font-size: 14px;
@@ -133,6 +163,48 @@ const handleNodeClick = (data: any) => {
     background-color: #fff;
     border: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
     border-radius: 4px;
+  }
+}
+
+.zfl-box {
+  padding: 20px;
+  display: flex;
+  border-bottom: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
+
+  .zfl-label {
+    margin-right: 20px;
+    width: 100px;
+
+    .zfl-label-shu {
+      display: inline-block;
+      width: 4px;
+      height: 12px;
+      margin-right: 4px;
+      background-color: #2563EB;
+    }
+
+    .zfl-label-span {
+      font-size: 14px;
+      line-height: 16px;
+      line-height: 30px;
+      color: rgb(55 65 81);
+    }
+  }
+
+  .zfl-content {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+    .zzdl-item {
+      margin-bottom: 20px;
+      width: 25%;
+    }
+
+    .zzdl-item span:hover {
+      cursor: pointer;
+      color: #2563EB;
+    }
   }
 }
 </style>
