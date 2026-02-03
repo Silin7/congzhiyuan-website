@@ -19,7 +19,7 @@ const getScalesDetailQueryApi = async () => {
 }
 
 const goAiAssessmentStart = () => {
-  router.push({ name: 'aiAssessmentStart', query: { scaleId: scaleDetailsQuery.value.scaleId } })
+  router.push({ name: 'aiAssessmentStart', query: { scaleId: scaleDetailsQuery.value.scaleId, name: scaleDetailsQuery.value.name } })
 }
 </script>
 

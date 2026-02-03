@@ -10,6 +10,7 @@ onMounted(() => {
 const route = useRoute()
 
 const scaleId = ref(route.query.scaleId)
+const name = ref(route.query.name)
 const activeIndex = ref(0)
 const scaleDetailsQuery: any = ref({})
 const getScaleStartApi = async () => {
@@ -47,7 +48,7 @@ const submitCheck = () => {
   }))
   const params = {
     asId: scaleDetailsQuery.value.asId,
-    answerJson
+    answerJson: JSON.stringify(answerJson)
   }
   ElMessageBox.confirm(
     '是否确认提交？',
@@ -91,9 +92,12 @@ const getscaleSaveApi = async (params: any) => {
     <main class="max-w-7xl mx-auto px-4 py-8">
       <section>
         <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
-          <!-- <div v-if="scaleDetailsQuery?.questionsJson?.length > 0" class="card-title">
-            共 {{ scaleDetailsQuery.questionsJson.length }} 道题目
-          </div> -->
+          <div class="card-title">
+            {{ name }}
+            <span v-if="scaleDetailsQuery?.questionsJson?.length > 0" class="card-num">
+              ( {{ activeIndex + 1 }} / {{ scaleDetailsQuery.questionsJson.length }}题)
+            </span>
+          </div>
           <div class="mb-6">
             <div v-for="(item, index) in scaleDetailsQuery.questionsJson" :key="item.questionId">
               <div v-if="index === activeIndex" class="question-item">
@@ -136,8 +140,17 @@ const getscaleSaveApi = async (params: any) => {
 }
 
 .card-title {
+  margin-bottom: 20px;
   font-size: 30px;
   line-height: 42px;
+  font-weight: 400;
+  // color: #2563EB;
+}
+
+.card-num {
+  margin-left: 10px;
+  font-size: 24px;
+  line-height: 36px;
   font-weight: 400;
   // color: #2563EB;
 }
