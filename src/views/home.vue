@@ -133,7 +133,7 @@ const getQrPicInfoList = async () => {
             <p class="text-gray-600">根据成绩、兴趣、就业前景多维分析，生成个性化志愿填报方案</p>
             <div class="mt-6">
               <a class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
-                href="#/aiAssessmentList">
+                href="#/volunteerApply">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
