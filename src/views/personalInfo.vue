@@ -60,7 +60,7 @@ const handleProvinceChange = () => {
 // 选科信息
 const selectedSubjects = ref<string[]>([])
 const handleSubjectClick = (subject: string) => {
-  if (personalForm.value.remaineditnum < 1) {
+  if (personalForm.value.remainEditNum < 1) {
     return
   }
   const index = selectedSubjects.value.indexOf(subject)
@@ -779,7 +779,7 @@ const scaleRowClick = (row: any) => {
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">考试类别</label>
                     <el-select v-model="personalForm.wctype" placeholder="请选择考试类别"
-                      :disabled="personalForm.remaineditnum < 1" class="select-tall44px" @change="wctypeChange">
+                      :disabled="personalForm.remainEditNum < 1" class="select-tall44px" @change="wctypeChange">
                       <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.wctypestr"
                         :value="item.wctype">
                       </el-option>
@@ -788,7 +788,7 @@ const scaleRowClick = (row: any) => {
                   <div v-if="personalForm.wctype == 2">
                     <label class="block text-sm font-medium text-neutral mb-2">详细类别</label>
                     <el-select v-model="personalForm.yklm" placeholder="请选择详细类别"
-                      :disabled="personalForm.remaineditnum < 1" class="select-tall44px">
+                      :disabled="personalForm.remainEditNum < 1" class="select-tall44px">
                       <el-option v-for="(item, index) in subjectList" :key="index" :label="item.yklmStr"
                         :value="item.yklm" @click="handleYklmClick">
                       </el-option>
@@ -804,14 +804,14 @@ const scaleRowClick = (row: any) => {
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">高考分数</label>
                     <el-input max="750" min="0" name="score" placeholder="请输入您的高考总分" v-model="personalForm.cj"
-                      :disabled="personalForm.remaineditnum < 1" @input="useDebounce(cjInput)" class="input-tall44px" />
+                      :disabled="personalForm.remainEditNum < 1" @input="useDebounce(cjInput)" class="input-tall44px" />
                     <p class="mt-2 text-sm text-neutral-400">总分范围：0-750分</p>
                   </div>
                   <!-- 位次 -->
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">位次</label>
                     <el-input min="1" name="ranking" placeholder="请输入您的省内位次" v-model="personalForm.wc"
-                      :disabled="personalForm.remaineditnum < 1" class="input-tall44px" />
+                      :disabled="personalForm.remainEditNum < 1" class="input-tall44px" />
                     <p class="mt-2 text-sm text-neutral-400">请输入省内排名位次</p>
                   </div>
                 </div>
