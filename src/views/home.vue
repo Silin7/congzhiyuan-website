@@ -4,18 +4,19 @@ import sideTop from '@/components/sideTop.vue'
 import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
 import selectProvince from '@/components/selectProvince.vue'
-import pageJump from '@/hooks/pageJump'
 
 onMounted(() => {
   getTopInfo()
+  getQrPicInfoList()
 })
 
 // 上部导航栏显示查询 - 智能推荐方案
 const topInfo = ref<any>([])
 const getTopInfo = async () => {
   try {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
     await api.topInfoApi({
-      province: '山东',
+      province: userInfo.province || '',
     }).then((res: any) => {
       if (res.data.code === 0) {
         topInfo.value = res.data.data.Rs || []
@@ -25,6 +26,26 @@ const getTopInfo = async () => {
     })
   } catch (error) {
     ElMessage.error('获取省份列表失败')
+  }
+}
+
+// 操作指南
+const qrPicInfoList = ref<any>([])
+const getQrPicInfoList = async () => {
+  try {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+    await api.qrPicInfoListApi({
+      province: userInfo.province || '',
+    }).then((res: any) => {
+      if (res.data.code === 0) {
+        qrPicInfoList.value = res.data.data.Rs || []
+        console.log('获取二维码信息成功', res.data.data)
+      } else {
+        ElMessage.error(res.data.message || '获取二维码信息失败')
+      }
+    })
+  } catch (error) {
+    ElMessage.error('获取二维码信息失败')
   }
 }
 </script>
@@ -112,7 +133,7 @@ const getTopInfo = async () => {
             <p class="text-gray-600">根据成绩、兴趣、就业前景多维分析，生成个性化志愿填报方案</p>
             <div class="mt-6">
               <a class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
-                style="cursor: pointer;" @click="pageJump('aiAssessmentList')">
+                href="#/aiAssessmentList">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -133,8 +154,7 @@ const getTopInfo = async () => {
             <h3 class="text-xl font-bold mt-4 mb-2 text-gray-800">院校数据查询</h3>
             <p class="text-gray-600">覆盖全国3000+院校实时录取数据，学科评估与就业报告深度解析</p>
             <div class="mt-6">
-              <a class="inline-flex items-center text-amber-600 hover:text-amber-800 font-medium"
-                style="cursor: pointer;" @click="pageJump('schoolSearch')">
+              <a class="inline-flex items-center text-amber-600 hover:text-amber-800 font-medium" href="#/schoolSearch">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -158,7 +178,7 @@ const getTopInfo = async () => {
             <p class="text-gray-600">全面解析2000+高校专业门类、培养方向与主要课程</p>
             <div class="mt-6">
               <a class="inline-flex items-center text-emerald-600 hover:text-emerald-800 font-medium"
-                style="cursor: pointer;" @click="pageJump('majorAnalysis')">
+                href="#/majorAnalysis">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -232,44 +252,14 @@ const getTopInfo = async () => {
 
       <!-- 合作院校 -->
       <section class="py-14 px-8">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">合作院校</h2>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">操作指南</h2>
         <div class="grid grid-cols-6 gap-6 max-w-5xl mx-auto">
-          <!-- 6个合作院校Logo占位符 -->
-          <div class="bg-gray-100 border-2 border-dashed rounded-xl w-full h-24 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-              viewBox="0 0 24 24" data-icon="mdi:university" class="iconify text-4xl text-gray-400 iconify--mdi">
-              <path fill="currentColor" d="M12 3L1 9l11 6l9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"></path>
-            </svg>
-          </div>
-          <div class="bg-gray-100 border-2 border-dashed rounded-xl w-full h-24 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-              viewBox="0 0 24 24" data-icon="mdi:university" class="iconify text-4xl text-gray-400 iconify--mdi">
-              <path fill="currentColor" d="M12 3L1 9l11 6l9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"></path>
-            </svg>
-          </div>
-          <div class="bg-gray-100 border-2 border-dashed rounded-xl w-full h-24 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-              viewBox="0 0 24 24" data-icon="mdi:university" class="iconify text-4xl text-gray-400 iconify--mdi">
-              <path fill="currentColor" d="M12 3L1 9l11 6l9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"></path>
-            </svg>
-          </div>
-          <div class="bg-gray-100 border-2 border-dashed rounded-xl w-full h-24 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-              viewBox="0 0 24 24" data-icon="mdi:university" class="iconify text-4xl text-gray-400 iconify--mdi">
-              <path fill="currentColor" d="M12 3L1 9l11 6l9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"></path>
-            </svg>
-          </div>
-          <div class="bg-gray-100 border-2 border-dashed rounded-xl w-full h-24 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-              viewBox="0 0 24 24" data-icon="mdi:university" class="iconify text-4xl text-gray-400 iconify--mdi">
-              <path fill="currentColor" d="M12 3L1 9l11 6l9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"></path>
-            </svg>
-          </div>
-          <div class="bg-gray-100 border-2 border-dashed rounded-xl w-full h-24 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
-              viewBox="0 0 24 24" data-icon="mdi:university" class="iconify text-4xl text-gray-400 iconify--mdi">
-              <path fill="currentColor" d="M12 3L1 9l11 6l9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17z"></path>
-            </svg>
+          <div v-for="(item, index) in qrPicInfoList" :key="index"
+            class="bg-gray-100 border-2 border-dashed w-full h-46 flex flex-col items-center justify-center">
+            <img :src="item.picurl" alt="">
+            <div class="text-center text-gray-600">
+              <a :href="item.texturl" target="_blank" class="qrPicInfoA">{{ item.text }}</a>
+            </div>
           </div>
         </div>
       </section>
@@ -661,5 +651,9 @@ const getTopInfo = async () => {
 
 body {
   background-color: #f9fafb;
+}
+
+.qrPicInfoA:hover {
+  color: #3b82f6;
 }
 </style>

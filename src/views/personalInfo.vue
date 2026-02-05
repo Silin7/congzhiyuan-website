@@ -661,6 +661,9 @@ const scaleRowClick = (row: any) => {
                   </div>
                 </div>
                 <!-- 选科信息 -->
+                <p class="mt-2 text-sm text-neutral-400">
+                  您当前还剩余 {{ personalForm.remainEditNum }} 次修改选科信息、考试类别、分数、位次的机会; 高考后还会给您 {{ personalForm.remainEditNumAfter }} 次修改机会
+                </p>
                 <div v-if="personalForm.xkMod == '1'">
                   <label class="block text-sm font-medium text-neutral mb-3">选科信息</label>
                   <div class="flex flex-wrap gap-3">

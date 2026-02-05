@@ -138,6 +138,19 @@ export function topInfoApi(data: any) {
   })
 }
 
+// 首页下部操作指南二维码查询
+export function qrPicInfoListApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  return axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=QrPicInfoList`, params, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+    },
+  })
+}
+
 // 志愿填报页批次查询
 // a.token:用户token，必选
 // b.ccdm:  1 本科 2 专科
