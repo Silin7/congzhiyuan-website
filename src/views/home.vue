@@ -4,6 +4,7 @@ import sideTop from '@/components/sideTop.vue'
 import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
 import selectProvince from '@/components/selectProvince.vue'
+import pageJump from '@/hooks/pageJump'
 
 onMounted(() => {
   getTopInfo()
@@ -133,7 +134,7 @@ const getQrPicInfoList = async () => {
             <p class="text-gray-600">根据成绩、兴趣、就业前景多维分析，生成个性化志愿填报方案</p>
             <div class="mt-6">
               <a class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
-                href="#/volunteerApply">
+                style="cursor: pointer;" @click="pageJump('volunteerApply')">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -154,7 +155,8 @@ const getQrPicInfoList = async () => {
             <h3 class="text-xl font-bold mt-4 mb-2 text-gray-800">院校数据查询</h3>
             <p class="text-gray-600">覆盖全国3000+院校实时录取数据，学科评估与就业报告深度解析</p>
             <div class="mt-6">
-              <a class="inline-flex items-center text-amber-600 hover:text-amber-800 font-medium" href="#/schoolSearch">
+              <a class="inline-flex items-center text-amber-600 hover:text-amber-800 font-medium"
+                style="cursor: pointer;" @click="pageJump('schoolSearch')">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -178,7 +180,7 @@ const getQrPicInfoList = async () => {
             <p class="text-gray-600">全面解析2000+高校专业门类、培养方向与主要课程</p>
             <div class="mt-6">
               <a class="inline-flex items-center text-emerald-600 hover:text-emerald-800 font-medium"
-                href="#/majorAnalysis">
+                style="cursor: pointer;" @click="pageJump('majorAnalysis')">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -200,7 +202,12 @@ const getQrPicInfoList = async () => {
           <div class="bg-white p-5 rounded-lg border border-gray-200 text-center">
             <div
               class="bg-gradient-to-r from-indigo-500 to-purple-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-              <span class="iconify text-3xl text-white" data-icon="mdi:artificial-intelligence"></span>
+              <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
+                viewBox="0 0 24 24" data-icon="mdi:brain" class="iconify text-3xl iconify--mdi text-white">
+                <path fill="currentColor"
+                  d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45c-.19.47-.58.84-1.06 1l-.79.25a1.69 1.69 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1c-.5.15-1 .23-1.5.23c-.88 0-1.76-.27-2.5-.79c-.53.16-1.07.23-1.62.22c-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11c-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7c1.6-1.5 4.05-1.66 5.83-.37c.42-.11.86-.17 1.3-.17c1.36-.03 2.65.57 3.5 1.64c2.04.53 3.5 2.35 3.58 4.47c.05 1.11-.25 2.2-.86 3.13c.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29c.25.09.51.14.77.21c5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49a1 1 0 0 1-1-1a1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3c.05-.29.08-.59.08-.89c-.06-1.24-.62-2.32-2.87-2.53c-1.25-2.96-4.4-1.32-4.4-.4c-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1c-.53-.02-1.03-.22-1.43-.56c-.48.31-1.03.5-1.6.56c-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77c0-.66.25-1.29.68-1.79c-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2C4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25c.5.19.78.75.59 1.29c-.19.52-.77.78-1.29.59c-.73-.32-1.55-.34-2.3-.06c-.32.27-.32.83-.32 1.27c0 .74.37 1.43 1 1.83c.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05c1.37-.07 2.59-.88 3.19-2.13c.23-1.38 1.34-1.5 2.56-1.5m2 7.47l-.62-1.3l-.71.16l1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67c-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1c0-.27.07-.54.23-.76c.12-.1.27-.15.43-.15c.55.03 1.02-.38 1.02-.92">
+                </path>
+              </svg>
             </div>
             <h3 class="font-semibold mt-4 mb-2 text-gray-800">AI算法精准</h3>
             <p class="text-gray-600 text-sm">基于机器学习模型不断优化，预测准确率高达92%</p>
