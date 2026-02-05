@@ -4,6 +4,7 @@ import sideTop from '@/components/sideTop.vue'
 import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
 import selectProvince from '@/components/selectProvince.vue'
+import pageJump from '@/hooks/pageJump'
 
 onMounted(() => {
   getTopInfo()
@@ -110,7 +111,8 @@ const getTopInfo = async () => {
             <h3 class="text-xl font-bold mt-4 mb-2 text-gray-800">AI志愿填报</h3>
             <p class="text-gray-600">根据成绩、兴趣、就业前景多维分析，生成个性化志愿填报方案</p>
             <div class="mt-6">
-              <a class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium" href="#">
+              <a class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-medium"
+                style="cursor: pointer;" @click="pageJump('aiAssessmentList')">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -131,7 +133,8 @@ const getTopInfo = async () => {
             <h3 class="text-xl font-bold mt-4 mb-2 text-gray-800">院校数据查询</h3>
             <p class="text-gray-600">覆盖全国3000+院校实时录取数据，学科评估与就业报告深度解析</p>
             <div class="mt-6">
-              <a class="inline-flex items-center text-amber-600 hover:text-amber-800 font-medium" href="#">
+              <a class="inline-flex items-center text-amber-600 hover:text-amber-800 font-medium"
+                style="cursor: pointer;" @click="pageJump('schoolSearch')">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
@@ -152,9 +155,10 @@ const getTopInfo = async () => {
               </svg>
             </div>
             <h3 class="text-xl font-bold mt-4 mb-2 text-gray-800">专业解析</h3>
-            <p class="text-gray-600">高校专业详细解析...</p>
+            <p class="text-gray-600">全面解析2000+高校专业门类、培养方向与主要课程</p>
             <div class="mt-6">
-              <a class="inline-flex items-center text-emerald-600 hover:text-emerald-800 font-medium" href="#">
+              <a class="inline-flex items-center text-emerald-600 hover:text-emerald-800 font-medium"
+                style="cursor: pointer;" @click="pageJump('majorAnalysis')">
                 <span>了解更多</span>
                 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                   viewBox="0 0 24 24" data-icon="mdi:arrow-right" class="iconify ml-1 iconify--mdi">
