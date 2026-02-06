@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
 import * as api from '@/api/interfaceapi'
+import { agreementURL } from '@/api/baseConfig'
 
 // Get current route
 const route = useRoute()
@@ -242,6 +243,11 @@ const logoutFunction = async () => {
     window.localStorage.removeItem('safeThreshold')
   }
 }
+
+// 处理用户协议点击事件
+const handleAgreementClick = () => {
+  window.open(agreementURL, '_blank')
+}
 </script>
 
 <template>
@@ -375,7 +381,7 @@ const logoutFunction = async () => {
     </el-tabs>
     <div class="form-agreement">
       <el-checkbox v-model="loginForm.agree">
-        阅读并同意 《用户协议》
+        <span @click.prevent.stop="handleAgreementClick">阅读并同意 《用户协议》</span>
       </el-checkbox>
     </div>
     <div class="dialog-footer">
