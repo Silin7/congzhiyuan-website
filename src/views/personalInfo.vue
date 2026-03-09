@@ -487,6 +487,25 @@ const zyExportExcel = async () => {
   }
 }
 
+// 专业模式志愿单按录取比例自动排序
+const choicesSortBylqbl = async () => {
+  const res = await api.choicesSortBylqblApi({
+    chGroupId: myChGroupSListId.value,
+  })
+  if (res) {
+    ElMessage.success('按录取比例自动排序成功')
+    getMyChioesGroupQuery()
+    // // 专业模式
+    // if(personalForm.zyType === '1') {
+    //   getMyChioesGroupQuery()
+    // }
+    // // 专业组模式
+    // if (personalForm.zyType === '2') {
+    //   getMyChioesGroupQuery()
+    // }
+  }
+}
+
 // 我的测评
 const scaleData: any = ref([])
 const getMyScalesQuery = async () => {
@@ -662,7 +681,8 @@ const scaleRowClick = (row: any) => {
                 </div>
                 <!-- 选科信息 -->
                 <p class="mt-2 text-sm text-neutral-400">
-                  您当前还剩余 {{ personalForm.remainEditNum }} 次修改选科信息、考试类别、分数、位次的机会; 高考后还会给您 {{ personalForm.remainEditNumAfter }} 次修改机会
+                  您当前还剩余 {{ personalForm.remainEditNum }} 次修改选科信息、考试类别、分数、位次的机会; 高考后还会给您 {{
+                    personalForm.remainEditNumAfter }} 次修改机会
                 </p>
                 <div v-if="personalForm.xkMod == '1'">
                   <label class="block text-sm font-medium text-neutral mb-3">选科信息</label>
@@ -967,6 +987,7 @@ const scaleRowClick = (row: any) => {
                 {{ item.chGroupName }}（{{ item.addNum }}/{{ item.maxNum }}）
               </el-tag>
               <el-button type="primary" @click="zyExportExcel">导出Excel</el-button>
+              <el-button type="primary" @click="choicesSortBylqbl" style="margin-left: 0;">自动排序</el-button>
             </div>
             <div v-if="tableData?.length > 0" style="margin-top: 20px; width: 100%;">
               <el-table v-if="personalForm.zyType === '1'" v-loading="false" :data="tableData" stripe border
@@ -1012,7 +1033,7 @@ const scaleRowClick = (row: any) => {
                       <el-tooltip v-if="scope.row.JHBZ" popper-class="custom-tooltip" effect="dark"
                         :content="scope.row.JHBZ" placement="top">
                         <div class="flex items-center text-xs text-gray-500">备注：<span class="beizhu">{{ scope.row.JHBZ
-                        }}</span></div>
+                            }}</span></div>
                       </el-tooltip>
                       <div v-if="scope.row.xkkm" class="text-xs text-gray-500">选科：<span>{{ scope.row.xkkm }}</span>
                       </div>
@@ -1035,12 +1056,12 @@ const scaleRowClick = (row: any) => {
                     <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1053,12 +1074,12 @@ const scaleRowClick = (row: any) => {
                     <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1071,12 +1092,12 @@ const scaleRowClick = (row: any) => {
                     <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1146,12 +1167,12 @@ const scaleRowClick = (row: any) => {
                             <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                              }}</span>
+                                }}</span>
                             </div>
                             <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                             <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                             <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                            }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </template>
@@ -1162,12 +1183,12 @@ const scaleRowClick = (row: any) => {
                             <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                              }}</span>
+                                }}</span>
                             </div>
                             <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                             <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                             <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                            }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </template>
@@ -1178,12 +1199,12 @@ const scaleRowClick = (row: any) => {
                             <!-- <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div> -->
                             <div class="text-xs text-gray-500">
                               成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                              }}</span>
+                                }}</span>
                             </div>
                             <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                             <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                             <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                            }}</span>
+                                }}</span>
                             </div>
                           </div>
                         </template>
@@ -1216,7 +1237,7 @@ const scaleRowClick = (row: any) => {
                       <span>{{ scope.row.yxmc }}（{{ scope.row.zyGroupDm }}）专业组</span>
                       <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
                       <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
-                      }}</span>
+                        }}</span>
                       <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                     </div>
                     <div class="text-xs text-gray-500">
@@ -1249,12 +1270,12 @@ const scaleRowClick = (row: any) => {
                     <div v-if="scope.row.minwc1 != 0 && scope.row.mincj1 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1267,12 +1288,12 @@ const scaleRowClick = (row: any) => {
                     <div v-if="scope.row.minwc2 != 0 && scope.row.mincj2 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1285,12 +1306,12 @@ const scaleRowClick = (row: any) => {
                     <div v-if="scope.row.minwc3 != 0 && scope.row.mincj3 != 0" class="tablezy">
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                        }}</span>
+                          }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>

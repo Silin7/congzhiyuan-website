@@ -1194,6 +1194,31 @@ export async function assDetailQueryApi(data: any) {
   }
 }
 
+// 志愿按录取比例自动排序
+export async function choicesSortBylqblApi(data: any) {
+  const params = new FormData()
+  Object.keys(data).forEach(key => {
+    params.append(key, data[key])
+  })
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=zhiYuan&act=choicesSortBylqbl`, params, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
 
 // token失效处理
 function tokenLose() {
