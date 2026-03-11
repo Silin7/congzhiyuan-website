@@ -60,7 +60,7 @@ const handleProvinceChange = () => {
 // 选科信息
 const selectedSubjects = ref<string[]>([])
 const handleSubjectClick = (subject: string) => {
-  if (personalForm.value.remainEditNum < 1) {
+  if (personalForm.value.remainXuankeEditNum < 1) {
     return
   }
   const index = selectedSubjects.value.indexOf(subject)
@@ -662,7 +662,7 @@ const scaleRowClick = (row: any) => {
                 </div>
                 <!-- 选科信息 -->
                 <p class="mt-2 text-sm text-neutral-400">
-                  您当前还剩余 {{ personalForm.remainEditNum }} 次修改选科信息、考试类别、分数、位次的机会; 高考后还会给您 {{ personalForm.remainEditNumAfter }} 次修改机会
+                  您当前还剩余 {{ personalForm.remainEditNum }} 次修改分数、位次的机会; 高考后还会给您 {{ personalForm.remainEditNumAfter }} 次修改机会
                 </p>
                 <div v-if="personalForm.xkMod == '1'">
                   <label class="block text-sm font-medium text-neutral mb-3">选科信息</label>
@@ -779,7 +779,7 @@ const scaleRowClick = (row: any) => {
                   <div>
                     <label class="block text-sm font-medium text-neutral mb-2">考试类别</label>
                     <el-select v-model="personalForm.wctype" placeholder="请选择考试类别"
-                      :disabled="personalForm.remainEditNum < 1" class="select-tall44px" @change="wctypeChange">
+                      :disabled="personalForm.remainXuankeEditNum < 1" class="select-tall44px" @change="wctypeChange">
                       <el-option v-for="(item, index) in wctypeList" :key="index" :label="item.wctypestr"
                         :value="item.wctype">
                       </el-option>
@@ -788,7 +788,7 @@ const scaleRowClick = (row: any) => {
                   <div v-if="personalForm.wctype == 2">
                     <label class="block text-sm font-medium text-neutral mb-2">详细类别</label>
                     <el-select v-model="personalForm.yklm" placeholder="请选择详细类别"
-                      :disabled="personalForm.remainEditNum < 1" class="select-tall44px">
+                      :disabled="personalForm.remainXuankeEditNum < 1" class="select-tall44px">
                       <el-option v-for="(item, index) in subjectList" :key="index" :label="item.yklmStr"
                         :value="item.yklm" @click="handleYklmClick">
                       </el-option>
