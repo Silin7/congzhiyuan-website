@@ -965,7 +965,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
           <el-table-column prop="bl" label="录取比例" width="90" sortable align="center">
             <template #default="scope">
               <div class="text-center text-xs mt-1">
-                <span style="font-weight: bold; color: #000;">{{ scope.row.bl }}</span>%
+                <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
               </div>
             </template>
           </el-table-column>
@@ -993,6 +993,9 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                   <template #default="scope">
                     <div class="font-medium tableyxmc">
                       <span>{{ scope.row.zymc }}</span><span v-if="scope.row.zydh">（{{ scope.row.zydh }}）</span>
+                      <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
+                      <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr }}</span>
+                      <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                     </div>
                     <div v-if="scope.row.zyts" class="text-xs text-gray-500">{{ scope.row.zyts }}</div>
                     <el-tooltip v-if="scope.row.jhbz" popper-class="custom-tooltip" effect="dark"
@@ -1061,6 +1064,11 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                   </template>
                 </el-table-column>
                 <el-table-column width="90">
+                  <template #default="scope">
+                    <div class="text-center text-xs mt-1">
+                      <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
+                    </div>
+                  </template>
                 </el-table-column>
                 <el-table-column label="操作" width="120" align="center">
                   <template #default="subScope">
@@ -1158,7 +1166,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
           <el-table-column prop="bl" label="录取比例" width="90" sortable align="center">
             <template #default="scope">
               <div class="text-center text-xs mt-1">
-                <span style="font-weight: bold; color: #000;">{{ scope.row.bl }}</span>%
+                <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
               </div>
             </template>
           </el-table-column>

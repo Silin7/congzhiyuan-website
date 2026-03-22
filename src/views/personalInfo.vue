@@ -1104,7 +1104,7 @@ const scaleRowClick = (row: any) => {
                 <el-table-column prop="bl" label="录取比例" width="90" sortable align="center">
                   <template #default="scope">
                     <div class="text-center text-xs mt-1">
-                      <span style="font-weight: bold; color: #000;">{{ scope.row.bl }}</span>%
+                      <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
                     </div>
                   </template>
                 </el-table-column>
@@ -1139,6 +1139,10 @@ const scaleRowClick = (row: any) => {
                               <span style="font-weight: normal;">专业名称：</span><span>{{ scope.row.zymc }}</span>
                               &nbsp;
                               <span style="font-weight: normal;">专业代号：</span><span>{{ scope.row.zydh }}</span>
+                              &nbsp;
+                              <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
+                              <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr }}</span>
+                              <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                             </p>
                           </div>
                           <el-tooltip v-if="scope.row.jhbz" popper-class="custom-tooltip" effect="dark"
@@ -1209,6 +1213,11 @@ const scaleRowClick = (row: any) => {
                         </template>
                       </el-table-column>
                       <el-table-column label="录取比例" width="100">
+                        <template #default="scope">
+                          <div class="text-center text-xs mt-1">
+                            <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
+                          </div>
+                        </template>
                       </el-table-column>
                       <el-table-column label="操作" width="70" align="center">
                         <template #default="subScope">
@@ -1318,7 +1327,7 @@ const scaleRowClick = (row: any) => {
                 <el-table-column label="录取比例" width="100" sortable align="center">
                   <template #default="scope">
                     <div class="text-center text-xs mt-1">
-                      <span style="font-weight: bold; color: #000;">{{ scope.row.bl }}</span>%
+                      <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
                     </div>
                   </template>
                 </el-table-column>
