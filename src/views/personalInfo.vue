@@ -47,6 +47,9 @@ const getMyuserInfoQuery = async () => {
       getwctypeList()
       getYklmQuery()
     }
+    if (personalInfo.value.ifDispUserInfo == '0') {
+      handleNavItemClick('my-collections')
+    }
     localStorage.setItem('userInfo', JSON.stringify(personalForm.value))
   }
 }
@@ -544,7 +547,7 @@ const scaleRowClick = (row: any) => {
             </div>
           </div>
           <nav class="mt-6 space-y-2">
-            <a @click="handleNavItemClick('basic-info')" :class="[
+            <a v-if="personalInfo.ifDispUserInfo != '0'" @click="handleNavItemClick('basic-info')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'basic-info'
                 ? 'bg-primary bg-opacity-10 text-primary'
@@ -558,7 +561,7 @@ const scaleRowClick = (row: any) => {
               </svg>
               <span class="font-medium">基本信息</span>
             </a>
-            <a v-if="personalInfo.userType == 1" @click="handleNavItemClick('seeting-password')" :class="[
+            <a v-if="personalInfo.userType == 1 && personalInfo.ifDispUserInfo != '0'" @click="handleNavItemClick('seeting-password')" :class="[
               'flex items-center p-3 rounded-lg transition-colors cursor-pointer',
               selectedNavItem === 'seeting-password'
                 ? 'bg-primary bg-opacity-10 text-primary'

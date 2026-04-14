@@ -11,6 +11,8 @@ onMounted(() => {
   getTopInfo()
   getQrPicInfoList()
   if (useRoute().query.sessncode) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
     getMyuserInfoQuery()
    }
 })
