@@ -5,11 +5,25 @@ import * as api from '@/api/interfaceapi'
 import { ElMessage } from 'element-plus'
 import selectProvince from '@/components/selectProvince.vue'
 import pageJump from '@/hooks/pageJump'
+import { useRoute } from 'vue-router'
 
 onMounted(() => {
   getTopInfo()
   getQrPicInfoList()
+  if (useRoute().query.sessncode) {
+    getMyuserInfoQuery()
+   }
 })
+
+const getMyuserInfoQuery = async () => {
+  const res: any = await api.myuserInfoQueryApi()
+  if (res) {
+    const personalForm = JSON.parse(JSON.stringify(res.data || {}))
+    localStorage.setItem('token', personalForm.token)
+    localStorage.setItem('userInfo', JSON.stringify(personalForm))
+    window.dispatchEvent(new CustomEvent('userInfoUpdated'))
+  }
+}
 
 // 上部导航栏显示查询 - 智能推荐方案
 const topInfo = ref<any>([])

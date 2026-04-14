@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, unref } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted, unref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElDialog, ElTabs, ElTabPane, ElForm, ElFormItem, ElInput, ElButton, ElCheckbox, ElMessage, ElMessageBox } from 'element-plus'
 import { UserFilled } from '@element-plus/icons-vue'
@@ -13,8 +13,14 @@ const router = useRouter()
 const currentPath = computed(() => route.path)
 
 const userInfo = ref<any>(null)
-onMounted(() => {
+
+const syncUserInfoFromStorage = () => {
   userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
+}
+
+onMounted(() => {
+  syncUserInfoFromStorage()
+  window.addEventListener('userInfoUpdated', syncUserInfoFromStorage)
   // if (userInfo.value?.ifProvSave == '1' && userInfo.value?.ifUserActive == '0') {
   //   ElMessage.warning('请先完善成绩信息')
   //   router.push({
@@ -25,6 +31,10 @@ onMounted(() => {
   api.navQueryApi().then(res => {
     console.log(res)
   })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('userInfoUpdated', syncUserInfoFromStorage)
 })
 
 // 选择的省份
