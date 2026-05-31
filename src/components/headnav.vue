@@ -6,6 +6,8 @@ import { UserFilled } from '@element-plus/icons-vue'
 import * as api from '@/api/interfaceapi'
 import { agreementURL } from '@/api/baseConfig'
 
+const CHARGING_ROUTE = '#/chargingInfomating'
+
 // Get current route
 const route = useRoute()
 const router = useRouter()
@@ -13,14 +15,30 @@ const router = useRouter()
 const currentPath = computed(() => route.path)
 
 const userInfo = ref<any>(null)
+const chargingGuide = ref({
+  disp: '0',
+  text: '升级VIP',
+})
 
 const syncUserInfoFromStorage = () => {
   userInfo.value = JSON.parse(localStorage.getItem('userInfo') || '{}')
 }
 
+const getChargingGuideInfo = async () => {
+  const res: any = await api.chargingInfoDispApi()
+  if (res?.data) {
+    chargingGuide.value = {
+      disp: String(res.data.disp ?? '0'),
+      text: res.data.text || '升级VIP',
+    }
+  }
+}
+
 onMounted(() => {
   syncUserInfoFromStorage()
   window.addEventListener('userInfoUpdated', syncUserInfoFromStorage)
+  window.addEventListener('userInfoUpdated', getChargingGuideInfo)
+  getChargingGuideInfo()
   // if (userInfo.value?.ifProvSave == '1' && userInfo.value?.ifUserActive == '0') {
   //   ElMessage.warning('请先完善成绩信息')
   //   router.push({
@@ -35,6 +53,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('userInfoUpdated', syncUserInfoFromStorage)
+  window.removeEventListener('userInfoUpdated', getChargingGuideInfo)
 })
 
 // 选择的省份
@@ -175,6 +194,8 @@ const userHandel = (res: any) => {
   localStorage.setItem('userInfo', JSON.stringify(res.data))
   localStorage.setItem('token', res.data.token)
   closeLoginModal()
+  getChargingGuideInfo()
+  window.dispatchEvent(new CustomEvent('userInfoUpdated'))
   if (userInfo.value.ifProvSave == '0') {
     genListQueryList()
   } else if (userInfo.value.ifUserActive == '0') {
@@ -210,6 +231,8 @@ const myUserPorvSave = async () => {
   })
   if (res) {
     showProvModal.value = false
+    getChargingGuideInfo()
+    window.dispatchEvent(new CustomEvent('userInfoUpdated'))
     if (userInfo.value.ifUserActive == '0') {
       ElMessage.warning('请完善成绩信息')
       router.push({
@@ -282,7 +305,8 @@ const handleAgreementClick = () => {
         <a href="/#/schoolSearch" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
         <a href="/#/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
         <a href="/#/aiAssessmentList" class="nav-link" :class="{ active: currentPath === '/aiAssessmentList' }">AI测评</a>
-        <a href="/#/chargingInfomating" class="nav-link" :class="{ active: currentPath === '/chargingInfomating' }">升级VIP</a>
+        <a v-if="chargingGuide.disp === '1'" :href="CHARGING_ROUTE" class="nav-link"
+          :class="{ active: currentPath === '/chargingInfomating' }">{{ chargingGuide.text }}</a>
       </div>
       <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
         <i class="fa fa-user-circle mr-2"></i>

@@ -7,31 +7,54 @@ import sideTop from '@/components/sideTop.vue'
 
 const route = useRoute()
 
-const vipPrice = ref<string>('')
+const chargeItem = ref('Vip会员充值')
+const totalFee = ref('')
+const chargeMemo = ref('')
+const paytype = ref('1')
 const paying = ref(false)
-const paymentMethod = ref('wechat')
+const loading = ref(false)
+
+const defaultNotes = [
+  'Vip会员特权：升级后您可以不受条数限制进行精准填报和一键填报，并查看完整的分析结果，并可下载我的志愿填报表；并获得2次修改成绩类型机会和5次修改选科和成绩机会',
+  '使用日期：有效期至当年年底',
+  '适用范围：仅限山东省考生',
+  '充值仅限于微信支付',
+]
 
 const displayPrice = computed(() => {
-  if (vipPrice.value) return vipPrice.value
   const queryPrice = route.query.price || route.query.amount
   if (queryPrice) return String(queryPrice)
+  if (totalFee.value) return totalFee.value
   return '--'
 })
 
-onMounted(() => {
-  fetchVipPrice()
+const paymentMethodName = computed(() => {
+  if (paytype.value === '2') return '支付宝'
+  return '微信支付'
 })
 
-const fetchVipPrice = async () => {
-  const queryPrice = route.query.price || route.query.amount
-  if (queryPrice) {
-    vipPrice.value = String(queryPrice)
-    return
-  }
-  if (!localStorage.getItem('token')) return
-  const res: any = await api.myuserInfoQueryApi()
-  if (res?.data?.vipPrice) {
-    vipPrice.value = String(res.data.vipPrice)
+const rechargeNotes = computed(() => {
+  if (!chargeMemo.value) return defaultNotes
+  const lines = chargeMemo.value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)
+  return lines.length > 0 ? lines : defaultNotes
+})
+
+onMounted(() => {
+  fetchChargingInfo()
+})
+
+const fetchChargingInfo = async () => {
+  loading.value = true
+  try {
+    const res: any = await api.chargingInfoQueryApi()
+    if (res?.data) {
+      chargeItem.value = res.data.chargeItem || chargeItem.value
+      totalFee.value = res.data.totalFee != null ? String(res.data.totalFee) : ''
+      chargeMemo.value = res.data.chargeMemo || ''
+      paytype.value = String(res.data.paytype || '1')
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -49,13 +72,6 @@ const handlePay = async () => {
     paying.value = false
   }
 }
-
-const rechargeNotes = [
-  'Vip会员特权：升级后您可以不受条数限制进行精准填报和一键填报，并查看完整的分析结果，并可下载我的志愿填报表；并获得2次修改成绩类型机会和5次修改选科和成绩机会',
-  '使用日期：有效期至当年年底',
-  '适用范围：仅限山东省考生',
-  '充值仅限于微信支付',
-]
 </script>
 
 <template>
@@ -69,7 +85,7 @@ const rechargeNotes = [
           元 即可成为Vip会员
         </h4>
 
-        <div class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
+        <div v-loading="loading" class="bg-gray-50 rounded-2xl shadow-lg p-6 border border-gray-200">
           <div class="vip-charge-list">
             <div class="list-item">
               <div class="vip-icon-box">
@@ -82,19 +98,15 @@ const rechargeNotes = [
                 </svg>
               </div>
               <div class="list-right">
-                <div class="right-title">Vip会员充值</div>
+                <div class="right-title">{{ chargeItem }}</div>
                 <div class="right-desc">
                   升级后可不受条数限制进行精准填报和一键填报，查看完整分析结果并下载志愿填报表
                 </div>
                 <div class="payment-row">
                   <span class="payment-label">支付方式：</span>
-                  <div
-                    class="payment-option"
-                    :class="{ active: paymentMethod === 'wechat' }"
-                    @click="paymentMethod = 'wechat'"
-                  >
+                  <div class="payment-option active">
                     <span class="wechat-icon" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <svg v-if="paytype !== '2'" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="12" cy="12" r="12" fill="#07C160" />
                         <path
                           d="M8.5 7.5c-2.5 0-4.5 1.6-4.5 3.6 0 1.2.7 2.3 1.8 3.1l-.4 1.4 1.5-.8c.5.1 1 .2 1.6.2 2.5 0 4.5-1.6 4.5-3.6S11 7.5 8.5 7.5zm-1.3 2.8c-.3 0-.6-.2-.6-.5s.3-.5.6-.5.6.2.6.5-.3.5-.6.5zm2.6 0c-.3 0-.6-.2-.6-.5s.3-.5.6-.5.6.2.6.5-.3.5-.6.5z"
@@ -105,8 +117,15 @@ const rechargeNotes = [
                           fill="#fff"
                         />
                       </svg>
+                      <svg v-else viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="12" fill="#1677FF" />
+                        <path
+                          d="M7 8h10v1.5H7V8zm0 3.2h6.5v1.5H7v-1.5zm0 3.2h8.5v1.5H7v-1.5z"
+                          fill="#fff"
+                        />
+                      </svg>
                     </span>
-                    <span class="payment-name">微信支付</span>
+                    <span class="payment-name">{{ paymentMethodName }}</span>
                   </div>
                 </div>
                 <el-button
@@ -123,9 +142,7 @@ const rechargeNotes = [
             <div class="list-item notes-item">
               <div class="list-right notes-right">
                 <div class="right-title">充值说明</div>
-                <ol class="notes-list">
-                  <li v-for="(note, index) in rechargeNotes" :key="index">{{ note }}</li>
-                </ol>
+                <div v-html="chargeMemo"></div>
               </div>
             </div>
           </div>
@@ -222,7 +239,7 @@ const rechargeNotes = [
 .vip-charge-list .payment-option {
   display: inline-flex;
   align-items: center;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
 }
 

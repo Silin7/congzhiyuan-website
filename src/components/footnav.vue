@@ -1,5 +1,33 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { Message, Phone, Location } from '@element-plus/icons-vue'
+import * as api from '@/api/interfaceapi'
+
+const CHARGING_ROUTE = '#/chargingInfomating'
+
+const chargingGuide = ref({
+  disp: '0',
+  text: '升级VIP',
+})
+
+const getChargingGuideInfo = async () => {
+  const res: any = await api.chargingInfoDispApi()
+  if (res?.data) {
+    chargingGuide.value = {
+      disp: String(res.data.disp ?? '0'),
+      text: res.data.text || '升级VIP',
+    }
+  }
+}
+
+onMounted(() => {
+  getChargingGuideInfo()
+  window.addEventListener('userInfoUpdated', getChargingGuideInfo)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('userInfoUpdated', getChargingGuideInfo)
+})
 </script>
 
 <template>
@@ -17,7 +45,7 @@ import { Message, Phone, Location } from '@element-plus/icons-vue'
           <li><a href="#/schoolSearch" class="footer-link">院校查询</a></li>
           <li><a href="#/majorAnalysis" class="footer-link">专业解析</a></li>
           <li><a href="#/aiAssessmentList" class="footer-link">AI测评</a></li>
-          <li><a href="#/chargingInfomating" class="footer-link">升级VIP</a></li>
+          <li v-if="chargingGuide.disp === '1'"><a :href="CHARGING_ROUTE" class="footer-link">{{ chargingGuide.text }}</a></li>
         </ul>
       </div>
       <div class="footer-column">

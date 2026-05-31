@@ -1220,6 +1220,48 @@ export async function choicesSortBylqblApi(data: any) {
   }
 }
 
+// 是否显示充值引导信息
+export async function chargingInfoDispApi() {
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=chargingInfoDisp`, {}, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
+// 充值引导信息查询
+export async function chargingInfoQueryApi() {
+  try {
+    const res = await axios.post(`${baseURL}/?ctl=ajax&mod=homePage&act=chargingInfoQuery`, {}, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    })
+    if (res.data.code === 0) {
+      return res.data
+    } else if (res.data.code === -998) {
+      useDebounce(tokenLose)
+    } else {
+      ElMessage.error(res.data.message || '请求失败')
+    }
+  } catch (error: any) {
+    console.error('error -------->', error)
+    ElMessage.error('请求失败')
+  }
+}
+
 
 // token失效处理
 function tokenLose() {
