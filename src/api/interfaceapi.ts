@@ -209,7 +209,7 @@ export async function tddwListApi(data: any) {
 
 // 通用复选框列表查询
 // a.token:用户token，必选
-// b.genType 查询类型字段（yxxz:院校性质prov:省份 yxts:院校特色zyts:专业特色）
+// b.genType 查询类型字段（yxxz:院校性质prov:省份 yxts:院校特色zyts:专业特色 sfbz:收费标准）
 export async function genListQueryApi(data: any) {
   const params = new FormData()
   Object.keys(data).forEach(key => {

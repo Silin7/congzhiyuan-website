@@ -13,6 +13,7 @@ onMounted(() => {
   }
   getDisciplineCategoriesList()
   getSchoolNatures()
+  getTuitionRanges()
   getProvinceList()
   getMajorFeatureList()
   document.addEventListener('click', handleDisciplineClickOutside)
@@ -120,6 +121,22 @@ const handleSchoolNatureClick = (nature: string) => {
   }
   localStorage.setItem('selectedSchoolNature', nature)
   selectedSchoolNature.value = nature
+}
+
+// 学费区间
+const tuitionRanges: any = ref([])
+const getTuitionRanges = async () => {
+  const res: any = await api.genListQueryApi({
+    genType: 'sfbz'
+  })
+  if (res) {
+    tuitionRanges.value = res.data.Rs || []
+  }
+}
+const selectedTuitionRange = ref(localStorage.getItem('selectedTuitionRange') || '')
+const handleTuitionRangeClick = (range: string) => {
+  localStorage.setItem('selectedTuitionRange', range)
+  selectedTuitionRange.value = range
 }
 
 // 院校特色
@@ -435,7 +452,7 @@ const lqInfoZyQuery = async () => {
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value || '',
-    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
+    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }, { id: selectedTuitionRange.value, genType: 'sfbz' }] }),
     zydm: zydmArray.value.join(','),
     lqdc: selectedRiskLevel.value.join(','),
     progressChong: riskThreshold.value,
@@ -509,7 +526,7 @@ const lqInfoZyGroupQuery = async () => {
     tddw: selectedAdmissionType.value,
     yxxz: selectedSchoolNature.value,
     yxid: selectedSchool.value || '',
-    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }] }),
+    genList: JSON.stringify({ Rs: [{ id: selectedSchoolNature.value, genType: 'yxxz' }, { id: selectedMajorFeature.value.join(','), genType: 'yxts' }, { id: selectedProvince.value.join(','), genType: 'prov' }, { id: selectedTuitionRange.value, genType: 'sfbz' }] }),
     zydm: zydmArray.value.join(','),
     lqdc: selectedRiskLevel.value.join(','),
     progressChong: riskThreshold.value,
@@ -817,6 +834,22 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               </div>
             </div>
           </div>
+
+          <!-- 学费区间 -->
+          <div v-if="!isCollapsed" class="tagBox">
+            <div class="tagTitle">学费区间：</div>
+            <div class="tagContent">
+              <div :class="selectedTuitionRange === '' ? 'primaryTag' : 'infoTag'" @click="handleTuitionRangeClick('')">
+                不限
+              </div>
+              <div v-for="(item, index) in tuitionRanges" :key="index"
+                :class="selectedTuitionRange === item.id ? 'primaryTag' : 'infoTag'"
+                @click="handleTuitionRangeClick(item.id)">
+                {{ item.disp }}
+              </div>
+            </div>
+          </div>
+
           <div v-if="yixuanzhuanye.length > 0" style="margin-top: 20px;">
             <div class="tagBox">
               <div class="tagTitle" style="margin-bottom: 0;">所选专业：</div>
