@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { ElTable, ElTableColumn, ElButton, ElPagination, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
@@ -15,6 +15,11 @@ onMounted(() => {
   getSchoolNatures()
   getProvinceList()
   getMajorFeatureList()
+  document.addEventListener('click', handleDisciplineClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleDisciplineClickOutside)
 })
 
 // 1:所在省份专业模式 2:所在省份专业组模式
@@ -204,122 +209,189 @@ const getDisciplineCategoriesList = async () => {
     disciplineCategoriesList.value = res.data.Rs || []
   }
 }
-const disciplineCategories = ref('')
-const disciplineCategoriesChange = (value: string) => {
-  disciplineCategories.value = value
-  firstDiscipline.value = ''
-  firstDisciplineList.value = []
-  subDiscipline.value = ''
-  subDisciplineList.value = []
-  getFirstDisciplineList()
+
+const disciplineMenuRef = ref<HTMLElement | null>(null)
+const disciplineMenuVisible = ref(false)
+const activeDisciplineCategory = ref('')
+const menuFirstDisciplineList: any = ref([])
+const menuSubDisciplineList: any = ref([])
+const menuFirstDiscipline = ref('')
+const tempSelectedFirst = ref<string[]>([])
+const tempSelectedSub = ref<string[]>([])
+const tempSelectedSubItems = ref<any[]>([])
+
+const getCategorySelectedCount = (xkml: string) => {
+  return yixuanzhuanye.value.filter((item: any) => item.sourceXkml === xkml).length
 }
 
-// 一级学科
-const firstDisciplineList: any = ref([])
-const getFirstDisciplineList = async () => {
-  const res: any = await api.yjxklistApi({
-    xkml: disciplineCategories.value
-  })
+const getCategoryItems = (xkml: string) => {
+  return yixuanzhuanye.value.filter((item: any) => item.sourceXkml === xkml)
+}
+
+const loadMenuFirstDisciplineList = async (xkml: string) => {
+  const res: any = await api.yjxklistApi({ xkml })
   if (res) {
-    firstDisciplineList.value = res.data.Rs || []
-    firstDisciplineList.value.forEach((item: any) => {
-      if (firstDisciplineChecked.value.includes(item.zydm)) {
-        item.checked = true
-      } else {
-        item.checked = false
+    menuFirstDisciplineList.value = res.data.Rs || []
+  } else {
+    menuFirstDisciplineList.value = []
+  }
+}
+
+const loadMenuSubDisciplineList = async (yjxk: string) => {
+  const res: any = await api.ejxklistApi({ yjxk })
+  if (res) {
+    menuSubDisciplineList.value = res.data.Rs || []
+  } else {
+    menuSubDisciplineList.value = []
+  }
+}
+
+const initTempOnMenuOpen = () => {
+  const categoryItems = getCategoryItems(activeDisciplineCategory.value)
+  tempSelectedFirst.value = categoryItems
+    .filter((item: any) => menuFirstDisciplineList.value.some((first: any) => first.zydm === item.zydm))
+    .map((item: any) => item.zydm)
+  tempSelectedSubItems.value = categoryItems.filter(
+    (item: any) => !menuFirstDisciplineList.value.some((first: any) => first.zydm === item.zydm)
+  )
+  tempSelectedSub.value = tempSelectedSubItems.value.map((item: any) => item.zydm)
+}
+
+const openDisciplineMenu = async (category: any, event?: Event) => {
+  event?.stopPropagation()
+  if (activeDisciplineCategory.value === category.zydm && disciplineMenuVisible.value) {
+    cancelDisciplineMenu()
+    return
+  }
+  activeDisciplineCategory.value = category.zydm
+  disciplineMenuVisible.value = true
+  await loadMenuFirstDisciplineList(category.zydm)
+  initTempOnMenuOpen()
+  if (menuFirstDisciplineList.value.length > 0) {
+    const defaultFirst = menuFirstDisciplineList.value.find((item: any) =>
+      tempSelectedFirst.value.includes(item.zydm)
+    )?.zydm || menuFirstDisciplineList.value[0].zydm
+    await selectMenuFirstDiscipline(defaultFirst)
+  } else {
+    menuFirstDiscipline.value = ''
+    menuSubDisciplineList.value = []
+  }
+}
+
+const selectMenuFirstDiscipline = async (zydm: string) => {
+  menuFirstDiscipline.value = zydm
+  await loadMenuSubDisciplineList(zydm)
+}
+
+const isTempFirstChecked = (item: any) => tempSelectedFirst.value.includes(item.zydm)
+const isTempSubChecked = (item: any) => tempSelectedSub.value.includes(item.zydm)
+
+const toggleTempFirstItem = (item: any) => {
+  const index = tempSelectedFirst.value.indexOf(item.zydm)
+  if (index > -1) {
+    tempSelectedFirst.value.splice(index, 1)
+  } else {
+    tempSelectedFirst.value.push(item.zydm)
+  }
+}
+
+const toggleTempSubItem = (item: any) => {
+  const index = tempSelectedSubItems.value.findIndex((selected: any) => selected.zydm === item.zydm)
+  if (index > -1) {
+    tempSelectedSubItems.value.splice(index, 1)
+    tempSelectedSub.value.splice(tempSelectedSub.value.indexOf(item.zydm), 1)
+  } else {
+    tempSelectedSubItems.value.push(item)
+    tempSelectedSub.value.push(item.zydm)
+  }
+}
+
+const isAllSubSelected = computed(() => {
+  if (menuSubDisciplineList.value.length === 0) return false
+  return menuSubDisciplineList.value.every((item: any) => tempSelectedSub.value.includes(item.zydm))
+})
+
+const toggleSelectAllSub = () => {
+  if (isAllSubSelected.value) {
+    menuSubDisciplineList.value.forEach((item: any) => {
+      const itemIndex = tempSelectedSubItems.value.findIndex((selected: any) => selected.zydm === item.zydm)
+      if (itemIndex > -1) {
+        tempSelectedSubItems.value.splice(itemIndex, 1)
+      }
+      const codeIndex = tempSelectedSub.value.indexOf(item.zydm)
+      if (codeIndex > -1) {
+        tempSelectedSub.value.splice(codeIndex, 1)
+      }
+    })
+  } else {
+    menuSubDisciplineList.value.forEach((item: any) => {
+      if (!tempSelectedSub.value.includes(item.zydm)) {
+        tempSelectedSubItems.value.push(item)
+        tempSelectedSub.value.push(item.zydm)
       }
     })
   }
 }
-const firstDiscipline = ref('')
-const firstDisciplineChange = (value: string) => {
-  firstDiscipline.value = value
-  subDiscipline.value = ''
-  subDisciplineList.value = []
-  getSubDisciplineList()
-  nextTick(() => {
-    subSelectRef.value.toggleMenu()
-  })
+
+const syncDisciplineCheckedState = () => {
+  firstDisciplineChecked.value = yixuanzhuanye.value
+    .filter((item: any) => item.zydm && !item.id)
+    .map((item: any) => item.zydm)
+  subDisciplineChecked.value = [...firstDisciplineChecked.value]
 }
+
+const confirmDisciplineMenu = () => {
+  const xkml = activeDisciplineCategory.value
+  yixuanzhuanye.value = yixuanzhuanye.value.filter((item: any) => item.sourceXkml !== xkml)
+  tempSelectedFirst.value.forEach((zydm) => {
+    const item = menuFirstDisciplineList.value.find((first: any) => first.zydm === zydm)
+    if (item) {
+      yixuanzhuanye.value.push({ ...item, sourceXkml: xkml })
+    }
+  })
+  tempSelectedSubItems.value.forEach((item: any) => {
+    if (!yixuanzhuanye.value.some((selected: any) => selected.zydm === item.zydm)) {
+      yixuanzhuanye.value.push({ ...item, sourceXkml: xkml })
+    }
+  })
+  syncDisciplineCheckedState()
+  cancelDisciplineMenu()
+}
+
+const cancelDisciplineMenu = () => {
+  disciplineMenuVisible.value = false
+  activeDisciplineCategory.value = ''
+  menuFirstDiscipline.value = ''
+  menuFirstDisciplineList.value = []
+  menuSubDisciplineList.value = []
+  tempSelectedFirst.value = []
+  tempSelectedSub.value = []
+  tempSelectedSubItems.value = []
+}
+
+const handleDisciplineClickOutside = (event: MouseEvent) => {
+  if (!disciplineMenuVisible.value) return
+  const target = event.target as Node
+  if (disciplineMenuRef.value && !disciplineMenuRef.value.contains(target)) {
+    cancelDisciplineMenu()
+  }
+}
+
 const firstDisciplineChecked: any = ref([])
-const firstDisciplineCheckClick = (item: any) => {
-  const index = yixuanzhuanye.value.indexOf(item)
-  if (index > -1) {
-    yixuanzhuanye.value.splice(index, 1)
-  } else {
-    yixuanzhuanye.value.push(item)
-  }
-  const index2 = firstDisciplineChecked.value.indexOf(item.zydm)
-  if (index2 > -1) {
-    firstDisciplineChecked.value.splice(index2, 1)
-  } else {
-    firstDisciplineChecked.value.push(item.zydm)
-  }
-}
-
-// 二级学科
-const subDisciplineList: any = ref([])
-const getSubDisciplineList = async () => {
-  const res: any = await api.ejxklistApi({
-    yjxk: firstDiscipline.value
-  })
-  if (res) {
-    subDisciplineList.value = res.data.Rs || []
-    subDisciplineList.value.forEach((item: any) => {
-      if (subDisciplineChecked.value.includes(item.zydm)) {
-        item.checked = true
-      } else {
-        item.checked = false
-      }
-    })
-  }
-}
-const subSelectRef = ref()
-const subDiscipline = ref('')
-const subDisciplineChange = (value: string) => {
-  subDiscipline.value = value
-  console.log(`选择了二级学科: ${value}`)
-  nextTick(() => {
-    subSelectRef.value.blur()
-  })
-}
 const subDisciplineChecked: any = ref([])
-const subDisciplineCheckClick = (item: any) => {
-  const index = yixuanzhuanye.value.indexOf(item)
-  if (index > -1) {
-    yixuanzhuanye.value.splice(index, 1)
-  } else {
-    yixuanzhuanye.value.push(item)
-  }
-  const index2 = subDisciplineChecked.value.indexOf(item.zydm)
-  if (index2 > -1) {
-    subDisciplineChecked.value.splice(index2, 1)
-  } else {
-    subDisciplineChecked.value.push(item.zydm)
-  }
-}
 
 // 已选专业
-const yixuanzhuanyeClick = async (index: any) => {
-  const hasFirst: any = ref(null)
-  await firstDisciplineChecked.value.forEach((item: any, index2: number) => {
-    if (item === yixuanzhuanye.value[index].zydm) {
-      hasFirst.value = index
+const yixuanzhuanyeClick = (index: number) => {
+  const removed = yixuanzhuanye.value[index]
+  if (removed?.zydm) {
+    const firstIndex = firstDisciplineChecked.value.indexOf(removed.zydm)
+    if (firstIndex > -1) {
+      firstDisciplineChecked.value.splice(firstIndex, 1)
     }
-  })
-  if (hasFirst.value !== null) {
-    firstDisciplineChecked.value.splice(hasFirst.value, 1)
-    getFirstDisciplineList()
-  }
-  const hasSub: any = ref(null)
-  await subDisciplineChecked.value.forEach((item: any, index2: number) => {
-    if (item === yixuanzhuanye.value[index].zydm) {
-      hasSub.value = index
+    const subIndex = subDisciplineChecked.value.indexOf(removed.zydm)
+    if (subIndex > -1) {
+      subDisciplineChecked.value.splice(subIndex, 1)
     }
-  })
-  if (hasSub.value !== null && firstDiscipline.value) {
-    subDisciplineChecked.value.splice(hasSub.value, 1)
-    getSubDisciplineList()
   }
   yixuanzhuanye.value.splice(index, 1)
 }
@@ -686,7 +758,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               </div>
             </div>
           </div>
-          <!-- 专业名称 学科门类 一级学科 二级学科 -->
+          <!-- 专业名称 -->
           <el-row v-if="!isCollapsed" :gutter="20">
             <el-col :span="6">
               <div class="tagTitle">专业名称：</div>
@@ -695,45 +767,57 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                 <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text" :value="item.id" />
               </el-select>
             </el-col>
-            <el-col :span="6">
-              <div class="tagTitle">学科门类：</div>
-              <el-select v-model="disciplineCategories" placeholder="请选择学科门类" class="select-tall38px"
-                @change="disciplineCategoriesChange">
-                <el-option v-for="(item, index) in disciplineCategoriesList" :key="index" :value="item.zydm"
-                  :label="item.zymc" />
-              </el-select>
-            </el-col>
-            <el-col :span="6">
-              <div class="tagTitle">一级学科：</div>
-              <el-select v-model="firstDiscipline" placeholder="请选择一级学科" class="select-tall38px">
-                <el-option v-for="(item, index) in firstDisciplineList" :key="index" :value="item.zydm"
-                  :label="item.zymc">
-                  <template #default>
-                    <div style="display: flex; align-items: center; width: 100%;"
-                      @click.stop="firstDisciplineChange(item.zydm)">
-                      <el-checkbox v-model="item.checked" @click.stop="firstDisciplineCheckClick(item)"></el-checkbox>
-                      <div style="margin-left: 5px;">{{ item.zymc }}</div>
-                    </div>
-                  </template>
-                </el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="6">
-              <div class="tagTitle">二级学科：</div>
-              <el-select ref="subSelectRef" v-model="subDiscipline" placeholder="请选择二级学科" class="select-tall38px">
-                <el-option v-for="(item, index) in subDisciplineList" :key="index" :value="item.zydm"
-                  :label="item.zymc">
-                  <template #default>
-                    <div style="display: flex; align-items: center; width: 100%;"
-                      @click.stop="subDisciplineChange(item.zydm)">
-                      <el-checkbox v-model="item.checked" @click.stop="subDisciplineCheckClick(item)"></el-checkbox>
-                      <div style="margin-left: 5px;">{{ item.zymc }}</div>
-                    </div>
-                  </template>
-                </el-option>
-              </el-select>
-            </el-col>
           </el-row>
+          <!-- 学科门类 一级学科 二级学科 -->
+          <div v-if="!isCollapsed" ref="disciplineMenuRef" class="tagBox discipline-filter-box">
+            <div class="tagTitle">学科门类：</div>
+            <div class="tagContent discipline-tag-content">
+              <div v-for="(item, index) in disciplineCategoriesList" :key="index" :class="[
+                getCategorySelectedCount(item.zydm) > 0 || activeDisciplineCategory === item.zydm
+                  ? 'primaryTag discipline-tag'
+                  : 'infoTag discipline-tag',
+                { 'discipline-tag-active': activeDisciplineCategory === item.zydm && disciplineMenuVisible }
+              ]" @click="openDisciplineMenu(item, $event)">
+                <span>{{ item.zymc }}({{ getCategorySelectedCount(item.zydm) }})</span>
+                <Icon icon="mdi:chevron-down" class="discipline-tag-arrow" />
+              </div>
+
+              <div v-if="disciplineMenuVisible" class="discipline-cascader-panel" @click.stop>
+                <div class="discipline-cascader-columns">
+                  <div class="discipline-cascader-col first-col">
+                    <div v-for="(item, index) in menuFirstDisciplineList" :key="index" class="discipline-cascader-item"
+                      :class="{ 'is-active': menuFirstDiscipline === item.zydm }"
+                      @click="selectMenuFirstDiscipline(item.zydm)">
+                      <el-checkbox :model-value="isTempFirstChecked(item)" @change="toggleTempFirstItem(item)"
+                        @click.stop />
+                      <span class="discipline-item-label">{{ item.zymc }}</span>
+                      <Icon icon="mdi:chevron-right" class="discipline-item-arrow" />
+                    </div>
+                  </div>
+                  <div class="discipline-cascader-col second-col">
+                    <div v-if="menuSubDisciplineList.length > 0" class="discipline-cascader-item select-all-item"
+                      @click="toggleSelectAllSub">
+                      <el-checkbox :model-value="isAllSubSelected" @click.stop @change="toggleSelectAllSub" />
+                      <span class="discipline-item-label">全选</span>
+                    </div>
+                    <div v-for="(item, index) in menuSubDisciplineList" :key="index" class="discipline-cascader-item"
+                      @click="toggleTempSubItem(item)">
+                      <el-checkbox :model-value="isTempSubChecked(item)" @change="toggleTempSubItem(item)"
+                        @click.stop />
+                      <span class="discipline-item-label">{{ item.zymc }}</span>
+                    </div>
+                    <div v-if="menuSubDisciplineList.length === 0" class="discipline-cascader-empty">
+                      请选择一级学科
+                    </div>
+                  </div>
+                </div>
+                <div class="discipline-cascader-footer">
+                  <el-button @click="cancelDisciplineMenu">取消</el-button>
+                  <el-button type="primary" @click="confirmDisciplineMenu">确定</el-button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div v-if="yixuanzhuanye.length > 0" style="margin-top: 20px;">
             <div class="tagBox">
               <div class="tagTitle" style="margin-bottom: 0;">所选专业：</div>
@@ -1416,6 +1500,105 @@ const handleExpandChange = (row: any, expandedRows: any) => {
       border: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
       border-radius: 4px;
     }
+  }
+
+  .discipline-filter-box {
+    align-items: flex-start;
+  }
+
+  .discipline-tag-content {
+    position: relative;
+    align-items: flex-start;
+  }
+
+  .discipline-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+  }
+
+  .discipline-tag-active {
+    box-shadow: 0 0 0 2px rgb(37 99 235 / 0.25);
+  }
+
+  .discipline-tag-arrow {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .discipline-cascader-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 20;
+    width: 100%;
+    min-width: 520px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgb(0 0 0 / 0.12);
+    overflow: hidden;
+  }
+
+  .discipline-cascader-columns {
+    display: flex;
+    min-height: 280px;
+    max-height: 360px;
+  }
+
+  .discipline-cascader-col {
+    flex: 1;
+    overflow-y: auto;
+    border-right: 1px solid #e5e7eb;
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  .discipline-cascader-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #333;
+    cursor: pointer;
+
+    &:hover,
+    &.is-active {
+      background-color: #eff6ff;
+      color: #2563eb;
+    }
+  }
+
+  .discipline-item-label {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .discipline-item-arrow {
+    flex-shrink: 0;
+    font-size: 16px;
+    color: #9ca3af;
+  }
+
+  .discipline-cascader-empty {
+    padding: 20px 14px;
+    font-size: 14px;
+    color: #9ca3af;
+    text-align: center;
+  }
+
+  .discipline-cascader-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 12px 16px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafafa;
   }
 
   .zksqBox {
