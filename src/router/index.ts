@@ -129,7 +129,7 @@ const routes: Array<RouteRecordRaw> = [
     name: 'chargingInfomating',
     component: () => import('@/views/chargingInfomating.vue'),
     meta: {
-      title: '收费信息',
+      title: '升级VIP',
       stcode: 'chargingInfomating',
       hashead: true,
       hasfoot: true,
