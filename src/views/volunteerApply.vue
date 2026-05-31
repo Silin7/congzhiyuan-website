@@ -759,15 +759,14 @@ const handleExpandChange = (row: any, expandedRows: any) => {
             </div>
           </div>
           <!-- 专业名称 -->
-          <el-row v-if="!isCollapsed" :gutter="20">
-            <el-col :span="6">
-              <div class="tagTitle">专业名称：</div>
-              <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
-                :remote-method="getMajorNameOptions" @change="handleMajorNameChange" class="select-tall38px">
-                <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text" :value="item.id" />
-              </el-select>
-            </el-col>
-          </el-row>
+          <div v-if="!isCollapsed" class="tagBox">
+            <div class="tagTitle">专业名称：</div>
+            <el-select v-model="majorName" filterable remote reserve-keyword placeholder="输入专业名称"
+              :remote-method="getMajorNameOptions" @change="handleMajorNameChange" class="select-tall38px"
+              style="margin-bottom: 10px; width: calc(50% - 90px);">
+              <el-option v-for="(item, index) in majorNameOptions" :key="index" :label="item.text" :value="item.id" />
+            </el-select>
+          </div>
           <!-- 学科门类 一级学科 二级学科 -->
           <div v-if="!isCollapsed" ref="disciplineMenuRef" class="tagBox discipline-filter-box">
             <div class="tagTitle">学科门类：</div>
