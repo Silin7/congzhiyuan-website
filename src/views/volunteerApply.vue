@@ -883,6 +883,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                 <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
                 <span v-if="scope.row.byly && scope.row.yxts"> | </span>
                 <span v-if="scope.row.yxts">{{ scope.row.yxts }}</span>
+                <span v-if="scope.row.yxjblxmc">{{ scope.row.yxjblxmc }}</span>
               </div>
             </template>
           </el-table-column>
@@ -965,7 +966,8 @@ const handleExpandChange = (row: any, expandedRows: any) => {
           <el-table-column prop="bl" label="录取比例" width="90" sortable align="center">
             <template #default="scope">
               <div class="text-center text-xs mt-1">
-                <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
+                <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100"
+                  style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
               </div>
             </template>
           </el-table-column>
@@ -994,7 +996,8 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                     <div class="font-medium tableyxmc">
                       <span>{{ scope.row.zymc }}</span><span v-if="scope.row.zydh">（{{ scope.row.zydh }}）</span>
                       <span v-if="scope.row.lqdcstr.includes('稳')" class="lqdcstr bg2">{{ scope.row.lqdcstr }}</span>
-                      <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr }}</span>
+                      <span v-else-if="scope.row.lqdcstr.includes('冲')" class="lqdcstr bg1">{{ scope.row.lqdcstr
+                        }}</span>
                       <span v-else class="lqdcstr bg3">{{ scope.row.lqdcstr }}</span>
                     </div>
                     <div v-if="scope.row.zyts" class="text-xs text-gray-500">{{ scope.row.zyts }}</div>
@@ -1021,12 +1024,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       <div class="text-xs text-gray-500"><span>{{ scope.row.match1Year }}</span>年</div>
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match1Type === 1 ? '精确' : scope.row.match1Type === 2 ? '近似' : '其他'
-                          }}</span>
+                        }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc1 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj1 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs1
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1037,12 +1040,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       <div class="text-xs text-gray-500"><span>{{ scope.row.match2Year }}</span>年</div>
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match2Type === 1 ? '精确' : scope.row.match2Type === 2 ? '近似' : '其他'
-                          }}</span>
+                        }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc2 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj2 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs2
-                          }}</span>
+                      }}</span>
                       </div>
                     </div>
                   </template>
@@ -1053,12 +1056,12 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                       <div class="text-xs text-gray-500"><span>{{ scope.row.match3Year }}</span>年</div>
                       <div class="text-xs text-gray-500">
                         成绩类型：<span>{{ scope.row.match3Type === 1 ? '精确' : scope.row.match3Type === 2 ? '近似' : '其他'
-                          }}</span>
+                        }}</span>
                       </div>
                       <div class="text-xs text-gray-500">位次：<span>{{ scope.row.minwc3 }}</span></div>
                       <div class="text-xs text-gray-500">分数：<span>{{ scope.row.mincj3 }}</span></div>
                       <div class="text-xs text-gray-500" style="margin-bottom: 0;">录取人数：<span>{{ scope.row.lqrs3
-                      }}</span>
+                          }}</span>
                       </div>
                     </div>
                   </template>
@@ -1066,7 +1069,8 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                 <el-table-column width="90">
                   <template #default="scope">
                     <div class="text-center text-xs mt-1">
-                      <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
+                      <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100"
+                        style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
                     </div>
                   </template>
                 </el-table-column>
@@ -1101,6 +1105,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                 <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
                 <span v-if="scope.row.byly && scope.row.yxts"> | </span>
                 <span v-if="scope.row.yxts">{{ scope.row.yxts }}</span>
+                <span v-if="scope.row.yxjblxmc">{{ scope.row.yxjblxmc }}</span>
               </div>
             </template>
           </el-table-column>
@@ -1166,7 +1171,8 @@ const handleExpandChange = (row: any, expandedRows: any) => {
           <el-table-column prop="bl" label="录取比例" width="90" sortable align="center">
             <template #default="scope">
               <div class="text-center text-xs mt-1">
-                <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100" style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
+                <span v-if="scope.row.bl && scope.row.bl > 0 && scope.row.bl < 100"
+                  style="font-weight: bold; color: #000;">{{ scope.row.bl }}%</span>
               </div>
             </template>
           </el-table-column>

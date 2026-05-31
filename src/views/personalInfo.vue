@@ -1018,6 +1018,7 @@ const scaleRowClick = (row: any) => {
                       {{ scope.row.sf211 === 1 ? '211高校 |' : '' }}
                       {{ scope.row.sf985 === 1 ? '985高校' : '' }}
                       <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
+                      <span v-if="scope.row.yxjblxmc">{{ scope.row.yxjblxmc }}</span>
                     </div>
                   </template>
                 </el-table-column>
@@ -1259,6 +1260,7 @@ const scaleRowClick = (row: any) => {
                       {{ scope.row.sf211 === 1 ? ' 211高校 | ' : '' }}
                       {{ scope.row.sf985 === 1 ? ' 985高校 | ' : '' }}
                       <span v-if="scope.row.byly">保研率：{{ scope.row.byly }}</span>
+                      <span v-if="scope.row.yxjblxmc">{{ scope.row.yxjblxmc }}</span>
                     </div>
                   </template>
                 </el-table-column>
