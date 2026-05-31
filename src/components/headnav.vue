@@ -282,6 +282,7 @@ const handleAgreementClick = () => {
         <a href="/#/schoolSearch" class="nav-link" :class="{ active: currentPath === '/schoolSearch' }">院校查询</a>
         <a href="/#/majorAnalysis" class="nav-link" :class="{ active: currentPath === '/majorAnalysis' }">专业解析</a>
         <a href="/#/aiAssessmentList" class="nav-link" :class="{ active: currentPath === '/aiAssessmentList' }">AI测评</a>
+        <a href="/#/chargingInfomating" class="nav-link" :class="{ active: currentPath === '/chargingInfomating' }">收费信息</a>
       </div>
       <div v-if="userInfo?.userName" ref="buttonRef" v-click-outside="onClickOutside" class="username">
         <i class="fa fa-user-circle mr-2"></i>

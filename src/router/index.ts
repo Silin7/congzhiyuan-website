@@ -131,6 +131,8 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: '收费信息',
       stcode: 'chargingInfomating',
+      hashead: true,
+      hasfoot: true,
     },
   },
   {

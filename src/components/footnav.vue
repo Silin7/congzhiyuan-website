@@ -17,6 +17,7 @@ import { Message, Phone, Location } from '@element-plus/icons-vue'
           <li><a href="#/schoolSearch" class="footer-link">院校查询</a></li>
           <li><a href="#/majorAnalysis" class="footer-link">专业解析</a></li>
           <li><a href="#/aiAssessmentList" class="footer-link">AI测评</a></li>
+          <li><a href="#/chargingInfomating" class="footer-link">收费信息</a></li>
         </ul>
       </div>
       <div class="footer-column">
