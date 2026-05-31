@@ -125,6 +125,15 @@ const routes: Array<RouteRecordRaw> = [
     },
   },
   {
+    path: '/chargingInfomating',
+    name: 'chargingInfomating',
+    component: () => import('@/views/chargingInfomating.vue'),
+    meta: {
+      title: '收费信息',
+      stcode: 'chargingInfomating',
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   }
