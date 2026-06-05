@@ -21,12 +21,15 @@ const defaultNotes = [
   '充值仅限于微信支付',
 ]
 
-const displayPrice = computed(() => {
-  const queryPrice = route.query.price || route.query.amount
-  if (queryPrice) return String(queryPrice)
+const CHARGE_PAY_ACTION = '/pay/chargePayDeal.php'
+
+const submitTotalFee = computed(() => {
   if (totalFee.value) return totalFee.value
-  return '--'
+  const queryPrice = route.query.price || route.query.amount
+  return queryPrice ? String(queryPrice) : ''
 })
+
+const displayPrice = computed(() => submitTotalFee.value || '--')
 
 const paymentMethodName = computed(() => {
   if (paytype.value === '2') return '支付宝'
@@ -58,19 +61,22 @@ const fetchChargingInfo = async () => {
   }
 }
 
-const handlePay = async () => {
-  if (paying.value) return
+const handlePay = (e: Event) => {
+  if (paying.value) {
+    e.preventDefault()
+    return
+  }
   if (!localStorage.getItem('token')) {
+    e.preventDefault()
     ElMessage.warning('请先登录后再充值')
     return
   }
-  paying.value = true
-  try {
-    // TODO: 对接微信支付接口
-    ElMessage.info('支付功能即将上线，敬请期待')
-  } finally {
-    paying.value = false
+  if (!submitTotalFee.value) {
+    e.preventDefault()
+    ElMessage.warning('充值金额无效，请稍后再试')
+    return
   }
+  paying.value = true
 }
 </script>
 
@@ -128,14 +134,24 @@ const handlePay = async () => {
                     <span class="payment-name">{{ paymentMethodName }}</span>
                   </div>
                 </div>
-                <el-button
-                  type="success"
-                  class="pay-btn"
-                  :loading="paying"
-                  @click="handlePay"
+                <form
+                  method="post"
+                  :action="CHARGE_PAY_ACTION"
+                  class="pay-form"
+                  @submit="handlePay"
                 >
-                  {{ paying ? '支付中...' : '立即支付' }}
-                </el-button>
+                  <input type="hidden" name="paytype" :value="paytype" />
+                  <input type="hidden" name="chargeItem" :value="chargeItem" />
+                  <input type="hidden" name="totalFee" :value="submitTotalFee" />
+                  <el-button
+                    type="success"
+                    class="pay-btn"
+                    native-type="submit"
+                    :loading="paying"
+                  >
+                    {{ paying ? '支付中...' : '立即支付' }}
+                  </el-button>
+                </form>
               </div>
             </div>
 
@@ -261,10 +277,14 @@ const handlePay = async () => {
   color: #2b3330;
 }
 
-.vip-charge-list .pay-btn {
+.vip-charge-list .pay-form {
   position: absolute;
   right: 0;
   bottom: 0;
+}
+
+.vip-charge-list .pay-btn {
+  position: static;
   min-width: 120px;
   height: 40px;
   background-color: #76a33c !important;
