@@ -233,7 +233,6 @@ const activeDisciplineCategory = ref('')
 const menuFirstDisciplineList: any = ref([])
 const menuSubDisciplineList: any = ref([])
 const menuFirstDiscipline = ref('')
-const tempSelectedFirst = ref<string[]>([])
 const tempSelectedSub = ref<string[]>([])
 const tempSelectedSubItems = ref<any[]>([])
 
@@ -263,14 +262,12 @@ const loadMenuSubDisciplineList = async (yjxk: string) => {
   }
 }
 
+const isFirstDisciplineItem = (item: any) =>
+  menuFirstDisciplineList.value.some((first: any) => first.zydm === item.zydm)
+
 const initTempOnMenuOpen = () => {
   const categoryItems = getCategoryItems(activeDisciplineCategory.value)
-  tempSelectedFirst.value = categoryItems
-    .filter((item: any) => menuFirstDisciplineList.value.some((first: any) => first.zydm === item.zydm))
-    .map((item: any) => item.zydm)
-  tempSelectedSubItems.value = categoryItems.filter(
-    (item: any) => !menuFirstDisciplineList.value.some((first: any) => first.zydm === item.zydm)
-  )
+  tempSelectedSubItems.value = categoryItems.filter((item: any) => !isFirstDisciplineItem(item))
   tempSelectedSub.value = tempSelectedSubItems.value.map((item: any) => item.zydm)
 }
 
@@ -285,9 +282,9 @@ const openDisciplineMenu = async (category: any, event?: Event) => {
   await loadMenuFirstDisciplineList(category.zydm)
   initTempOnMenuOpen()
   if (menuFirstDisciplineList.value.length > 0) {
-    const defaultFirst = menuFirstDisciplineList.value.find((item: any) =>
-      tempSelectedFirst.value.includes(item.zydm)
-    )?.zydm || menuFirstDisciplineList.value[0].zydm
+    const firstWithSelectedSub = tempSelectedSubItems.value.find((item: any) => item.yjxk)?.yjxk
+    const defaultFirst = menuFirstDisciplineList.value.find((item: any) => item.zydm === firstWithSelectedSub)?.zydm
+      || menuFirstDisciplineList.value[0].zydm
     await selectMenuFirstDiscipline(defaultFirst)
   } else {
     menuFirstDiscipline.value = ''
@@ -300,17 +297,7 @@ const selectMenuFirstDiscipline = async (zydm: string) => {
   await loadMenuSubDisciplineList(zydm)
 }
 
-const isTempFirstChecked = (item: any) => tempSelectedFirst.value.includes(item.zydm)
 const isTempSubChecked = (item: any) => tempSelectedSub.value.includes(item.zydm)
-
-const toggleTempFirstItem = (item: any) => {
-  const index = tempSelectedFirst.value.indexOf(item.zydm)
-  if (index > -1) {
-    tempSelectedFirst.value.splice(index, 1)
-  } else {
-    tempSelectedFirst.value.push(item.zydm)
-  }
-}
 
 const toggleTempSubItem = (item: any) => {
   const index = tempSelectedSubItems.value.findIndex((selected: any) => selected.zydm === item.zydm)
@@ -360,12 +347,6 @@ const syncDisciplineCheckedState = () => {
 const confirmDisciplineMenu = () => {
   const xkml = activeDisciplineCategory.value
   yixuanzhuanye.value = yixuanzhuanye.value.filter((item: any) => item.sourceXkml !== xkml)
-  tempSelectedFirst.value.forEach((zydm) => {
-    const item = menuFirstDisciplineList.value.find((first: any) => first.zydm === zydm)
-    if (item) {
-      yixuanzhuanye.value.push({ ...item, sourceXkml: xkml })
-    }
-  })
   tempSelectedSubItems.value.forEach((item: any) => {
     if (!yixuanzhuanye.value.some((selected: any) => selected.zydm === item.zydm)) {
       yixuanzhuanye.value.push({ ...item, sourceXkml: xkml })
@@ -381,7 +362,6 @@ const cancelDisciplineMenu = () => {
   menuFirstDiscipline.value = ''
   menuFirstDisciplineList.value = []
   menuSubDisciplineList.value = []
-  tempSelectedFirst.value = []
   tempSelectedSub.value = []
   tempSelectedSubItems.value = []
 }
@@ -804,8 +784,6 @@ const handleExpandChange = (row: any, expandedRows: any) => {
                     <div v-for="(item, index) in menuFirstDisciplineList" :key="index" class="discipline-cascader-item"
                       :class="{ 'is-active': menuFirstDiscipline === item.zydm }"
                       @click="selectMenuFirstDiscipline(item.zydm)">
-                      <el-checkbox :model-value="isTempFirstChecked(item)" @change="toggleTempFirstItem(item)"
-                        @click.stop />
                       <span class="discipline-item-label">{{ item.zymc }}</span>
                       <Icon icon="mdi:chevron-right" class="discipline-item-arrow" />
                     </div>
@@ -855,7 +833,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
               <div class="tagTitle" style="margin-bottom: 0;">所选专业：</div>
               <div class="tagContent">
                 <el-tag v-for="(item, index) in yixuanzhuanye" :key="index" type="primary" closable
-                  style="margin: 5px 10px 5px 0; cursor: pointer;" @close="yixuanzhuanyeClick(index)">
+                  style="margin: 5px 10px 5px 0; cursor: pointer;" @close="yixuanzhuanyeClick(Number(index))">
                   {{ item.zymc || item.text }}
                 </el-tag>
               </div>
