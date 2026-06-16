@@ -834,7 +834,7 @@ const scaleRowClick = (row: any) => {
                     <label class="block text-sm font-medium text-neutral mb-2">位次</label>
                     <el-input min="1" name="ranking" placeholder="请输入您的省内位次" v-model="personalForm.wc"
                       :disabled="personalForm.remainEditNum < 1" class="input-tall44px" />
-                    <p class="mt-2 text-sm text-neutral-400">请输入省内排名位次</p>
+                    <p class="mt-2 text-sm text-neutral-400">请输入省内排名位次，如果所在省的一分一段表是分阶段的，请在不同阶段按实际情况填写</p>
                   </div>
                 </div>
               </div>

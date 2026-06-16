@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
+import { chargePayURL } from '@/api/baseConfig'
 import sideTop from '@/components/sideTop.vue'
 
 const route = useRoute()
@@ -21,7 +22,7 @@ const defaultNotes = [
   '充值仅限于微信支付',
 ]
 
-const CHARGE_PAY_ACTION = '/pay/chargePayDeal.php'
+const CHARGE_PAY_ACTION = chargePayURL
 
 const submitTotalFee = computed(() => {
   if (totalFee.value) return totalFee.value
@@ -30,6 +31,11 @@ const submitTotalFee = computed(() => {
 })
 
 const displayPrice = computed(() => submitTotalFee.value || '--')
+
+const payToken = computed(() => {
+  const token = localStorage.getItem('token') || ''
+  return token ? `Bearer ${token}` : ''
+})
 
 const paymentMethodName = computed(() => {
   if (paytype.value === '2') return '支付宝'
@@ -143,6 +149,7 @@ const handlePay = (e: Event) => {
                   <input type="hidden" name="paytype" :value="paytype" />
                   <input type="hidden" name="chargeItem" :value="chargeItem" />
                   <input type="hidden" name="totalFee" :value="submitTotalFee" />
+                  <input type="hidden" name="token" :value="payToken" />
                   <el-button
                     type="success"
                     class="pay-btn"
