@@ -535,6 +535,16 @@ const zyGroupHandleApply = async (zyid: any, row: any) => {
   }
 }
 
+// 立即开始智能检索（从第一页开始查询）
+const handleSmartSearchZy = () => {
+  currentPage.value = 1
+  lqInfoZyQuery()
+}
+const handleSmartSearchZyGroup = () => {
+  currentPage.value = 1
+  lqInfoZyGroupQuery()
+}
+
 // 处理分页变化
 const handlePageChange = (page: number) => {
   currentPage.value = page
@@ -885,7 +895,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
           <div class="mt-8 flex justify-center">
             <button v-if="zyType == '1'"
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
-              @click="lqInfoZyQuery">
+              @click="handleSmartSearchZy">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                 viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
                 class="iconify text-2xl iconify--solar">
@@ -909,7 +919,7 @@ const handleExpandChange = (row: any, expandedRows: any) => {
             </button>
             <button v-if="zyType == '2'"
               class="w-full md:w-64 py-4 px-8 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center space-x-3"
-              @click="lqInfoZyGroupQuery">
+              @click="handleSmartSearchZyGroup">
               <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                 viewBox="0 0 24 24" data-icon="solar:minimalistic-magnifer-zoom-in-bold"
                 class="iconify text-2xl iconify--solar">
