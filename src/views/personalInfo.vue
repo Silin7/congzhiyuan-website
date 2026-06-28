@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
 import Sortable from "sortablejs"
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { dayjs, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
 import { baseURL } from '@/api/baseConfig'
@@ -342,9 +342,8 @@ const handleViewGroup1 = async (id?: any) => {
   if (res) {
     tableData.value = res.data.Rs || []
     tuozhuaiTableData.value = res.data.Rs || []
-    setTimeout(() => {
-      rowDrop()
-    }, 1000)
+    await nextTick()
+    initRowDrop()
   }
 }
 
@@ -359,9 +358,8 @@ const handleViewGroup2 = async (id?: any) => {
   if (res) {
     tableData.value = res.data.Rs || []
     tuozhuaiTableData.value = res.data.Rs || []
-    setTimeout(() => {
-      rowDrop()
-    }, 1000)
+    await nextTick()
+    initRowDrop()
   }
 }
 // 专业模式志 - 删除
@@ -414,44 +412,46 @@ const handleExpandChange = (row: any, expandedRows: any) => {
 }
 
 // 表格行拖拽
-const rowDrop = () => {
-  let tbody = document.querySelector(".el-table__body-wrapper tbody");
-  Sortable.create(tbody, {
-    group: { // 相同的组之间可以相互拖拽
-      name: "table",
-      pull: true,
-      put: true,
-    },
-    animation: 150, // ms, number 单位：ms，定义排序动画的时间
-    filter: '.el-table__expanded-cell', // 过滤掉展开行的拖拽
-    onAdd: function (e: any) {
-      // 拖拽时候添加有新的节点的时候发生该事件
-      console.log("onAdd.foo:", e);
-    },
-    onUpdate: function (e: any) {
-      // 拖拽更新节点位置发生该事件
-      console.log("onUpdate.foo:", e);
-    },
-    onRemove: function (e: any) {
-      // 删除拖拽节点的时候促发该事件
-      console.log("onRemove.foo:", e);
-    },
-    onStart: function (e: any) {
-      // 开始拖拽出发该函数
-      console.log("onStart.foo:", e);
+const sortableTableRef = ref()
+let sortableInstance: Sortable | null = null
+
+const destroyRowDrop = () => {
+  sortableInstance?.destroy()
+  sortableInstance = null
+}
+
+const reorderTableData = (oldIndex: number, newIndex: number) => {
+  const newData = [...tableData.value]
+  const [moved] = newData.splice(oldIndex, 1)
+  newData.splice(newIndex, 0, moved)
+  tableData.value = newData
+  tuozhuaiTableData.value = newData
+}
+
+const initRowDrop = () => {
+  destroyRowDrop()
+
+  const tableEl = sortableTableRef.value?.$el as HTMLElement | undefined
+  const tbody = tableEl?.querySelector('.el-table__body-wrapper tbody') as HTMLElement | null
+  if (!tbody) return
+
+  sortableInstance = Sortable.create(tbody, {
+    animation: 150,
+    draggable: 'tr.el-table__row',
+    filter: '.el-table__expanded-row',
+    onStart() {
       expandedRows.value = []
     },
-    onSort: function (e: any) {
-      // 发生排序发生该事件
-      console.log("onUpdate.foo:", e);
-    },
-    onEnd(e: any) {
-      // 结束拖拽
-      console.log("结束表格拖拽", e.oldIndex, e.newIndex);
-      tuozhuaiTableData.value.splice(e.newIndex, 0, ...tuozhuaiTableData.value.splice(e.oldIndex, 1))
+    onEnd(evt) {
+      const { oldIndex, newIndex } = evt
+      if (oldIndex == null || newIndex == null || oldIndex === newIndex) return
+
+      destroyRowDrop()
+      reorderTableData(oldIndex, newIndex)
       handleSaveSort()
+      nextTick(() => initRowDrop())
     },
-  });
+  })
 }
 
 // 专业模式志愿单保存排序
@@ -992,8 +992,8 @@ const scaleRowClick = (row: any) => {
               <el-button type="primary" @click="choicesSortBylqbl" style="margin-left: 0;">自动排序</el-button>
             </div>
             <div v-if="tableData?.length > 0" style="margin-top: 20px; width: 100%;">
-              <el-table v-if="personalForm.zyType === '1'" v-loading="false" :data="tableData" stripe border
-                size="small" row-key="yxmc" class="custom-table" style="width: 100%">
+              <el-table v-if="personalForm.zyType === '1'" ref="sortableTableRef" v-loading="false" :data="tableData"
+                stripe border size="small" row-key="chId" class="custom-table" style="width: 100%">
                 <el-table-column width="60" label="排序" align="center">
                   <template #default="scope">
                     <div style="font-size: 16px; font-weight: 700; color: #000;">
@@ -1120,8 +1120,8 @@ const scaleRowClick = (row: any) => {
                   </template>
                 </el-table-column>
               </el-table>
-              <el-table v-if="personalForm.zyType === '2'" v-loading="false" :data="tableData" stripe
-                :row-key="(row: any) => row.zyGroupId" :expand-row-keys="expandedRows"
+              <el-table v-if="personalForm.zyType === '2'" ref="sortableTableRef" v-loading="false" :data="tableData"
+                stripe :row-key="(row: any) => row.zyGroupId" :expand-row-keys="expandedRows"
                 @expand-change="handleExpandChange" border size="small" id="custom-expand-table" style="width: 100%">
                 <el-table-column type="expand" width="1" align="center">
                   <template #default="{ row }">
