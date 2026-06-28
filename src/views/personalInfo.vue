@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import Sortable from "sortablejs"
+import Sortable, { type SortableEvent } from 'sortablejs'
 import { nextTick, onMounted, ref } from 'vue'
 import { dayjs, ElMessage } from 'element-plus'
 import * as api from '@/api/interfaceapi'
@@ -442,7 +442,7 @@ const initRowDrop = () => {
     onStart() {
       expandedRows.value = []
     },
-    onEnd(evt) {
+    onEnd(evt: SortableEvent) {
       const { oldIndex, newIndex } = evt
       if (oldIndex == null || newIndex == null || oldIndex === newIndex) return
 
